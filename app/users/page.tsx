@@ -75,11 +75,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="card-container">
-      <Card
-        title="Get all users from secure endpoint:"
-        loading={!users}
-        className="dashboard-container"
-      >
+      <Card title="Portfolio" loading={!users} className="dashboard-container">
         {users && (
           <>
             {/* antd Table: pass the columns and data, plus a rowKey for stable row identity */}

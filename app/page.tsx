@@ -3,7 +3,7 @@ import "@ant-design/v5-patch-for-react-19";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Button } from "antd";
-import { BookOutlined, CodeOutlined, GlobalOutlined } from "@ant-design/icons";
+// import { BookOutlined, CodeOutlined, GlobalOutlined } from "@ant-design/icons";
 import styles from "@/styles/page.module.css";
 
 export default function Home() {
@@ -13,31 +13,31 @@ export default function Home() {
       <main className={styles.main}>
         <Image
           className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
+          src="/stockico.png"
+          alt="Game Logo"
+          width={500}
+          height={400}
           priority
         />
-        <ol>
+        <ul>
           <h2>Developers</h2>
           <br></br>
           <li>
-            <code>Ilias Karagiannakis</code> ilias.karagiannakis@uzh.ch
+            <strong>Ilias Karagiannakis</strong> ilias.karagiannakis@uzh.ch
           </li>
           <li>
-            <code>Jianwen Cao</code> jianwen.cao@uzh.ch.
+            <strong>Jianwen Cao</strong> jianwen.cao@uzh.ch.
           </li>
           <li>
-            <code>Seung Ju Paek</code> seungju.paek@uzh.ch
+            <strong>Seung Ju Paek</strong> seungju.paek@uzh.ch
           </li>
           <li>
-            <code>Shirley Feng Yi Lau</code> seungju.paek@uzh.ch
+            <strong>Shirley Feng Yi Lau</strong> shirleyfengyi.lau@uzh.ch
           </li>
           <li>
-            <code>Julius Landes</code> juliuslhamo.landes@uzh.ch
+            <strong>Julius Landes</strong> juliuslhamo.landes@uzh.ch
           </li>
-        </ol>
+        </ul>
 
         <div className={styles.ctas}>
           <Button
@@ -45,18 +45,19 @@ export default function Home() {
             variant="solid"
             onClick={() => router.push("/login")}
           >
-            login
+            Go to login Menu
           </Button>
           <Button
             type="primary"
             variant="solid"
-            onClick={() => router.push("/register")}
+            color="gold"
+            onClick={() => window.open("/register", "_blank")}
           >
-            Register
+            Register New User
           </Button>
         </div>
       </main>
-      <footer className={styles.footer}>
+      {/* <footer className={styles.footer}>
         <Button
           type="link"
           icon={<BookOutlined />}
@@ -84,7 +85,7 @@ export default function Home() {
         >
           Go to nextjs.org →
         </Button>
-      </footer>
+      </footer> */}
     </div>
   );
 }
