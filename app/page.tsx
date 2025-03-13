@@ -3,6 +3,7 @@ import "@ant-design/v5-patch-for-react-19";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Button } from "antd";
+import { GithubOutlined } from "@ant-design/icons";
 // import { BookOutlined, CodeOutlined, GlobalOutlined } from "@ant-design/icons";
 import styles from "@/styles/page.module.css";
 
@@ -19,26 +20,6 @@ export default function Home() {
           height={400}
           priority
         />
-        <ul>
-          <h2>Developers</h2>
-          <br></br>
-          <li>
-            <strong>Ilias Karagiannakis</strong> ilias.karagiannakis@uzh.ch
-          </li>
-          <li>
-            <strong>Jianwen Cao</strong> jianwen.cao@uzh.ch.
-          </li>
-          <li>
-            <strong>Seung Ju Paek</strong> seungju.paek@uzh.ch
-          </li>
-          <li>
-            <strong>Shirley Feng Yi Lau</strong> shirleyfengyi.lau@uzh.ch
-          </li>
-          <li>
-            <strong>Julius Landes</strong> juliuslhamo.landes@uzh.ch
-          </li>
-        </ul>
-
         <div className={styles.ctas}>
           <Button
             type="primary"
@@ -56,36 +37,55 @@ export default function Home() {
             Register New User
           </Button>
         </div>
+        <br></br>
       </main>
-      {/* <footer className={styles.footer}>
+      <footer className={styles.footer}>
         <Button
           type="link"
-          icon={<BookOutlined />}
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
+          icon={<GithubOutlined />}
+          href="https://github.com/LiakosKari"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Learn
+          Ilias Karagiannakis
         </Button>
         <Button
           type="link"
-          icon={<CodeOutlined />}
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
+          icon={<GithubOutlined />}
+          href="https://github.com/shirleyl1220"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Examples
+          Shirley Feng Yi Lau
         </Button>
         <Button
           type="link"
-          icon={<GlobalOutlined />}
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
+          icon={<GithubOutlined />}
+          href="https://github.com/JianwenCao"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Go to nextjs.org →
+          Jianwen Cao
         </Button>
-      </footer> */}
+        <Button
+          type="link"
+          icon={<GithubOutlined />}
+          href="https://github.com/sing-git"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          SeungJu Paek
+        </Button>
+        <Button
+          type="link"
+          icon={<GithubOutlined />}
+          href="https://github.com/JuliusLhamo"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Julius Landes
+        </Button>
+      </footer>
     </div>
   );
 }
