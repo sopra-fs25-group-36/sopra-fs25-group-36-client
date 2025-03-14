@@ -2,7 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import useLocalStorage from "@/hooks/useLocalStorage";
-import { Input, Button, Form, Typography, Alert } from "antd";
+import { Input, Button, Form, Typography, Alert, DatePicker } from "antd";
+import dayjs from "dayjs";
 import { useApi } from "@/hooks/useApi";
 import { useState } from "react";
 
@@ -19,7 +20,8 @@ const Register: React.FC = () => {
   const handleRegister = async (values: {
     username: string;
     password: string;
-    birthday?: Date; // Make birthday optional
+    birthday: Date; // Make birthday optional
+    email: string;
   }) => {
     try {
       // Convert the birthday to a UTC date string if provided
@@ -46,7 +48,7 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div style={{ maxWidth: 400, margin: "auto", padding: 2 }}>
+    <div style={{ maxWidth: 400, margin: "50px auto", padding: 2 }}>
       <Title level={2}>Registration Form</Title>
       {errorMessage && (
         <Alert
@@ -70,14 +72,37 @@ const Register: React.FC = () => {
             { required: true, message: "Please input your unique username!" },
           ]}
         >
-          <Input placeholder="Create a username" />
+          <Input placeholder="Create a username" autoFocus autoComplete="off" />
         </Form.Item>
+        <Form.Item
+          name="email"
+          label="E-Mail"
+          rules={[
+            { required: true, message: "Please input your E-Mail address!" },
+            {
+              type: "email",
+              message: "Please enter a valid email address!",
+            },
+          ]}
+        >
+          <Input
+            type="email"
+            placeholder="Enter your E-Mail Address"
+            autoFocus
+            autoComplete="new-password" // To prevent browser auto-filling for email
+            aria-label="Email address"
+          />
+        </Form.Item>
+
         <Form.Item
           name="password"
           label="Create Password"
           rules={[{ required: true, message: "Please input your password!" }]}
         >
-          <Input.Password placeholder="Create your password" />
+          <Input.Password
+            placeholder="Create your password"
+            autoComplete="off"
+          />
         </Form.Item>
         <Form.Item
           name="verify"
@@ -97,8 +122,44 @@ const Register: React.FC = () => {
             }),
           ]}
         >
-          <Input.Password placeholder="Verify your password" />
+          <Input.Password
+            placeholder="Verify your password"
+            autoComplete="off"
+          />
         </Form.Item>
+        <Form.Item
+          name="birthday"
+          label="Birthday"
+          rules={[
+            {
+              required: true,
+              message: "You have to be at least 18 years old",
+            },
+            {
+              validator(_, value) {
+                if (!value)
+                  return Promise.reject(
+                    new Error("Please select your birthdate!")
+                  );
+                const age = dayjs().diff(value, "year");
+                return age >= 18
+                  ? Promise.resolve()
+                  : Promise.reject(
+                      new Error("You must be at least 18 years old!")
+                    );
+              },
+            },
+          ]}
+        >
+          <DatePicker
+            format="DD.MM.YYYY"
+            placeholder="dd.MM.YYYY"
+            autoFocus
+            autoComplete="off"
+            style={{ width: "100%" }} // Ensure it fills the container
+          />
+        </Form.Item>
+        <br></br>
         <Form.Item>
           <Button type="primary" htmlType="submit" block>
             Register

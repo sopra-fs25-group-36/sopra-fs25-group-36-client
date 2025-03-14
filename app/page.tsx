@@ -37,7 +37,6 @@ export default function Home() {
             Register New User
           </Button>
         </div>
-        <br></br>
       </main>
       <footer className={styles.footer}>
         <Button

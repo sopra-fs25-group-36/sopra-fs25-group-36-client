@@ -151,6 +151,7 @@ a {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+
 /* Button styles */
 .ant-btn {
   color: var(--button-text) !important; /* Ensure button text is readable */
@@ -181,6 +182,63 @@ a {
 .ant-form-item-label > label {
   color: var(--foreground) !important; /* Ensure labels are visible in light mode */
 }
+
+.ant-picker {
+  width: 100%; /* Make DatePicker fill its container */
+  height: 40px; /* Adjust height */
+  font-size: 16px; /* Increase text size for better readability */
+  border-radius: 8px; /* Rounded corners */
+  border: 1px solid var(--card-border) !important; /* Use your defined border color */
+  background-color: var(--card-background) !important; /* Match theme */
+  color: var(--foreground) !important; /* Adjust text color */
+}
+
+.ant-picker-input > input {
+  font-size: 14px; /* Adjust input text size */
+  color: var(--foreground) !important;
+}
+
+.ant-picker:hover,
+.ant-picker-focused {
+  border-color: var(--button-primary); /* Highlight on hover/focus */
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.ant-input-password {
+  background-color: var(--card-background) !important; /* Make sure the background is correct */
+  color: var(--foreground) !important; /* Ensure the text is readable */
+}
+
+/* Dark mode password input */
+@media (prefers-color-scheme: dark) {
+  .ant-input-password {
+    background-color: #333333 !important; /* Dark background for the password input in dark mode */
+    color: #ffffff !important; /* Light text for visibility in dark mode */
+  }
+}
+
+/* Ensure the SVG (eye icon) has the correct color in dark mode */
+@media (prefers-color-scheme: dark) {
+  .ant-input-password-icon svg {
+    fill: var(--foreground) !important; /* Change SVG color to match text color in dark mode */
+  }
+}
+
+.ant-picker-dropdown {
+  background-color: var(--card-background) !important;
+  color: var(--foreground) !important;
+  border-radius: 8px;
+}
+
+.ant-picker-cell {
+  color: var(--foreground);
+}
+
+.ant-picker-cell-in-view.ant-picker-cell-selected {
+  background-color: var(--button-primary) !important;
+  color: var(--background) !important;
+}
+
 
 /* Form button styles */
 .login-form .ant-btn,
@@ -258,6 +316,50 @@ a {
 .ant-descriptions-bordered .ant-descriptions-item-label,
 .ant-descriptions-bordered .ant-descriptions-item-content {
   border-color: var(--card-border) !important;
+}
+
+/* Remove browser autofill background color */
+input,
+textarea,
+.ant-input,
+.ant-input-affix-wrapper {
+  background-color: var(--card-background) !important;
+  color: var(--foreground) !important;
+  border: 1px solid var(--card-border) !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: rgba(255, 255, 255, 0.6) !important; /* Lighter placeholder in dark mode */
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  background-color: var(--card-background) !important;
+  color: var(--foreground) !important;
+  -webkit-text-fill-color: var(--foreground) !important;
+  -webkit-box-shadow: 0 0 0px 1000px var(--card-background) inset !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+svg {
+  fill: var(--foreground) !important; /* Use the theme color */
+}
+
+/* Light Mode */
+input::placeholder,
+textarea::placeholder {
+  color: var(--foreground) !important; /* Ensure the placeholder color is visible in light mode */
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--foreground) !important; /* Ensure the placeholder color is visible in dark mode */
+  }
 }
 
 /* Page module styles */
