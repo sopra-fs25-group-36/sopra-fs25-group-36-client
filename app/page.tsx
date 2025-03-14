@@ -41,8 +41,8 @@ export default function Home() {
       <footer className={styles.footer}>
         <Button
           type="link"
-          // icon={<GithubOutlined />}
-          icon={<GithubOutlined style={{ color: "#971a1a" }} />}
+          icon={<GithubOutlined />}
+          // icon={<GithubOutlined style={{ color: "#971a1a" }} />}
           href="https://github.com/LiakosKari"
           target="_blank"
           rel="noopener noreferrer"
@@ -51,8 +51,8 @@ export default function Home() {
         </Button>
         <Button
           type="link"
-          // icon={<GithubOutlined />}
-          icon={<GithubOutlined style={{ color: "#971a1a" }} />}
+          icon={<GithubOutlined />}
+          // icon={<GithubOutlined style={{ color: "#971a1a" }} />}
           href="https://github.com/shirleyl1220"
           target="_blank"
           rel="noopener noreferrer"
@@ -61,8 +61,8 @@ export default function Home() {
         </Button>
         <Button
           type="link"
-          // icon={<GithubOutlined />}
-          icon={<GithubOutlined style={{ color: "#971a1a" }} />}
+          icon={<GithubOutlined />}
+          // icon={<GithubOutlined style={{ color: "#971a1a" }} />}
           href="https://github.com/JianwenCao"
           target="_blank"
           rel="noopener noreferrer"
@@ -71,8 +71,8 @@ export default function Home() {
         </Button>
         <Button
           type="link"
-          // icon={<GithubOutlined />}
-          icon={<GithubOutlined style={{ color: "#971a1a" }} />}
+          icon={<GithubOutlined />}
+          // icon={<GithubOutlined style={{ color: "#971a1a" }} />}
           href="https://github.com/sing-git"
           target="_blank"
           rel="noopener noreferrer"
@@ -81,8 +81,8 @@ export default function Home() {
         </Button>
         <Button
           type="link"
-          // icon={<GithubOutlined />}
-          icon={<GithubOutlined style={{ color: "#971a1a" }} />}
+          icon={<GithubOutlined />}
+          // icon={<GithubOutlined style={{ color: "#971a1a" }} />}
           href="https://github.com/JuliusLhamo"
           target="_blank"
           rel="noopener noreferrer"
