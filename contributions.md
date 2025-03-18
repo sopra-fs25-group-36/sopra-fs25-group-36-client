@@ -30,54 +30,17 @@ reason).
 
 ---
 
-## Contributions Week 1 - [Begin Date] to [End Date]
+## Contributions Week 6 - [24.03.2025] to [31.03.2025]
 
-| **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
-| ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
-| **[@githubUser1]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **[@githubUser2]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-
----
-
-## Contributions Week 2 - [Begin Date] to [End Date]
-
-| **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
-| ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
-| **[@githubUser1]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **[@githubUser2]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-
----
-
-## Contributions Week 3 - [Begin Date] to [End Date]
-
-_Continue with the same table format as above._
-
----
-
-## Contributions Week 4 - [Begin Date] to [End Date]
-
-_Continue with the same table format as above._
-
----
-
-## Contributions Week 5 - [Begin Date] to [End Date]
-
-_Continue with the same table format as above._
-
----
-
-## Contributions Week 6 - [Begin Date] to [End Date]
-
-_Continue with the same table format as above._
+| **Student**         | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
+| ------------------- | -------- | ------------------ | ------------------------------- | ----------------------------------- |
+| **[@shirleyl1220]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                     | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@sing-git]**     | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                     | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@JuliusLhamo]**  | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                     | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@JianwenCao]**   | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                     | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@LiakosKari]**   | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                     | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |

@@ -162,7 +162,7 @@ const Register: React.FC = () => {
         <br></br>
         <Form.Item>
           <Button type="primary" htmlType="submit" block>
-            Register
+            Sign Up
           </Button>
         </Form.Item>
       </Form>

@@ -16,8 +16,8 @@ export default function Home() {
           className={styles.logo}
           src="/stockico.png"
           alt="Game Logo"
-          width={500}
-          height={400}
+          width={700}
+          height={500}
           priority
         />
         <div className={styles.ctas}>
@@ -25,17 +25,18 @@ export default function Home() {
             type="primary"
             variant="solid"
             onClick={() => router.push("/login")}
+            block
           >
-            Go to login Menu
+            Login
           </Button>
-          <Button
+          {/* <Button
             type="primary"
             variant="solid"
             color="gold"
             onClick={() => window.open("/register", "_blank")}
           >
             Register New User
-          </Button>
+          </Button> */}
         </div>
       </main>
       <footer className={styles.footer}>

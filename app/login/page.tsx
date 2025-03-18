@@ -41,7 +41,7 @@ const Login: React.FC = () => {
     } catch (error) {
       message.error(
         error instanceof Error
-          ? `Bastardaki!! Something went wrong during the login:\n${error.message}`
+          ? `Something went wrong during the login:\n${error.message}`
           : "An unknown error occurred during login."
       );
     } finally {
@@ -74,7 +74,10 @@ const Login: React.FC = () => {
           <Input.Password placeholder="Enter password" />
         </Form.Item>
         <Form.Item>
-          <Button type="primary" htmlType="submit" loading={loading}>
+          {/* <Form.Item
+          style={{ display: "flex", justifyContent: "center", width: "100%" }}
+        > */}
+          <Button type="primary" htmlType="submit" loading={loading} block>
             Login
           </Button>
         </Form.Item>
@@ -82,7 +85,8 @@ const Login: React.FC = () => {
       <p style={{ marginTop: 10, textAlign: "center" }}>
         You do not have an account?{" "}
         <a
-          onClick={() => router.push("/register")}
+          // onClick={() => router.push("/register")}
+          onClick={() => window.open("/register", "_blank")}
           style={{ cursor: "pointer" }}
         >
           Register
