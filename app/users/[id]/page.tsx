@@ -8,7 +8,7 @@ import { User } from "@/types/user";
 import { Button, Card, Descriptions, Modal, Input, Form, message } from "antd";
 import { EditOutlined } from "@ant-design/icons";
 import styles from "../../styles/page.module.css";
-import useLocalStorage from "@/hooks/useLocalStorage"; // Import the hook
+import useLocalStorage from "@/hooks/useLocalStorage";
 
 const UserPage: React.FC = () => {
   const { id } = useParams();
