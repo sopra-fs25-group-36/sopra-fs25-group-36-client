@@ -21,9 +21,10 @@ interface LocalStorage<T> {
  *  - set: Updates both react state & localStorage.
  *  - clear: Resets state to defaultValue and deletes localStorage key.
  */
+
 export default function useLocalStorage<T>(
   key: string,
-  defaultValue: T,
+  defaultValue: T
 ): LocalStorage<T> {
   const [value, setValue] = useState<T>(defaultValue);
 
