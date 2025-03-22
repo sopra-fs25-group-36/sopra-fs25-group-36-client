@@ -2,29 +2,52 @@
 
 import { useRouter } from "next/navigation";
 import useLocalStorage from "@/hooks/useLocalStorage";
-import { Input, Button, Form, Typography, Alert, DatePicker } from "antd";
+import {
+  Input,
+  Button,
+  Form,
+  Typography,
+  Alert,
+  DatePicker,
+  Radio,
+  Image,
+} from "antd";
 import dayjs from "dayjs";
 import { useApi } from "@/hooks/useApi";
 import { useState } from "react";
+import Logo from "@/components/Logo"; // Adjust the import path as needed
 
 const { Title } = Typography;
+
+// Define the avatar options
+const avatarOptions = [
+  { label: "Avatar 1", value: "/avatars/avatar1.jpg" },
+  { label: "Avatar 2", value: "/avatars/avatar2.jpg" },
+  { label: "Avatar 3", value: "/avatars/avatar3.jpg" },
+  { label: "Avatar 4", value: "/avatars/avatar4.jpg" },
+  { label: "Avatar 5", value: "/avatars/avatar5.jpg" },
+  { label: "Avatar 6", value: "/avatars/avatar6.jpg" },
+  { label: "Avatar 7", value: "/avatars/avatar7.jpg" },
+  { label: "Avatar 8", value: "/avatars/avatar8.jpg" },
+  { label: "Avatar 9", value: "/avatars/avatar9.jpg" },
+];
 
 const Register: React.FC = () => {
   const router = useRouter();
   const apiService = useApi();
   const [form] = Form.useForm();
   const { set: setToken } = useLocalStorage<string>("token", "");
-  const { set: setUserId } = useLocalStorage<number>("id", 0); // Add this line to set the user ID
+  const { set: setUserId } = useLocalStorage<number>("id", 0);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const handleRegister = async (values: {
     username: string;
     password: string;
-    birthday: Date; // Make birthday optional
+    birthday: Date;
     email: string;
+    avatar: string; // Add avatar to the payload
   }) => {
     try {
-      // Convert the birthday to a UTC date string if provided
       const utcBirthday = values.birthday
         ? values.birthday.toISOString().split("T")[0]
         : null;
@@ -33,13 +56,14 @@ const Register: React.FC = () => {
         "/register",
         {
           ...values,
-          birthday: utcBirthday, // Send the UTC date string or null
+          birthday: utcBirthday,
+          avatar: values.avatar, // Include the selected avatar
         }
       );
 
       if (response.token && response.id) {
-        setToken(response.token); // Set the token in local storage
-        setUserId(response.id); // Set the user ID in local storage
+        setToken(response.token);
+        setUserId(response.id);
         router.push("/users");
       }
     } catch (error) {
@@ -49,7 +73,11 @@ const Register: React.FC = () => {
 
   return (
     <div style={{ maxWidth: 400, margin: "50px auto", padding: 2 }}>
-      <Title level={2}>Registration Form</Title>
+      {/* Center the image and make it clickable */}
+      <Logo />
+      <Title level={2} style={{ textAlign: "center" }}>
+        Registration Form
+      </Title>
       {errorMessage && (
         <Alert
           message={errorMessage}
@@ -88,8 +116,7 @@ const Register: React.FC = () => {
           <Input
             type="email"
             placeholder="Enter your E-Mail Address"
-            autoFocus
-            autoComplete="new-password" // To prevent browser auto-filling for email
+            autoComplete="new-password"
             aria-label="Email address"
           />
         </Form.Item>
@@ -153,13 +180,31 @@ const Register: React.FC = () => {
         >
           <DatePicker
             format="DD.MM.YYYY"
-            placeholder="dd.MM.YYYY"
-            autoFocus
+            placeholder="DD.MM.YYYY"
             autoComplete="off"
-            style={{ width: "100%" }} // Ensure it fills the container
+            style={{ width: "100%" }}
           />
         </Form.Item>
-        <br></br>
+        <Form.Item
+          name="avatar"
+          label="Select Avatar"
+          rules={[{ required: true, message: "Please select an avatar!" }]}
+        >
+          <Radio.Group>
+            {avatarOptions.map((option) => (
+              <Radio key={option.value} value={option.value}>
+                <Image
+                  src={option.value}
+                  alt={option.label}
+                  width={85}
+                  height={85}
+                  style={{ borderRadius: "50%" }}
+                />
+              </Radio>
+            ))}
+          </Radio.Group>
+        </Form.Item>
+        <br />
         <Form.Item>
           <Button type="primary" htmlType="submit" block>
             Sign Up

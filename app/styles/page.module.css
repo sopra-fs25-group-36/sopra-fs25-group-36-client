@@ -1,17 +1,17 @@
 .page {
   --gray-rgb: 0, 0, 0;
-  --gray-alpha-100: rgb(52, 54, 68);
-  --gray-alpha-200: rgb(46, 50, 72);
-  --button-primary-hover: rgb(46, 50, 72);
+  --gray-alpha-100: #343644;
+  --gray-alpha-200: #2e3248;
+  --button-primary-hover: #2e3248;
   --button-secondary-hover: #f2f2f2;
 
-  display: grid;
-  grid-template-rows: 20px 1fr 20px;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-items: center;
-  min-height: 100svh;
-  padding: 80px;
-  gap: 64px;
+  justify-content: center;
+  min-height: 100vh; /* Ensure the page takes at least the full viewport height */
+  padding: 20px;
+  gap: 20px; /* Add spacing between main content and footer */
   font-family: var(--font-geist-sans);
   background-color: var(--background);
   color: var(--foreground);
@@ -27,11 +27,20 @@
   }
 }
 
+.logo {
+  max-width: 100%; /* Ensure the logo is responsive */
+  height: auto; /* Maintain aspect ratio */
+  margin-top: -50px; /* Adjust this value to move the image up */
+}
+
 .main {
+  flex: 1; /* Allow main content to grow and take up available space */
   display: flex;
   flex-direction: column;
-  gap: 32px;
-  grid-row-start: 2;
+  align-items: center;
+  justify-content: center;
+  gap: 20px; /* Add spacing between logo and button */
+  padding-bottom: 40px; /* Add padding at the bottom to prevent overlap with footer */
 }
 
 .main ol {
@@ -56,20 +65,20 @@
   font-weight: 600;
 }
 
-
 .ctas {
   display: flex;
   gap: 16px;
   justify-content: center; /* Center buttons horizontally */
   align-items: center; /* Center buttons vertically */
   width: 100%; /* Ensure it spans full width of container */
+  max-width: 300px; /* Limit the width of the button container */
 }
 
 .ctas a {
   appearance: none;
   border-radius: 128px;
-  height: 48px;
-  padding: 0 20px;
+  height: 60px; /* Increased height for a bigger button */
+  padding: 0 30px; /* Increased padding for a wider button */
   border: none;
   border: 1px solid transparent;
   transition: background 0.23s, color 0.2s, border-color 0.2s;
@@ -77,8 +86,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
-  line-height: 20px;
+  font-size: 20px; /* Increased font size for bigger letters */
+  line-height: 24px; /* Adjusted line height for better alignment */
   font-weight: 500;
 }
 
@@ -94,9 +103,15 @@ a.secondary {
 }
 
 .footer {
-  grid-row-start: 3;
   display: flex;
-  gap: 24px;
+  flex-wrap: wrap; /* Allow footer buttons to wrap on small screens */
+  justify-content: center;
+  gap: 10px; /* Add spacing between footer buttons */
+  padding: 10px;
+  /* Remove background-color or set it to transparent */
+  background-color: transparent; /* Remove black background */
+  border-top: 1px solid var(--card-border);
+  width: 100%; /* Ensure footer spans the full width */
 }
 
 .footer a {
@@ -134,13 +149,10 @@ a.secondary {
   }
 
   .main {
-    display: flex;
-    flex-direction: column;
     align-items: center; /* Ensures all child elements are centered */
     text-align: center;
     width: 100%;
   }
-  
 
   .main ol {
     text-align: center;
@@ -150,7 +162,6 @@ a.secondary {
     width: 100%;
     align-items: center;
   }
-  
 
   .ctas a {
     font-size: 14px;
@@ -163,8 +174,7 @@ a.secondary {
   }
 
   .footer {
-    flex-wrap: wrap;
+    flex-direction: column; /* Stack footer buttons vertically on small screens */
     align-items: center;
-    justify-content: center;
   }
 }

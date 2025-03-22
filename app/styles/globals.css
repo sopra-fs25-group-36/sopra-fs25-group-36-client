@@ -315,9 +315,9 @@ textarea::placeholder {
 /* Page module styles */
 .page {
   --gray-rgb: 0, 0, 0;
-  --gray-alpha-100: rgb(52, 54, 68);
-  --gray-alpha-200: rgb(46, 50, 72);
-  --button-primary-hover: rgb(46, 50, 72);
+  --gray-alpha-100: #343644;
+  --gray-alpha-200: #2e3248;
+  --button-primary-hover: #2e3248;
   --button-secondary-hover: #f2f2f2;
 
   display: grid;
@@ -325,7 +325,7 @@ textarea::placeholder {
   align-items: center;
   justify-items: center;
   min-height: 100svh;
-  padding: 80px;
+  padding: 40px 80px; /* Reduce the top padding to 40px */
   gap: 64px;
   font-family: var(--font-geist-sans);
   background-color: var(--background);
@@ -345,8 +345,9 @@ textarea::placeholder {
 .main {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 16px; /* Reduce this value to bring the image closer to the top */
   grid-row-start: 2;
+  padding-top: 20px; /* Adjust this value to move the content up */
 }
 
 .main ol {
