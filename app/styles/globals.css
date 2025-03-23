@@ -3,8 +3,7 @@
   --foreground: #2e3248;
   --button-primary: #11e098;
   --button-primary-hover: #1f1f1f;
-  /* --button-text: #aa2222;  */
-  --button-text: #ffffff; /* Red text for buttons in light mode */
+  --button-text: #ffffff; /* Red text for buttons in light mode. Used to be #aa2222; */
   --card-background: #f0f2f5;
   --card-border: #d9d9d9;
 }
@@ -15,7 +14,6 @@
     --foreground: #ffffff;
     --button-primary: #1f1f1f;
     --button-primary-hover: #cccccc;
-    /* --button-text: #aa2222; */
     --button-text: #11e098;
     --card-background: #1f1f1f;
     --card-border: #434343;
@@ -90,7 +88,6 @@ a {
   padding: 24px;
   box-shadow: 0 2px 8px #0000001a;
 }
-
 
 /* Button styles */
 .ant-btn {
@@ -297,7 +294,7 @@ input:-webkit-autofill:active {
 
 /* Use the theme color */
 svg {
-  /* fill: var(--foreground) !important;  */
+  /* fill: var(--button-text) !important;  */
   fill:#aa2222;
 }
 

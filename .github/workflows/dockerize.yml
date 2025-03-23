@@ -1,12 +1,13 @@
-name: Dockerize
+# name: Dockerize
 
-on:
-  push:
-    branches:
-      - main
+# on:
+#   push:
+#     branches:
+#       - main
 
 jobs:
   dockerize:
+    if: github.event_name == 'push' && false # Ensures no push triggers it....if i need DOCKER i have to delete this line and uncomment lines 1-6
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # auto-generated

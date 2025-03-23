@@ -1,5 +1,5 @@
 # Build image
-FROM node:22.14.0 as build
+FROM node:22.14.0 AS build
 # Set container working directory to /app
 WORKDIR /app
 # Copy npm instructions

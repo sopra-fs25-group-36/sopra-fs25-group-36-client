@@ -88,11 +88,7 @@ const Login: React.FC = () => {
       </Form>
       <p style={{ marginTop: 10, textAlign: "center" }}>
         You do not have an account?{" "}
-        <a
-          // onClick={() => router.push("/register")}
-          onClick={() => window.open("/register", "_blank")}
-          style={{ cursor: "pointer" }}
-        >
+        <a href="/register" target="_blank" rel="noopener noreferrer">
           Register
         </a>
       </p>
