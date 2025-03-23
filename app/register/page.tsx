@@ -213,8 +213,8 @@ const Register: React.FC = () => {
       </Form>
       <p style={{ marginTop: 10, textAlign: "center" }}>
         Already have an account?{" "}
-        <a onClick={() => router.push("/login")} style={{ cursor: "pointer" }}>
-          Login
+        <a href="/login" target="_blank" rel="noopener noreferrer">
+          Register
         </a>
       </p>
     </div>

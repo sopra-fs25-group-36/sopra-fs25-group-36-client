@@ -154,20 +154,6 @@ a {
   }
 }
 
-/* Ensure the SVG (eye icon) has the correct color in dark mode */
-/* Change SVG color to match text color in dark mode */
-/* @media (prefers-color-scheme: dark) {
-  .ant-input-password-icon svg {
-    fill: var(--foreground) !important; 
-  }
-} */
-
-/* .github-icon {
-  fill: #aa2222 !important;
-  color: #aa2222 !important;
-} */
-
-
 .ant-picker-dropdown {
   background-color: var(--card-background) !important;
   color: var(--foreground) !important;
@@ -294,8 +280,7 @@ input:-webkit-autofill:active {
 
 /* Use the theme color */
 svg {
-  /* fill: var(--button-text) !important;  */
-  fill:#aa2222;
+  fill: var(--button-text) !important; /* fill:#aa2222; */
 }
 
 /* Light Mode */
