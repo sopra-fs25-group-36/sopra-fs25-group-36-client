@@ -261,10 +261,10 @@ textarea,
   border: 1px solid var(--card-border) !important;
 }
 
-input::placeholder,
+/* input::placeholder,
 textarea::placeholder {
-  color: #ffffff99 !important; /* Lighter placeholder in dark mode */
-}
+  color: #ffffff99 !important;
+} */
 
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
