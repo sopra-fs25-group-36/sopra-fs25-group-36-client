@@ -41,11 +41,10 @@ reason).
 |                     | [20.03.2025] | -                                                                                                                   | Drew out class diagram                                                | Required task for M2                                                       |
 |                     | [22.03.2025] | -                                                                                                                   | Added development tasks to front end repository                       | Required task for M2                                                       |
 | **[@sing-git]**     | [19.03.2025] | - | M2 2.4 setting up development infra (for server) | Tasks are written in M2 | [Why this contribution is relevant]                                     |
-| **[@sing-git]**     | [20.03.2025] | - | M2 2.4 infra + 2.5 scrum setup, backend/gameflow planning | Tasks are written in M2 | [Why this contribution is relevant]                                     |
-| **[@sing-git]**     | [21.03.2025] | - | M2 2.5 scrum setup on github, make a project and details
- | Tasks are written in M2  | [Why this contribution is relevant]                     |
-| **[@sing-git]**     | [21.03.2025]  | - |  planned backend architecture and game flow(esp component diagram)| Tasks are written in M2 |  [Why this contribution is relevant]                  |
-| **[@sing-git]**     | [22.03.2025]  | - |  made a presentation slides and work on overlead report| Tasks are written in M2 |     [Why this contribution is relevant]     |      
+|       | [20.03.2025] | - | M2 2.4 infra + 2.5 scrum setup, backend/gameflow planning | Tasks are written in M2 | [Why this contribution is relevant]                                     |
+|     | [21.03.2025] | - | M2 2.5 scrum setup on github, make a project and details | Tasks are written in M2  | [Why this contribution is relevant]                     |
+|     | [21.03.2025] | - | planned backend architecture and game flow(esp component diagram) | Tasks are written in M2 |
+   
      
 
 
