@@ -274,7 +274,7 @@ input:-webkit-autofill:active {
 
 /* Use the theme color */
 svg {
-  fill: var(--button-text) !important; /* fill:#aa2222; */
+  fill: var(--button-text) !important;
 }
 
 /* Light Mode */
