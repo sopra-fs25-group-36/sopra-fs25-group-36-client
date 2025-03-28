@@ -4,10 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
-import { Button, Form, Input, Typography, message } from "antd";
+import { Button, Form, Input, message } from "antd";
 import Logo from "@/components/Logo"; // Adjust the import path as needed
-
-const { Title } = Typography;
 
 interface FormFieldProps {
   username: string;
@@ -53,9 +51,6 @@ const Login: React.FC = () => {
   return (
     <div style={{ maxWidth: 400, margin: "50px auto", padding: 2 }}>
       <Logo />
-      <Title level={2} style={{ textAlign: "center" }}>
-        Login Form
-      </Title>
       <Form
         form={form}
         name="login"

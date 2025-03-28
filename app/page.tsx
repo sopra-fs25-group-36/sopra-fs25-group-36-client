@@ -12,7 +12,7 @@ export default function Home() {
     <div className={styles.page}>
       <main className={styles.main}>
         {/* Pass width and height props to Logo */}
-        <Logo width={700} height={500} />
+        <Logo width={350} height={250} />
         <div className={styles.ctas}>
           <Button
             type="primary"

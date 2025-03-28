@@ -6,7 +6,7 @@ import {
   Input,
   Button,
   Form,
-  Typography,
+  // Typography,
   Alert,
   DatePicker,
   Radio,
@@ -17,19 +17,19 @@ import { useApi } from "@/hooks/useApi";
 import { useState } from "react";
 import Logo from "@/components/Logo"; // Adjust the import path as needed
 
-const { Title } = Typography;
+// const { Title } = Typography;
 
 // Define the avatar options
 const avatarOptions = [
-  { label: "Avatar 1", value: "/avatars/avatar1.jpg" },
-  { label: "Avatar 2", value: "/avatars/avatar2.jpg" },
-  { label: "Avatar 3", value: "/avatars/avatar3.jpg" },
+  { label: "Bill Gates", value: "/avatars/avatar1.jpg" },
+  { label: "Elon Mask", value: "/avatars/avatar2.jpg" },
+  // { label: "Jeff Bezos", value: "/avatars/avatar3.jpg" },
   { label: "Avatar 4", value: "/avatars/avatar4.jpg" },
-  { label: "Avatar 5", value: "/avatars/avatar5.jpg" },
+  // { label: "Mark Zukenberg", value: "/avatars/avatar5.jpg" },
   { label: "Avatar 6", value: "/avatars/avatar6.jpg" },
-  { label: "Avatar 7", value: "/avatars/avatar7.jpg" },
-  { label: "Avatar 8", value: "/avatars/avatar8.jpg" },
-  { label: "Avatar 9", value: "/avatars/avatar9.jpg" },
+  { label: "Steve Jobs", value: "/avatars/avatar7.jpg" },
+  // { label: "Avatar 8", value: "/avatars/avatar8.jpg" },
+  // { label: "Avatar 9", value: "/avatars/avatar9.jpg" },
 ];
 
 const Register: React.FC = () => {
@@ -73,11 +73,10 @@ const Register: React.FC = () => {
 
   return (
     <div style={{ maxWidth: 400, margin: "50px auto", padding: 2 }}>
-      {/* Center the image and make it clickable */}
       <Logo />
-      <Title level={2} style={{ textAlign: "center" }}>
+      {/* <Title level={2} style={{ textAlign: "center" }}>
         Registration Form
-      </Title>
+      </Title> */}
       {errorMessage && (
         <Alert
           message={errorMessage}
@@ -196,8 +195,8 @@ const Register: React.FC = () => {
                 <Image
                   src={option.value}
                   alt={option.label}
-                  width={85}
-                  height={85}
+                  width={35}
+                  height={35}
                   style={{ borderRadius: "50%" }}
                 />
               </Radio>
