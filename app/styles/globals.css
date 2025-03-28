@@ -64,7 +64,7 @@ a:hover {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  min-height: 50vh;
   padding: 24px;
   background-color: var(--background);
 }
@@ -85,7 +85,7 @@ a:hover {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  min-height: 50vh;
   padding: 24px;
   background-color: var(--background);
 }
@@ -116,9 +116,9 @@ a:hover {
   border: none !important;
   position: relative;
   overflow: hidden;
-  box-shadow: 
+  /* box-shadow: 
     0 2px 4px rgba(0, 0, 0, 0.05),
-    0 1px 2px rgba(0, 0, 0, 0.1) !important;
+    0 1px 2px rgba(0, 0, 0, 0.1) !important; */
 }
 
 /* Primary button */
@@ -127,7 +127,7 @@ a:hover {
   color: var(--button-text) !important;
   box-shadow: none;
   border: none !important;
-  height: 48px;
+  height: 38px;
   padding: 0 30px !important;
   display: flex !important;
   align-items: center;
@@ -223,6 +223,10 @@ a:hover {
 .ant-form-item-label > label {
   color: var(--foreground) !important; 
   font-weight: 500;
+}
+
+.ant-form-vertical .ant-form-item {
+  margin-bottom: 14px !important;
 }
 
 /* DatePicker Styles */
@@ -438,8 +442,8 @@ textarea::placeholder {
   grid-template-rows: 20px 1fr 20px;
   align-items: center;
   justify-items: center;
-  min-height: 100svh;
-  padding: 40px 80px; /* Reduce the top padding to 40px */
+  min-height: 50svh;
+  padding: 20px 80px; /* Reduce the top padding to 40px */
   gap: 64px;
   font-family: var(--font-geist-sans);
   background-color: var(--background);
@@ -469,7 +473,7 @@ textarea::placeholder {
   padding-left: 0;
   margin: 0;
   font-size: 14px;
-  line-height: 24px;
+  line-height: 20px;
   letter-spacing: -0.01em;
   list-style-position: inside;
 }
@@ -494,7 +498,7 @@ textarea::placeholder {
 .ctas a {
   appearance: none;
   border-radius: 128px;
-  height: 48px;
+  height: 36px;
   padding: 0 20px;
   border: none;
   border: 1px solid transparent;
@@ -503,7 +507,7 @@ textarea::placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  font-size: 14px;
   line-height: 20px;
   font-weight: 500;
 }
@@ -576,7 +580,7 @@ a.secondary {
 
   .ctas a {
     font-size: 14px;
-    height: 40px;
+    height: 20px;
     padding: 0 16px;
   }
 

@@ -72,7 +72,7 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div style={{ maxWidth: 400, margin: "50px auto", padding: 2 }}>
+    <div style={{ maxWidth: 400, margin: "20px auto", padding: 2 }}>
       <Logo />
       {/* <Title level={2} style={{ textAlign: "center" }}>
         Registration Form
@@ -203,7 +203,6 @@ const Register: React.FC = () => {
             ))}
           </Radio.Group>
         </Form.Item>
-        <br />
         <Form.Item>
           <Button type="primary" htmlType="submit" block>
             Sign Up

@@ -10,7 +10,7 @@ interface LogoProps {
   height?: number;
 }
 
-const Logo = ({ width = 175, height = 125 }: LogoProps) => {
+const Logo = ({ width = 632 / 3, height = 209 / 3 }: LogoProps) => {
   const [isDarkTheme, setIsDarkTheme] = useState(false);
 
   // Detect the theme preference

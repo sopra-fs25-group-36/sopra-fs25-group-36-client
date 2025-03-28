@@ -4,8 +4,8 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh; /* Ensure the page takes at least the full viewport height */
-  padding: 10px;
-  gap: 20px; /* Add spacing between main content and footer */
+  padding: 20px;
+  gap: 20px;/* Add spacing between main content and footer */
 }
 
 .logo {

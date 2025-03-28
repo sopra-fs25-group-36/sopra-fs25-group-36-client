@@ -49,7 +49,7 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div style={{ maxWidth: 400, margin: "50px auto", padding: 2 }}>
+    <div style={{ maxWidth: 400, margin: "20px auto", padding: 2 }}>
       <Logo />
       <Form
         form={form}

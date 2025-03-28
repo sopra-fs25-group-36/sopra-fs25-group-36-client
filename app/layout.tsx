@@ -35,7 +35,7 @@ export default function RootLayout({
               borderRadius: 38, // Default corner rounding
               colorText: "var(--foreground)",
               colorBgContainer: "var(--background)",
-              fontSize: 16,
+              fontSize: 14,
             },
             components: {
               Button: {
