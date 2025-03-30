@@ -33,14 +33,24 @@ reason).
 ## Contributions Week 1 - [17.03.2025] to [24.03.2025]
 
 | **Student**         | **Date**     | **Link to Commit**                                                                                                  | **Description**                                                       | **Relevance**                                                              |
-| ------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+|---------------------|--------------|---------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------|----------------------------------------------------------------------------|
 | **[@LiakosKari]**   | [20.03.2025] | External activity/Not related with github                                                                           | [Finalize Figma, Fine tuning Presentation and include Figma Material] | [Important Task for M2 of SoPra ]                                          |
 |                     | [21.03.2025] | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-client/commit/5683ba1189c0fa510839db2f179b05269a75f821] | [Made the SonarQube to read the repository properly]                  | [Important Task for M2 of SoPra ]                                          |
 |                     | [22.03.2025] | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-client/commit/91320d8b8629c60fe57ce11702bea25ed22740c5] | [Finalize Home, Registration and Login Page]                          | [Make them Responsive and functioning according to User Stories and Figma] |
-| **[@shirleyl1220]** | [date]       | [Link to Commit 1]                                                                                                  | [Brief description of the task]                                       | [Why this contribution is relevant]                                        |
-|                     | [date]       | [Link to Commit 2]                                                                                                  | [Brief description of the task]                                       | [Why this contribution is relevant]                                        |
-| **[@sing-git]**     | [date]       | [Link to Commit 1]                                                                                                  | [Brief description of the task]                                       | [Why this contribution is relevant]                                        |
-|                     | [date]       | [Link to Commit 2]                                                                                                  | [Brief description of the task]                                       | [Why this contribution is relevant]                                        |
+| **[@shirleyl1220]** | [19.03.2025] | -                                                                                                                   | Formed discussion and planned backend architecture                    | Because the backend architecture needs to be able to support the gameflow  |
+|                     | [20.03.2025] | -                                                                                                                   | Drew out class diagram                                                | Required task for M2                                                       |
+|                     | [22.03.2025] | -                                                                                                                   | Added development tasks to front end repository                       | Required task for M2                                                       |
+| **[@sing-git]**     | [19.03.2025] | - | M2 2.4 setting up development infra (for server) | Tasks are written in M2 | [Why this contribution is relevant]                                     |
+|       | [20.03.2025] | - | M2 2.4 infra + 2.5 scrum setup, backend/gameflow planning | Tasks are written in M2 | [Why this contribution is relevant]                                     |
+|     | [21.03.2025] | - | M2 2.5 scrum setup on github, make a project and details | Tasks are written in M2  | [Why this contribution is relevant]                     |
+|     | [21.03.2025] | - | planned backend architecture and game flow(esp component diagram) | Tasks are written in M2 |
+   
+     
+
+
+
+
+
 | **[@JuliusLhamo]**  | [date]       | [Link to Commit 1]                                                                                                  | [Brief description of the task]                                       | [Why this contribution is relevant]                                        |
 |                     | [date]       | [Link to Commit 2]                                                                                                  | [Brief description of the task]                                       | [Why this contribution is relevant]                                        |
 | **[@JianwenCao]**   | [date]       | [Link to Commit 1]                                                                                                  | [Brief description of the task]                                       | [Why this contribution is relevant]                                        |
