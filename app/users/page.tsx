@@ -3,57 +3,75 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
+import { useAuth } from "@/hooks/useAuth";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { User } from "@/types/user";
-import { Button, Card, Table } from "antd";
-import type { TableProps } from "antd"; // antd component library allows imports of types
+import { Button, Input, Typography } from "antd";
+import Logo from "@/components/Logo";
 
-// Optionally, you can import a CSS module or file for additional styling:
-// import "@/styles/views/Dashboard.scss";
-
-// Columns for the antd table of User objects
-const columns: TableProps<User>["columns"] = [
-  {
-    title: "Username",
-    dataIndex: "username",
-    key: "username",
-  },
-  {
-    title: "Name",
-    dataIndex: "name",
-    key: "name",
-  },
-  {
-    title: "Id",
-    dataIndex: "id",
-    key: "id",
-  },
-];
+const { Title } = Typography;
 
 const Dashboard: React.FC = () => {
   const router = useRouter();
   const apiService = useApi();
   const [users, setUsers] = useState<User[] | null>(null);
-  // useLocalStorage hook example use
-  // The hook returns an object with the value and two functions
-  // Simply choose what you need from the hook:
-  const {
-    // value: token, // is commented out because we dont need to know the token value for logout
-    // set: setToken, // is commented out because we dont need to set or update the token value
-    clear: clearToken, // all we need in this scenario is a method to clear the token
-  } = useLocalStorage<string>("token", ""); // if you wanted to select a different token, i.e "lobby", useLocalStorage<string>("lobby", "");
 
-  const handleLogout = (): void => {
-    // Clear token using the returned function 'clear' from the hook
-    clearToken();
-    router.push("/login");
+  // Use the useAuth hook to check authentication
+  const isAuthenticated = useAuth();
+
+  // useLocalStorage hook example use
+  const { clear: clearToken } = useLocalStorage<string>("token", "");
+  const { clear: clearUserId } = useLocalStorage<number>("id", 0); // Add this line to clear the user ID
+
+  const checkLogin = () => {
+    if (!isAuthenticated) {
+      // Redirect to login if not authenticated
+      router.push("/login");
+      return;
+    }
   };
+  useEffect(() => {
+    checkLogin();
+    const fetchUsers = async () => {
+      try {
+        const users: User[] = await apiService.get<User[]>("/users");
+        setUsers(users);
+        console.log("Fetched users:", users);
+      } catch (error) {
+        if (error instanceof Error) {
+          alert(`Something went wrong while fetching users:\n${error.message}`);
+        } else {
+          console.error("An unknown error occurred while fetching users.");
+        }
+      }
+    };
+    fetchUsers();
+  }, [apiService]);
+
+  const handleLogout = async (): Promise<void> => {
+    const id = localStorage.getItem("id");
+
+    try {
+      // Call the logout endpoint if currentUser exists
+      if (id) {
+        await apiService.post<User>(`/logout/${id}`, {});
+      }
+    } catch (error) {
+      console.error("Error during logout:", error);
+    } finally {
+      clearToken();
+      clearUserId(); // Clear the user ID from local storage
+      router.push("/login");
+    }
+  };
+
+  if (!isAuthenticated) {
+    return null; // Render nothing while redirecting
+  }
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        // apiService.get<User[]> returns the parsed JSON object directly,
-        // thus we can simply assign it to our users variable.
         const users: User[] = await apiService.get<User[]>("/users");
         setUsers(users);
         console.log("Fetched users:", users);
@@ -67,32 +85,32 @@ const Dashboard: React.FC = () => {
     };
 
     fetchUsers();
-  }, [apiService]); // dependency apiService does not re-trigger the useEffect on every render because the hook uses memoization (check useApi.tsx in the hooks).
-  // if the dependency array is left empty, the useEffect will trigger exactly once
-  // if the dependency array is left away, the useEffect will run on every state change. Since we do a state change to users in the useEffect, this results in an infinite loop.
-  // read more here: https://react.dev/reference/react/useEffect#specifying-reactive-dependencies
+  }, [apiService]);
 
   return (
-    <div className="card-container">
-      <Card title="Portfolio" loading={!users} className="dashboard-container">
-        {users && (
-          <>
-            {/* antd Table: pass the columns and data, plus a rowKey for stable row identity */}
-            <Table<User>
-              columns={columns}
-              dataSource={users}
-              rowKey="id"
-              onRow={(row) => ({
-                onClick: () => router.push(`/users/${row.id}`),
-                style: { cursor: "pointer" },
-              })}
-            />
-            <Button onClick={handleLogout} type="primary">
-              Logout
-            </Button>
-          </>
-        )}
-      </Card>
+    <div style={{ maxWidth: 400, margin: "20px auto", padding: 2 }}>
+      <Logo />
+      <Title level={2} style={{ textAlign: "center" }}>
+        Welcome !
+      </Title>
+      <Button
+        type="primary"
+        variant="solid"
+        onClick={() => router.push("/NewGame")}
+        block
+        style={{ height: "60px", fontSize: "20px", padding: "0 30px" }}
+      >
+        New Game
+      </Button>
+      <Button
+        type="primary"
+        variant="solid"
+        onClick={() => router.push("/JoinGame")}
+        block
+        style={{ height: "60px", fontSize: "20px", padding: "0 30px" }}
+      >
+        Join Game
+      </Button>
     </div>
   );
 };

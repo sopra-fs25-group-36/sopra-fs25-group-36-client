@@ -11,7 +11,6 @@ export default function Home() {
   return (
     <div className={styles.page}>
       <main className={styles.main}>
-        {/* Pass width and height props to Logo */}
         <Logo width={632 / 2} height={209 / 2} />
         <div className={styles.ctas}>
           <Button

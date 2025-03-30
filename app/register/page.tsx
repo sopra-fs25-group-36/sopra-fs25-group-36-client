@@ -2,22 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import useLocalStorage from "@/hooks/useLocalStorage";
-import {
-  Input,
-  Button,
-  Form,
-  // Typography,
-  Alert,
-  DatePicker,
-  Radio,
-  Image,
-} from "antd";
+import { Input, Button, Form, Alert, DatePicker, Radio, Image } from "antd";
 import dayjs from "dayjs";
 import { useApi } from "@/hooks/useApi";
 import { useState } from "react";
-import Logo from "@/components/Logo"; // Adjust the import path as needed
-
-// const { Title } = Typography;
+import Logo from "@/components/Logo";
 
 // Define the avatar options
 const avatarOptions = [
@@ -74,9 +63,6 @@ const Register: React.FC = () => {
   return (
     <div style={{ maxWidth: 400, margin: "20px auto", padding: 2 }}>
       <Logo />
-      {/* <Title level={2} style={{ textAlign: "center" }}>
-        Registration Form
-      </Title> */}
       {errorMessage && (
         <Alert
           message={errorMessage}
