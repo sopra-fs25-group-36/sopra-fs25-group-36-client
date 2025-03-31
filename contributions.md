@@ -55,8 +55,7 @@ reason).
 
 | **[@JuliusLhamo]**  | [date]       | [Link to Commit 1]                                                                                                  | [Brief description of the task]                                       | [Why this contribution is relevant]                                        |
 |                     | [date]       | [Link to Commit 2]                                                                                                  | [Brief description of the task]                                       | [Why this contribution is relevant]                                        |
-| **[@JianwenCao]**   | [date]       | [Link to Commit 1]                                                                                                  | [Brief description of the task]                                       | [Why this contribution is relevant]                                        |
-|                     | [date]       | [Link to Commit 2]                                                                                                  | [Brief description of the task]                                       | [Why this contribution is relevant]                                        |
+
 
 ## Contributions Week 2 - [24.03.2025] to [31.03.2025]
 
@@ -67,3 +66,6 @@ reason).
 |                   | [30.03.2025] | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-client/commit/ff77cf37435a8595eedbce9fdedcaaeee65aa4b4] | [First Draft of Dashboard and Lobby View]            | [First Draft of Dashboard and Lobby View]                                    |
 |  **[@sing-git]**   | [27.03.2025] | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-server/commit/f3b68c7524527e9853819ca45ca20ed487f82fa3]| authentication controller and service | written in User story |
 |  **[@sing-git]**   | [30.03.2025] | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-server/commit/783f8a360d8b82826791ef9f346e1c0ecfb47507]| stock data controller and service(but we still need adjustment as Julius code is different from updated class diagram) | written in User story |
+| **[@JianwenCao]**   | [26.03.2025]       | https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-server/commit/950e5e56f9366970483f4b0dc9f0e57d34dbb46a      | draft about lobby                                       | lobby is an important part of our system                                       |
+|                     | [26.03.2025]       | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-server/commit/cfa6e7b5bca3e538f221fb17cb0589c6e8a0ff3b]    | now the lobby get and post API works                                       | lobby is an important part of our system                                        |
+|                     | [27.03.2025]       | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-server/commit/74f77f44ed002f0ab78f890e7c4046d0dba631ee]    | additional features, now we can add new users to the lobby                                       | lobby is an important part of our system                                        |
