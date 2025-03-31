@@ -43,7 +43,9 @@ reason).
 | **[@sing-git]**     | [19.03.2025] | - | M2 2.4 setting up development infra (for server) | Tasks are written in M2 | [Why this contribution is relevant]                                     |
 |       | [20.03.2025] | - | M2 2.4 infra + 2.5 scrum setup, backend/gameflow planning | Tasks are written in M2 | [Why this contribution is relevant]                                     |
 |     | [21.03.2025] | - | M2 2.5 scrum setup on github, make a project and details | Tasks are written in M2  | [Why this contribution is relevant]                     |
-|     | [21.03.2025] | - | planned backend architecture and game flow(esp component diagram) | Tasks are written in M2 |
+|     | [21.03.2025] | - | planned backend
+
+   
    
      
 
@@ -63,3 +65,5 @@ reason).
 | **[@LiakosKari]** | [28.03.2025] | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-client/commit/76e73fe301b7cf6760a698c21cdd4b2aec264c82] | [Fine Tune new CSS to be more modern and responsive] | [change avatar pictures change CSS of buttons and input boxes to more curvy] |
 |                   | [28.03.2025] | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-client/commit/4d165a1e12a1f096984eb850be18ada633bb8a1d] | [change logo change CSS of form]                     | [change logo change CSS of form]                                             |
 |                   | [30.03.2025] | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-client/commit/ff77cf37435a8595eedbce9fdedcaaeee65aa4b4] | [First Draft of Dashboard and Lobby View]            | [First Draft of Dashboard and Lobby View]                                    |
+|  **[@sing-git]**   | [27.03.2025] | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-server/commit/f3b68c7524527e9853819ca45ca20ed487f82fa3]| authentication controller and service | written in User story |
+|  **[@sing-git]**   | [30.03.2025] | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-server/commit/783f8a360d8b82826791ef9f346e1c0ecfb47507]| stock data controller and service(but we still need adjustment as Julius code is different from updated class diagram) | written in User story |
