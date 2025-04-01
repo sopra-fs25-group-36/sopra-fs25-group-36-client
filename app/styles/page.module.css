@@ -1,17 +1,12 @@
 .page {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh; /* Ensure the page takes at least the full viewport height */
-  padding: 20px;
-  gap: 20px;/* Add spacing between main content and footer */
+  justify-content: flex-start; /* Moves content closer to the top */
+  padding-top: 50px; /* Adjust as needed */
 }
 
 .logo {
-  max-width: 100%; /* Ensure the logo is responsive */
-  height: auto; /* Maintain aspect ratio */
-  margin-top: -50px; /* Adjust this value to move the image up */
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 50px; /* Adjust this value to add more space below */
 }
 
 .main {
@@ -21,6 +16,7 @@
   align-items: center;
   justify-content: center;
   padding-bottom: 30px; /* Add padding at the bottom to prevent overlap with footer */
+  gap: 60px; /* Adjust spacing between logo and buttons */
 }
 
 .main code {
@@ -31,6 +27,8 @@
 }
 
 .ctas {
+  margin-top: 50px; /* Ensure there's space between the logo and buttons */
+  margin-bottom: 50px; /* Ensure there's space between the logo and buttons */
   justify-content: center; /* Center buttons horizontally */
   align-items: center; /* Center buttons vertically */
   width: 100%; /* Ensure it spans full width of container */
@@ -39,15 +37,15 @@
 
 .footer {
   display: flex;
-  flex-wrap: wrap; /* Allow footer buttons to wrap on small screens */
-  justify-content: center;
-  gap: 10px; /* Add spacing between footer buttons */
+  flex-wrap: wrap; /* Allow buttons to wrap onto the next line */
+  justify-content: center; /* Center buttons horizontally */
+  gap: 10px; /* Space between buttons */
   padding: 10px;
   border-top: 1px solid var(--card-border);
-  width: 100%; /* Ensure footer spans the full width */
+  width: 100%; /* Ensure footer spans full width */
 }
 
-@media (max-width: 800px) {
+@media (max-width: 300px) {
   .page {
     padding: 16px;
     padding-bottom: 80px;

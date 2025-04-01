@@ -587,10 +587,4 @@ a.secondary {
   a.secondary {
     min-width: auto;
   }
-
-  .footer {
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-  }
 }
