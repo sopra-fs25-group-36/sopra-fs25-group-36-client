@@ -27,7 +27,7 @@ const Register: React.FC = () => {
   const [form] = Form.useForm();
   const { set: setToken } = useLocalStorage<string>("token", "");
   const { set: setUserId } = useLocalStorage<number>("id", 0);
-  const { set: setAvatarNumber } = useLocalStorage<number>("avatarNumber", 0); // New line for avatar number
+  // const { set: setAvatarNumber } = useLocalStorage<number>("avatarNumber", 0); // New line for avatar number
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const handleRegister = async (values: {
@@ -43,9 +43,9 @@ const Register: React.FC = () => {
         : null;
 
       // Find the selected avatar
-      const selectedAvatar = avatarOptions.find(
-        (opt) => opt.index === values.avatar
-      );
+      // const selectedAvatar = avatarOptions.find(
+      //   (opt) => opt.index === values.avatar
+      // );
 
       const response = await apiService.post<{ token: string; id: number }>(
         "/register",
