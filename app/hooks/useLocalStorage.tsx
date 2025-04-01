@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 
 interface LocalStorage<T> {
   value: T;
@@ -12,11 +12,11 @@ export default function useLocalStorage<T>(
 ): LocalStorage<T> {
   const [value, setValue] = useState<T>(defaultValue);
 
-  // On mount, try to read the stored value
   useEffect(() => {
     if (typeof window === "undefined") return; // SSR safeguard
     try {
-      const stored = globalThis.localStorage.getItem(key);
+      // const stored = globalThis.localStorage.getItem(key);
+      const stored = localStorage.getItem(key);
       if (stored) {
         setValue(JSON.parse(stored) as T);
       }
@@ -25,19 +25,18 @@ export default function useLocalStorage<T>(
     }
   }, [key]);
 
-  // Simple setter that updates both state and localStorage
   const set = (newVal: T) => {
     setValue(newVal);
     if (typeof window !== "undefined") {
-      globalThis.localStorage.setItem(key, JSON.stringify(newVal));
+      // globalThis.localStorage.setItem(key, JSON.stringify(newVal));
+      localStorage.setItem(key, JSON.stringify(newVal));
     }
   };
 
-  // Removes the key from localStorage and resets the state
   const clear = () => {
     setValue(defaultValue);
     if (typeof window !== "undefined") {
-      globalThis.localStorage.removeItem(key);
+      localStorage.removeItem(key);
     }
   };
 

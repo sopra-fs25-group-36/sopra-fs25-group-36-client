@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { Button, Form, Input, message } from "antd";
-import Logo from "@/components/Logo"; // Adjust the import path as needed
+import Logo from "@/components/Logo";
 
 interface FormFieldProps {
   username: string;
@@ -16,7 +16,7 @@ const Login: React.FC = () => {
   const router = useRouter();
   const apiService = useApi();
   const [form] = Form.useForm();
-  const [loading, setLoading] = useState(false); // Fix: Import useState
+  const [loading, setLoading] = useState(false);
 
   const { set: setToken } = useLocalStorage<string>("token", "");
   const { set: setID } = useLocalStorage<number>("id", 0);

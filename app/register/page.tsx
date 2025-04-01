@@ -10,15 +10,15 @@ import Logo from "@/components/Logo";
 
 // Define the avatar options
 const avatarOptions = [
-  { label: "Bill Gates", value: "/avatars/avatar1.jpg" },
-  { label: "Elon Mask", value: "/avatars/avatar2.jpg" },
-  // { label: "Jeff Bezos", value: "/avatars/avatar3.jpg" },
-  { label: "Avatar 4", value: "/avatars/avatar4.jpg" },
-  // { label: "Mark Zukenberg", value: "/avatars/avatar5.jpg" },
-  { label: "Avatar 6", value: "/avatars/avatar6.jpg" },
-  { label: "Steve Jobs", value: "/avatars/avatar7.jpg" },
-  // { label: "Avatar 8", value: "/avatars/avatar8.jpg" },
-  // { label: "Avatar 9", value: "/avatars/avatar9.jpg" },
+  { index: 1, label: "Bill Gates", value: "/avatars/avatar1.jpg" },
+  { index: 2, label: "Elon Mask", value: "/avatars/avatar2.jpg" },
+  // { index: 3, label: "Jeff Bezos", value: "/avatars/avatar3.jpg" },
+  { index: 4, label: "Avatar 4", value: "/avatars/avatar4.jpg" },
+  // { index: 5, label: "Mark Zukenberg", value: "/avatars/avatar5.jpg" },
+  { index: 6, label: "Avatar 6", value: "/avatars/avatar6.jpg" },
+  { index: 7, label: "Steve Jobs", value: "/avatars/avatar7.jpg" },
+  // { index: 8, label: "Avatar 8", value: "/avatars/avatar8.jpg" },
+  // { index: 9, label: "Avatar 9", value: "/avatars/avatar9.jpg" },
 ];
 
 const Register: React.FC = () => {
@@ -27,6 +27,7 @@ const Register: React.FC = () => {
   const [form] = Form.useForm();
   const { set: setToken } = useLocalStorage<string>("token", "");
   const { set: setUserId } = useLocalStorage<number>("id", 0);
+  const { set: setAvatarNumber } = useLocalStorage<number>("avatarNumber", 0); // New line for avatar number
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const handleRegister = async (values: {
@@ -34,19 +35,24 @@ const Register: React.FC = () => {
     password: string;
     birthday: Date;
     email: string;
-    avatar: string; // Add avatar to the payload
+    avatar: number;
   }) => {
     try {
       const utcBirthday = values.birthday
         ? values.birthday.toISOString().split("T")[0]
         : null;
 
+      // Find the selected avatar
+      const selectedAvatar = avatarOptions.find(
+        (opt) => opt.index === values.avatar
+      );
+
       const response = await apiService.post<{ token: string; id: number }>(
         "/register",
         {
           ...values,
           birthday: utcBirthday,
-          avatar: values.avatar, // Include the selected avatar
+          avatar: values.avatar, // Store the index/number
         }
       );
 
@@ -177,7 +183,7 @@ const Register: React.FC = () => {
         >
           <Radio.Group>
             {avatarOptions.map((option) => (
-              <Radio key={option.value} value={option.value}>
+              <Radio key={option.index} value={option.index}>
                 <Image
                   src={option.value}
                   alt={option.label}
