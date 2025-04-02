@@ -2,8 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import useLocalStorage from "@/hooks/useLocalStorage";
-import { Input, Button, Form, Alert, DatePicker, Radio, Image, message } from "antd";
-import dayjs from "dayjs";
+import { Input, Button, Form, Alert, Radio, Image, message } from "antd";
 import { useApi } from "@/hooks/useApi";
 import { useState } from "react";
 import Logo from "@/components/Logo";
