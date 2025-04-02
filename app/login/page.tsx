@@ -25,7 +25,7 @@ const Login: React.FC = () => {
     setLoading(true);
     try {
       const response = await apiService.post<{ token: string; id: number }>(
-        "/login",
+        "/users/login",
         values
       );
 
