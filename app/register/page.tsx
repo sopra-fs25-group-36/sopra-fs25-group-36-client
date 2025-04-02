@@ -93,7 +93,7 @@ const Register: React.FC = () => {
         >
           <Input placeholder="Create a username" autoFocus autoComplete="off" />
         </Form.Item>
-        <Form.Item
+        {/* <Form.Item
           name="email"
           label="E-Mail"
           rules={[
@@ -110,7 +110,7 @@ const Register: React.FC = () => {
             autoComplete="new-password"
             aria-label="Email address"
           />
-        </Form.Item>
+        </Form.Item> */}
 
         <Form.Item
           name="password"
@@ -146,37 +146,6 @@ const Register: React.FC = () => {
           />
         </Form.Item>
         <Form.Item
-          name="birthday"
-          label="Birthday"
-          rules={[
-            {
-              required: true,
-              message: "You have to be at least 18 years old",
-            },
-            {
-              validator(_, value) {
-                if (!value)
-                  return Promise.reject(
-                    new Error("Please select your birthdate!")
-                  );
-                const age = dayjs().diff(value, "year");
-                return age >= 18
-                  ? Promise.resolve()
-                  : Promise.reject(
-                      new Error("You must be at least 18 years old!")
-                    );
-              },
-            },
-          ]}
-        >
-          <DatePicker
-            format="DD.MM.YYYY"
-            placeholder="DD.MM.YYYY"
-            autoComplete="off"
-            style={{ width: "100%" }}
-          />
-        </Form.Item>
-        <Form.Item
           name="avatar"
           label="Select Avatar"
           rules={[{ required: true, message: "Please select an avatar!" }]}
@@ -204,7 +173,7 @@ const Register: React.FC = () => {
       <p style={{ marginTop: 10, textAlign: "center" }}>
         Already have an account?{" "}
         <a href="/login" target="_blank" rel="noopener noreferrer">
-          Register
+          Login
         </a>
       </p>
     </div>
