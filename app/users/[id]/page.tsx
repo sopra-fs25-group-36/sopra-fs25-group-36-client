@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Button, Typography, Modal, Form, Input, App, message } from "antd";
 import Logo from "@/components/Logo";

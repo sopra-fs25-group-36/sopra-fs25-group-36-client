@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams} from "next/navigation";
 import { App, Typography, List, message } from "antd";
 import Logo from "@/components/Logo";
 import { useApi } from "@/hooks/useApi";
@@ -17,7 +17,6 @@ interface Player {
 
 const LobbyPage: React.FC = () => {
   const { id: lobbyId } = useParams();
-  const router = useRouter();
   const apiService = useApi();
 
   const [lobby, setLobby] = useState<Lobby | null>(null);
