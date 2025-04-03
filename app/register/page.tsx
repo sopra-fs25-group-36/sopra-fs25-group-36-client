@@ -48,7 +48,6 @@ const Register: React.FC = () => {
       }
       const autoLoginResponse = await apiService.post<User>("/users/login", payload);
       setUser(autoLoginResponse);
-      alert("so far");
       router.push("/users");
     } catch (error) {
       alert("Signup was not successful: " + (error as Error).message);
@@ -144,7 +143,7 @@ const Register: React.FC = () => {
       </Form>
       <p style={{ marginTop: 10, textAlign: "center" }}>
         Already have an account?{" "}
-        <a href="/login" target="_blank" rel="noopener noreferrer">
+        <a href="/login">
           Login
         </a>
       </p>

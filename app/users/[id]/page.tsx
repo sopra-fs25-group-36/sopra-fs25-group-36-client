@@ -1,293 +1,153 @@
 "use client";
 
-import { useAuth } from "@/hooks/useAuth";
-import React, { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import React, { useState, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
+import { Button, Typography, Modal, Form, Input, App, message } from "antd";
+import Logo from "@/components/Logo";
 import { useApi } from "@/hooks/useApi";
+import { useAuth } from "@/hooks/useAuth";
 import { User } from "@/types/user";
-import { Button, Card, Descriptions, Modal, Input, Form, message } from "antd";
-import { EditOutlined } from "@ant-design/icons";
-import styles from "../../styles/page.module.css";
-import useLocalStorage from "@/hooks/useLocalStorage";
+import { Lobby } from "@/types/lobby";
 
-const UserPage: React.FC = () => {
-  const { id } = useParams();
+const { Title } = Typography;
+
+const Dashboard: React.FC = () => {
   const router = useRouter();
+  const { id: userId } = useParams();
   const apiService = useApi();
-  const [user, setUser] = useState<User | null>(null);
-  const [isEditingUsername, setIsEditingUsername] = useState(false);
-  const [newUsername, setNewUsername] = useState("");
-  const [savingUsername, setSavingUsername] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [isEditingPassword, setIsEditingPassword] = useState(false);
-  const [oldPassword, setOldPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [savingPassword, setSavingPassword] = useState(false);
-  const [isEditingBirthday, setIsEditingBirthday] = useState(false);
-  const [newBirthday, setNewBirthday] = useState<Date | null>(null);
-  const [savingBirthday, setSavingBirthday] = useState(false);
-
   const { isAuthenticated, isLoading } = useAuth();
-  const { value: loggedInUserId } = useLocalStorage<number>("id", 0); // Use the `value` property
-  const isLoggedInUser = loggedInUserId === Number(id); // Check if the logged-in user is viewing their own profile
+  const [isJoinGameModalVisible, setIsJoinGameModalVisible] = useState(false);
+  const [form] = Form.useForm();
+  const [currentUser] = useState<User | null>(null);
 
-  useEffect(() => {
-    if (isLoading) return;
-
-    if (!isAuthenticated) {
+  // Handle logout
+  const handleLogout = async () => {
+    try {
+      await apiService.post(`/logout/${userId}`, {});
+    } catch (error) {
+      console.error("Logout failed:", error);
+    } finally {
+      localStorage.removeItem("token");
+      localStorage.removeItem("id");
       router.push("/login");
-      return;
     }
+  };
 
-    const fetchUser = async () => {
-      try {
-        const user: User = await apiService.get<User>(`/users/${id}`);
-        user.birthday = user.birthday ? new Date(user.birthday) : null;
-        setUser(user);
-      } catch (error) {
-        setError(
-          error instanceof Error ? error.message : "Unknown error occurred"
-        );
-      } finally {
-        setLoading(false);
+  // Handle creating a new lobby
+  const handleCreateNewRoom = async () => {
+    try {
+      const newLobby = await apiService.post<Lobby>(`/${userId}/createLobby`, {});
+      if (newLobby && newLobby.id) {
+        router.push(`/lobby/${newLobby.id}`);
+      } else {
+        message.error("Failed to create lobby");
       }
-    };
-
-    fetchUser();
-  }, [id, apiService, isAuthenticated, isLoading, router]);
-
-  const handleSaveUsername = async () => {
-    if (!newUsername) {
-      message.error("Please enter a valid username.");
-      return;
-    }
-
-    setSavingUsername(true);
-    try {
-      const updatedUser: User = await apiService.put<User>(`/users/${id}`, {
-        username: newUsername,
-      });
-      setUser(updatedUser);
-      message.success("Username updated successfully!");
-      setIsEditingUsername(false);
-      setNewUsername("");
     } catch (error) {
-      message.error(
-        error instanceof Error
-          ? error.message
-          : "An error occurred while updating the username."
-      );
-    } finally {
-      setSavingUsername(false);
+      console.error("Error creating lobby:", error);
+      message.error("Error creating lobby");
     }
   };
 
-  const handleSaveBirthday = async () => {
-    if (!newBirthday) {
-      message.error("Please enter a valid birthday.");
-      return;
-    }
-
-    setSavingBirthday(true);
-    try {
-      const updatedUser: User = await apiService.put<User>(`/users/${id}`, {
-        birthday: newBirthday.toISOString().split("T")[0], // Format as DD.MM.YYYY
-      });
-      setUser(updatedUser); // This will now work because the backend returns the updated user
-      message.success("Birthday updated successfully!");
-      setIsEditingBirthday(false);
-      setNewBirthday(null);
-    } catch (error) {
-      message.error(
-        error instanceof Error
-          ? error.message
-          : "An error occurred while updating the birthday."
-      );
-    } finally {
-      setSavingBirthday(false);
-    }
+  // Show join game modal
+  const showJoinGameModal = () => {
+    setIsJoinGameModalVisible(true);
   };
 
-  const handleSavePassword = async () => {
-    if (!oldPassword || !newPassword) {
-      message.error("Please fill in both password fields.");
-      return;
-    }
+  // Cancel join game modal
+  const handleJoinGameCancel = () => {
+    setIsJoinGameModalVisible(false);
+    form.resetFields();
+  };
 
-    setSavingPassword(true);
+  // Submit join game modal
+  const handleJoinGameSubmit = async () => {
     try {
-      await apiService.put(`/users/${id}/password`, {
-        oldPassword,
-        newPassword,
+      const lobbyCode = form.getFieldValue("gameCode");
+      if (!lobbyCode) {
+        message.error("Please enter a game code");
+        return;
+      }
+      // Post to the joinLobby endpoint using lobbyCode as the lobby id.
+      const updatedLobby = await apiService.post<Lobby>(`/${lobbyCode}/joinLobby`, {
+        userId: Number(userId)
       });
-      message.success("Password updated successfully!");
-      setIsEditingPassword(false);
-      setOldPassword("");
-      setNewPassword("");
+      if (updatedLobby && updatedLobby.id) {
+        router.push(`/lobby/${updatedLobby.id}`);
+      } else {
+        message.error("Failed to join lobby");
+      }
     } catch (error) {
-      message.error(
-        error instanceof Error
-          ? error.message
-          : "An error occurred while updating the password."
-      );
-    } finally {
-      setSavingPassword(false);
+      console.error("Error joining lobby:", error);
+      message.error("Error joining lobby");
     }
   };
 
   if (isLoading) {
-    return <div>Loading authentication status...</div>;
+    return <div>Loading...</div>;
   }
 
   if (!isAuthenticated) {
+    router.push("/login");
     return null;
   }
 
-  if (loading) {
-    return <div>Loading user data...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
-  if (!user) {
-    return <div>User not found</div>;
-  }
-
   return (
-    <div className={styles.userDetailContainer}>
-      <Card title={`User Details: ${user.username}`}>
-        <Descriptions bordered column={1}>
-          <Descriptions.Item label="ID">{user.id}</Descriptions.Item>
-          <Descriptions.Item label="Username">
-            {user.username}
-            {isLoggedInUser && ( // Only show the Edit button if it's the logged-in user
-              <Button
-                type="link"
-                icon={<EditOutlined />}
-                onClick={() => {
-                  setIsEditingUsername(true);
-                  setNewUsername(user.username);
-                }}
-              />
-            )}
-          </Descriptions.Item>
-          <Descriptions.Item label="Status">{user.status}</Descriptions.Item>
-          <Descriptions.Item label="Creation Date">
-            {user.creation
-              ? new Date(user.creation).toLocaleString()
-              : "Has NOT being defined yet!!!!"}
-          </Descriptions.Item>
-          <Descriptions.Item label="Password">
-            ********
-            {isLoggedInUser && ( // Only show the Edit button if it's the logged-in user
-              <Button
-                type="link"
-                icon={<EditOutlined />}
-                onClick={() => setIsEditingPassword(true)}
-              />
-            )}
-          </Descriptions.Item>
-          <Descriptions.Item label="Birthday">
-            {user.birthday
-              ? new Date(user.birthday).toLocaleDateString()
-              : "Has NOT being defined yet!!!!"}
-            {isLoggedInUser && ( // Only show the Edit button if it's the logged-in user
-              <Button
-                type="link"
-                icon={<EditOutlined />}
-                onClick={() => {
-                  setIsEditingBirthday(true);
-                  setNewBirthday(user.birthday || null);
-                }}
-              />
-            )}
-          </Descriptions.Item>
-        </Descriptions>
-        <Button
-          onClick={() => router.push("/users")}
-          type="primary"
-          style={{ marginTop: 16 }}
+    <App>
+      <div style={{ maxWidth: 400, margin: "20px auto", padding: 2 }}>
+        <Logo />
+        <br />
+        <Title level={2} style={{ textAlign: "center" }}>
+          {currentUser ? `Welcome, ${currentUser.username}!` : "Welcome!"}
+        </Title>
+        <br />
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          <Button
+            type="primary"
+            onClick={handleCreateNewRoom}
+            block
+            style={{ height: "60px", fontSize: "20px" }}
+          >
+            Create New Room
+          </Button>
+          <Button
+            type="primary"
+            onClick={showJoinGameModal}
+            block
+            style={{ height: "60px", fontSize: "20px" }}
+          >
+            Join Game
+          </Button>
+          <Button
+            type="default"
+            onClick={handleLogout}
+            block
+            style={{ height: "60px", fontSize: "20px" }}
+          >
+            Logout
+          </Button>
+        </div>
+
+        <Modal
+          title="Enter Game Code"
+          open={isJoinGameModalVisible}
+          onOk={handleJoinGameSubmit}
+          onCancel={handleJoinGameCancel}
+          okText="Join Game"
+          cancelText="Cancel"
         >
-          Back to All Users
-        </Button>
-      </Card>
-
-      <Modal
-        title={<span style={{ color: "red" }}>Update Username</span>}
-        open={isEditingUsername}
-        onOk={handleSaveUsername}
-        onCancel={() => setIsEditingUsername(false)}
-        confirmLoading={savingUsername}
-      >
-        <Form layout="vertical">
-          <Form.Item
-            label={<span style={{ color: "red" }}>New Username</span>}
-            required
-          >
-            <Input
-              value={newUsername}
-              onChange={(e) => setNewUsername(e.target.value)}
-            />
-          </Form.Item>
-        </Form>
-      </Modal>
-      <Modal
-        title={<span style={{ color: "red" }}>Edit Password</span>}
-        open={isEditingPassword}
-        onOk={handleSavePassword}
-        onCancel={() => setIsEditingPassword(false)}
-        confirmLoading={savingPassword}
-      >
-        <Form layout="vertical">
-          <Form.Item
-            label={<span style={{ color: "red" }}>Old Password</span>}
-            required
-          >
-            <Input.Password
-              value={oldPassword}
-              onChange={(e) => setOldPassword(e.target.value)}
-            />
-          </Form.Item>
-          <Form.Item
-            label={<span style={{ color: "red" }}>New Password</span>}
-            required
-          >
-            <Input.Password
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-            />
-          </Form.Item>
-        </Form>
-      </Modal>
-
-      <Modal
-        title={<span style={{ color: "red" }}>Update Birthday</span>}
-        open={isEditingBirthday}
-        onOk={handleSaveBirthday}
-        onCancel={() => setIsEditingBirthday(false)}
-        confirmLoading={savingBirthday}
-      >
-        <Form layout="vertical">
-          <Form.Item
-            label={<span style={{ color: "red" }}>New Birthday</span>}
-            required
-          >
-            <Input
-              type="date"
-              value={newBirthday ? newBirthday.toISOString().split("T")[0] : ""}
-              onChange={(e) => {
-                const dateValue = e.target.value;
-                setNewBirthday(dateValue ? new Date(dateValue) : null);
-              }}
-            />
-          </Form.Item>
-        </Form>
-      </Modal>
-    </div>
+          <Form form={form} layout="vertical">
+            <Form.Item
+              name="gameCode"
+              label="Game Code"
+              rules={[{ required: true, message: "Please enter the game code" }]}
+            >
+              <Input placeholder="Enter the game code" size="large" autoFocus />
+            </Form.Item>
+          </Form>
+        </Modal>
+      </div>
+    </App>
   );
 };
 
-export default UserPage;
+export default Dashboard;

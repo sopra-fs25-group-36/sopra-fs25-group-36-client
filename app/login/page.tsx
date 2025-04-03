@@ -33,7 +33,7 @@ const Login: React.FC = () => {
         setToken(response.token);
         setID(response.id);
         message.success("Login successful!");
-        router.push("/users");
+        router.push(`/users/${response.id}`);
       } else {
         throw new Error("No token received from the server.");
       }
@@ -83,7 +83,7 @@ const Login: React.FC = () => {
       </Form>
       <p style={{ marginTop: 10, textAlign: "center" }}>
         You do not have an account?{" "}
-        <a href="/register" target="_blank" rel="noopener noreferrer">
+        <a href="/register">
           Register
         </a>
       </p>
