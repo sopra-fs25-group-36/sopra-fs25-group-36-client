@@ -62,23 +62,22 @@ const Dashboard: React.FC = () => {
   // Submit join game modal
   const handleJoinGameSubmit = async () => {
     try {
-      const lobbyCode = form.getFieldValue("gameCode");
-      if (!lobbyCode) {
+      const lobbyId = form.getFieldValue("gameCode");
+      if (!lobbyId) {
         message.error("Please enter a game code");
         return;
       }
       // Post to the joinLobby endpoint using lobbyCode as the lobby id.
-      const updatedLobby = await apiService.post<Lobby>(`/${lobbyCode}/joinLobby`, {
+      const targetLobby = await apiService.post<Lobby>(`/${lobbyId}/joinLobby`, {
         userId: Number(userId)
       });
-      if (updatedLobby && updatedLobby.id) {
-        router.push(`/lobby/${updatedLobby.id}`);
+      if (targetLobby && targetLobby.id && targetLobby.active) {
+        router.push(`/lobby/${targetLobby.id}`);
       } else {
-        message.error("Failed to join lobby");
+        console.error("Failed to join lobby, the lobby is no longer valid");
       }
     } catch (error) {
       console.error("Error joining lobby:", error);
-      message.error("Error joining lobby");
     }
   };
 

@@ -1,40 +1,34 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useParams} from "next/navigation";
-import { App, Typography, List, message } from "antd";
+import { useRouter, useParams } from "next/navigation";
+import { App, Typography, List, message, Button } from "antd";
 import Logo from "@/components/Logo";
 import { useApi } from "@/hooks/useApi";
 import { Lobby } from "@/types/lobby";
+import { User } from "@/types/user";
 
 const { Title, Text } = Typography;
 
-interface Player {
-  userId: string;
-  username: string;
-  ready: boolean;
-}
-
 const LobbyPage: React.FC = () => {
   const { id: lobbyId } = useParams();
+  const router = useRouter();
   const apiService = useApi();
+  const currentUserId = localStorage.getItem("id");
 
   const [lobby, setLobby] = useState<Lobby | null>(null);
+  const [userMap, setUserMap] = useState<{ [key: string]: string }>({});
   const [countdown, setCountdown] = useState<number>(300);
 
-  // Fetch lobby details from the backend
   useEffect(() => {
     const fetchLobby = async () => {
       try {
-        const data = await apiService.get<Lobby>(`/lobby/${lobbyId}`);
-        if (data) {
-          setLobby(data);
-          // Optionally override countdown if the lobby provides its own time limit:
-          // setCountdown(data.timeLimitSeconds || 300);
+        const lobbyData = await apiService.get<Lobby>(`/lobby/${lobbyId}`);
+        if (lobbyData) {
+          setLobby(lobbyData);
         }
       } catch (error) {
         console.error("Failed to fetch lobby data:", error);
-        message.error("Failed to fetch lobby data");
       }
     };
 
@@ -43,32 +37,93 @@ const LobbyPage: React.FC = () => {
     }
   }, [lobbyId, apiService]);
 
-  // Start countdown timer
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
+    const fetchUsernames = async () => {
+      if (lobby && lobby.playerReadyStatuses) {
+        const userIDs = Object.keys(lobby.playerReadyStatuses);
+        const newUserMap = { ...userMap };
+        await Promise.all(
+          userIDs.map(async (userId) => {
+            if (!newUserMap[userId]) {
+              try {
+                const userData = await apiService.get<User>(`/users/${userId}`);
+                newUserMap[userId] = userData.username;
+              } catch (error) {
+                console.error("Failed to fetch username for user", userId, error);
+                newUserMap[userId] = `User ${userId}`;
+              }
+            }
+          })
+        );
+        setUserMap(newUserMap);
+      }
+    };
+    fetchUsernames();
+  }, [lobby, apiService, userMap]);
+
+  useEffect(() => {
+    if (lobby && lobby.createdAt && lobby.timeLimitSeconds) {
+      const createdAt = new Date(lobby.createdAt).getTime();
+      const timeLimitMs = lobby.timeLimitSeconds * 1000;
+      const endTime = createdAt + timeLimitMs;
+
+      const timer = setInterval(() => {
+        const now = Date.now();
+        const remaining = Math.floor((endTime - now) / 1000);
+        if (remaining <= 0) {
           clearInterval(timer);
-          return 0;
+          setCountdown(0);
+          router.push(`/users/${currentUserId}`);
+        } else {
+          setCountdown(remaining);
         }
-        return prev - 1;
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [lobby, currentUserId, router]);
+
+  const handleReady = async () => {
+    if (!currentUserId) return;
+    try {
+      const updatedLobby = await apiService.post<Lobby>(`/${lobbyId}/ready`, {
+        userId: Number(currentUserId),
       });
-    }, 1000);
+      if (updatedLobby && updatedLobby.id) {
+        setLobby(updatedLobby);
+      } else {
+        message.error("Failed to update ready status");
+      }
+    } catch (error) {
+      console.error("Error updating ready status:", error);
+      message.error("Error updating ready status");
+    }
+  };
 
-    return () => clearInterval(timer);
-  }, []);
+  let players: { userId: string; ready: boolean }[] = [];
+  if (lobby && lobby.playerReadyStatuses) {
+    players = Object.entries(lobby.playerReadyStatuses).map(([key, ready]) => ({
+      userId: key,
+      ready,
+    }));
+  }
 
-  // Build a list of 5 players. If there are fewer than 5 joined players,
-  // fill the remaining slots with a placeholder.
-  const players: Player[] = [];
-  const joinedPlayers = lobby ? Object.entries(lobby.playerReadyStatuses) : [];
-  for (let i = 0; i < 5; i++) {
-    if (i < joinedPlayers.length) {
-      const [userId, ready] = joinedPlayers[i];
-      // Replace "User {userId}" with the actual username if available.
-      players.push({ userId, username: `User ${userId}`, ready });
+  const totalSlots = 5;
+  const playersWithPlaceholders = [];
+  for (let i = 0; i < totalSlots; i++) {
+    if (i < players.length) {
+      const player = players[i];
+      playersWithPlaceholders.push({
+        userId: player.userId,
+        username: userMap[player.userId] || `User ${player.userId}`,
+        ready: player.ready,
+      });
     } else {
-      players.push({ userId: "", username: "Empty Slot", ready: false });
+      playersWithPlaceholders.push({
+        userId: "",
+        username: "Empty Slot",
+        ready: false,
+      });
     }
   }
 
@@ -84,11 +139,16 @@ const LobbyPage: React.FC = () => {
             Countdown: {countdown}s
           </Text>
         </div>
+        <div style={{ marginBottom: 16, textAlign: "center" }}>
+          <Button type="primary" onClick={handleReady}>
+            Ready
+          </Button>
+        </div>
         <div>
-          <Title level={4}>Players</Title>
+          <Title level={4}>Player Status</Title>
           <List
             bordered
-            dataSource={players}
+            dataSource={playersWithPlaceholders}
             renderItem={(player) => (
               <List.Item>
                 <div
