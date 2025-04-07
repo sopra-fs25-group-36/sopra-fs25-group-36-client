@@ -309,11 +309,18 @@ a:hover {
   color: var(--foreground) !important;
 }
 
+.ant-message-success {
+  color: #000000;
+}
+
 /* Dark mode password input */
 @media (prefers-color-scheme: dark) {
   .ant-input-password {
-    background-color: #333333 !important;
     color: #ffffff !important;
+  }
+
+  .ant-message-success {
+    color: #11e098;
   }
 }
 

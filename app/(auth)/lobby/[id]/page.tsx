@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { App, Typography, List, message, Button } from "antd";
+import { App as AntApp, Typography, List, Button } from "antd";
 import Logo from "@/components/Logo";
 import { useApi } from "@/hooks/useApi";
 import { Lobby } from "@/types/lobby";
@@ -19,6 +19,7 @@ const LobbyPage: React.FC = () => {
   const [lobby, setLobby] = useState<Lobby | null>(null);
   const [userMap, setUserMap] = useState<{ [key: string]: string }>({});
   const [countdown, setCountdown] = useState<number>(300);
+  const { message } = AntApp.useApp();
 
   useEffect(() => {
     const fetchLobby = async () => {
@@ -49,7 +50,11 @@ const LobbyPage: React.FC = () => {
                 const userData = await apiService.get<User>(`/users/${userId}`);
                 newUserMap[userId] = userData.username;
               } catch (error) {
-                console.error("Failed to fetch username for user", userId, error);
+                console.error(
+                  "Failed to fetch username for user",
+                  userId,
+                  error
+                );
                 newUserMap[userId] = `User ${userId}`;
               }
             }
@@ -128,24 +133,30 @@ const LobbyPage: React.FC = () => {
   }
 
   return (
-    <App>
-      <div style={{ maxWidth: 600, margin: "20px auto", padding: 16 }}>
+    <AntApp>
+      <div style={{ maxWidth: 400, margin: "20px auto", padding: 16 }}>
         <Logo />
         <Title level={2} style={{ textAlign: "center" }}>
           Lobby #{lobbyId}
         </Title>
         <div style={{ textAlign: "center", marginBottom: 16 }}>
-          <Text strong style={{ fontSize: "20px" }}>
-            Countdown: {countdown}s
-          </Text>
-        </div>
-        <div style={{ marginBottom: 16, textAlign: "center" }}>
-          <Button type="primary" onClick={handleReady}>
-            Ready
+          <Button
+            type="dashed"
+            onClick={() => {
+              navigator.clipboard.writeText(window.location.href);
+              message.success("Invite link copied to clipboard! 📋");
+            }}
+          >
+            📩 Invite
           </Button>
         </div>
+        <div style={{ textAlign: "center", marginBottom: 16 }}>
+          <Text strong style={{ fontSize: "36px" }}>
+            Game Starts in: {countdown}s
+          </Text>
+        </div>
+
         <div>
-          <Title level={4}>Player Status</Title>
           <List
             bordered
             dataSource={playersWithPlaceholders}
@@ -158,15 +169,70 @@ const LobbyPage: React.FC = () => {
                     width: "100%",
                   }}
                 >
-                  <span>{player.username}</span>
-                  <span>{player.ready ? "Ready" : "Not Ready"}</span>
+                  <span
+                    style={{
+                      color:
+                        player.username === "Empty Slot"
+                          ? undefined
+                          : player.ready
+                            ? "#11e098"
+                            : "red",
+                      fontWeight:
+                        player.username === "Empty Slot" ? "normal" : "bold",
+                    }}
+                  >
+                    {player.username}
+                  </span>
+                  <span
+                    style={{
+                      color:
+                        player.username === "Empty Slot"
+                          ? undefined
+                          : player.ready
+                            ? "#11e098"
+                            : "red",
+                      fontWeight:
+                        player.username === "Empty Slot" ? "normal" : "bold",
+                    }}
+                  >
+                    {player.username === "Empty Slot"
+                      ? ""
+                      : player.ready
+                        ? "Ready ✅"
+                        : "Not Ready ❌"}
+                  </span>
                 </div>
               </List.Item>
             )}
           />
         </div>
+
+        <br></br>
+        {!lobby?.playerReadyStatuses?.[currentUserId || ""] && (
+          <div>
+            <Button
+              type="primary"
+              htmlType="submit"
+              onClick={handleReady}
+              block
+            >
+              Ready
+            </Button>
+          </div>
+        )}
       </div>
-    </App>
+      {/* <div
+        style={{
+          marginBottom: 16,
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        <Button type="primary" onClick={handleReady}>
+          Ready
+        </Button>
+      </div> */}
+    </AntApp>
   );
 };
 
