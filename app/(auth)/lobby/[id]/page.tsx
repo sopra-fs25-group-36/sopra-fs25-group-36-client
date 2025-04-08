@@ -2,11 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { App as AntApp, Typography, List, Button } from "antd";
+import { App as AntApp, Typography, List, Button, Tooltip } from "antd";
 import Logo from "@/components/Logo";
 import { useApi } from "@/hooks/useApi";
 import { Lobby } from "@/types/lobby";
 import { User } from "@/types/user";
+import Instructions from "@/components/Instructions";
 
 const { Title, Text } = Typography;
 
@@ -20,6 +21,24 @@ const LobbyPage: React.FC = () => {
   const [userMap, setUserMap] = useState<{ [key: string]: string }>({});
   const [countdown, setCountdown] = useState<number>(300);
   const { message } = AntApp.useApp();
+
+  const [modalVisible, setModalVisible] = useState<boolean>(false); // Modal visibility state
+
+  // Steps for the guide
+  const steps = [
+    {
+      title: `Welcome to the Lobby #${lobbyId}!`,
+      content: "Click the 'Ready' button to signal your readiness.",
+    },
+    {
+      title: "Copy Invite Link",
+      content: `Copy the invite link to share with others, by clicking on the 'Lobby #${lobbyId}'`,
+    },
+    {
+      title: "Game Countdown",
+      content: "Watch the countdown to see when the game will start.",
+    },
+  ];
 
   useEffect(() => {
     const fetchLobby = async () => {
@@ -42,7 +61,8 @@ const LobbyPage: React.FC = () => {
     const fetchUsernames = async () => {
       if (lobby && lobby.playerReadyStatuses) {
         const userIDs = Object.keys(lobby.playerReadyStatuses);
-        const newUserMap = { ...userMap };
+        const newUserMap: { [key: string]: string } = {}; // Fresh map on every render
+
         await Promise.all(
           userIDs.map(async (userId) => {
             if (!newUserMap[userId]) {
@@ -60,11 +80,15 @@ const LobbyPage: React.FC = () => {
             }
           })
         );
-        setUserMap(newUserMap);
+
+        setUserMap(newUserMap); // Set the state once after processing all users
       }
     };
-    fetchUsernames();
-  }, [lobby, apiService, userMap]);
+
+    if (lobby) {
+      fetchUsernames();
+    }
+  }, [lobby, apiService]); // No need for userMap here anymore
 
   useEffect(() => {
     if (lobby && lobby.createdAt && lobby.timeLimitSeconds) {
@@ -132,24 +156,66 @@ const LobbyPage: React.FC = () => {
     }
   }
 
+  // Show modal when user enters the lobby
+  useEffect(() => {
+    if (lobbyId) {
+      setModalVisible(true);
+    }
+  }, [lobbyId]);
+
   return (
     <AntApp>
       <div style={{ maxWidth: 400, margin: "20px auto", padding: 16 }}>
         <Logo />
-        <Title level={2} style={{ textAlign: "center" }}>
-          Lobby #{lobbyId}
-        </Title>
-        <div style={{ textAlign: "center", marginBottom: 16 }}>
-          <Button
-            type="dashed"
-            onClick={() => {
-              navigator.clipboard.writeText(window.location.href);
-              message.success("Invite link copied to clipboard! 📋");
+        <div
+          style={{
+            textAlign: "center",
+            marginBottom: 16,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 8,
+          }}
+        >
+          <Tooltip
+            title="Click to copy invite link"
+            trigger="hover"
+            placement="top"
+            styles={{
+              body: {
+                borderRadius: 8,
+                padding: "8px 12px",
+                fontSize: 12,
+              },
             }}
           >
-            📩 Invite
-          </Button>
+            <div
+              style={{
+                cursor: "pointer",
+                padding: "4px 12px",
+                borderRadius: "8px",
+                transition: "background-color 0.2s",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+              }}
+            >
+              <Title
+                level={2}
+                style={{
+                  margin: 0,
+                }}
+                onClick={() => {
+                  navigator.clipboard.writeText(window.location.href);
+                  message.success("Lobby link copied! 📋");
+                }}
+              >
+                Lobby #{lobbyId}
+              </Title>
+            </div>
+          </Tooltip>
         </div>
+
         <div style={{ textAlign: "center", marginBottom: 16 }}>
           <Text strong style={{ fontSize: "36px" }}>
             Game Starts in: {countdown}s
@@ -221,17 +287,13 @@ const LobbyPage: React.FC = () => {
           </div>
         )}
       </div>
-      {/* <div
-        style={{
-          marginBottom: 16,
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
-        <Button type="primary" onClick={handleReady}>
-          Ready
-        </Button>
-      </div> */}
+
+      {/* Modal for guiding user */}
+      <Instructions
+        visible={modalVisible}
+        steps={steps} // Pass the steps here
+        onClose={() => setModalVisible(false)}
+      />
     </AntApp>
   );
 };

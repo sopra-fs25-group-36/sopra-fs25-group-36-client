@@ -120,7 +120,9 @@ a:hover {
 }
 
 /* Primary button */
-.ant-btn-primary {
+/* Ensure both buttons are styled as primary buttons */
+.ant-btn-primary,
+.ctas a.primary {
   background-color: var(--button-primary-bg) !important;
   color: var(--button-text) !important;
   box-shadow: none;
@@ -139,7 +141,8 @@ a:hover {
   letter-spacing: 0.5px;
 }
 
-.ant-btn-primary::before {
+.ant-btn-primary::before,
+.ctas a.primary::before {
   content: '';
   position: absolute;
   top: 0;
@@ -154,7 +157,8 @@ a:hover {
   border-radius: 24px 24px 0 0;
 }
 
-.ant-btn-primary:hover {
+.ant-btn-primary:hover,
+.ctas a.primary:hover {
   background-color: var(--button-primary-hover) !important;
   color: var(--button-text) !important;
   transform: translateY(-1px);
@@ -163,7 +167,8 @@ a:hover {
     0 6px 12px rgba(0, 0, 0, 0.15) !important;
 }
 
-.ant-btn-primary:active {
+.ant-btn-primary:active,
+.ctas a.primary:active {
   transform: translateY(1px);
   box-shadow: 
     0 1px 2px rgba(0, 0, 0, 0.1),
@@ -367,6 +372,7 @@ a:hover {
 .ant-modal-title {
   color: var(--foreground) !important;
 }
+
 
 .ant-modal-footer {
   border-top-color: var(--card-border) !important;

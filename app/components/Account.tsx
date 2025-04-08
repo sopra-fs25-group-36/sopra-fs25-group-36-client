@@ -60,7 +60,8 @@ const Account = () => {
 
   return (
     <div style={{ position: "fixed", top: 16, right: 16, zIndex: 1000 }}>
-      <Tooltip title={currentUser?.username}>
+      {/* <Tooltip title={currentUser?.username}> */}
+      <Tooltip>
         <Dropdown
           menu={{ items }}
           trigger={["click"]}
@@ -74,6 +75,7 @@ const Account = () => {
             type="text"
             icon={
               <Avatar
+                size={50}
                 src={currentUser?.avatar}
                 icon={!currentUser?.avatar && <UserOutlined />}
               />

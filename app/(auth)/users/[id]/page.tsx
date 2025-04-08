@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Button, Typography, Modal, Form, Input, App, message } from "antd";
+import type { InputRef } from "antd";
 import Logo from "@/components/Logo";
 import { useApi } from "@/hooks/useApi";
 import { useAuth } from "@/hooks/useAuth";
@@ -19,6 +20,16 @@ const Dashboard: React.FC = () => {
   const [isJoinGameModalVisible, setIsJoinGameModalVisible] = useState(false);
   const [form] = Form.useForm();
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const inputRef = useRef<InputRef>(null);
+
+  useEffect(() => {
+    if (isJoinGameModalVisible) {
+      // Short delay ensures modal is rendered before focus
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
+    }
+  }, [isJoinGameModalVisible]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -106,20 +117,28 @@ const Dashboard: React.FC = () => {
           {currentUser ? `Welcome, ${currentUser.username}!` : "Welcome!"}
         </Title>
         <br />
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        {/* <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}> */}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            gap: "16px",
+            justifyContent: "center",
+          }}
+        >
           <Button
             type="primary"
             onClick={handleCreateNewRoom}
             block
-            style={{ height: "60px", fontSize: "20px" }}
+            style={{ height: "50px" }}
           >
-            Create New Room
+            Create Game
           </Button>
           <Button
             type="primary"
             onClick={showJoinGameModal}
             block
-            style={{ height: "60px", fontSize: "20px" }}
+            style={{ height: "50px" }}
           >
             Join Game
           </Button>
@@ -131,9 +150,22 @@ const Dashboard: React.FC = () => {
           onOk={handleJoinGameSubmit}
           onCancel={handleJoinGameCancel}
           okText="Join Game"
-          cancelText="Cancel"
+          cancelButtonProps={{ style: { display: "none" } }}
+          keyboard={true}
+          closable={true}
+          footer={
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <Button
+                type="primary"
+                onClick={handleJoinGameSubmit}
+                style={{ width: "150px" }} // Adjust width as needed
+              >
+                Join Game
+              </Button>
+            </div>
+          }
         >
-          <Form form={form} layout="vertical">
+          <Form form={form} layout="vertical" onFinish={handleJoinGameSubmit}>
             <Form.Item
               name="gameCode"
               label="Game Code"
@@ -141,7 +173,12 @@ const Dashboard: React.FC = () => {
                 { required: true, message: "Please enter the game code" },
               ]}
             >
-              <Input placeholder="Enter the game code" size="large" autoFocus />
+              <Input
+                ref={inputRef}
+                placeholder="Enter the game code"
+                size="large"
+                onPressEnter={handleJoinGameSubmit}
+              />
             </Form.Item>
           </Form>
         </Modal>
