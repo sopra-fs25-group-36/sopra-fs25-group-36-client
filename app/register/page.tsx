@@ -46,13 +46,15 @@ const Register: React.FC = () => {
       } else {
         throw new Error("No token received from the server.");
       }
-      const autoLoginResponse = await apiService.post<User>("/users/login", payload);
+      const autoLoginResponse = await apiService.post<User>(
+        "/users/login",
+        payload
+      );
       setUser(autoLoginResponse);
       router.push("/login");
     } catch (error) {
       alert("Signup was not successful: " + (error as Error).message);
     }
-
   };
 
   return (
@@ -142,10 +144,7 @@ const Register: React.FC = () => {
         </Form.Item>
       </Form>
       <p style={{ marginTop: 10, textAlign: "center" }}>
-        Already have an account?{" "}
-        <a href="/login">
-          Login
-        </a>
+        Already have an account? <a href="/login">Login</a>
       </p>
     </div>
   );

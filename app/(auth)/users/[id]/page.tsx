@@ -9,8 +9,24 @@ import { useApi } from "@/hooks/useApi";
 import { useAuth } from "@/hooks/useAuth";
 import { User } from "@/types/user";
 import { Lobby } from "@/types/lobby";
+import AnimatedLineChart from "@/components/AnimatedLineChart";
 
 const { Title } = Typography;
+
+const datasets = [
+  {
+    label: "AAPL",
+    data: [10.5, 7.02, 9, 5.11, 8, 3, 4, 2, 5.243, 12],
+  },
+  {
+    label: "JNJ",
+    data: [100, 100, 100, 100, 100, 90, 99, 20, 50.243, 71.2],
+  },
+  {
+    label: "GOOGL",
+    data: [50, 48, 52, 53, 51, 47, 50, 45, 43, 44],
+  },
+];
 
 const Dashboard: React.FC = () => {
   const router = useRouter();
@@ -183,6 +199,9 @@ const Dashboard: React.FC = () => {
           </Form>
         </Modal>
       </div>
+      <section>
+        <AnimatedLineChart datasets={datasets} />
+      </section>
     </App>
   );
 };

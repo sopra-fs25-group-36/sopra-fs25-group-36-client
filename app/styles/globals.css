@@ -769,3 +769,19 @@ a.secondary {
     padding: 10px 16px !important;
   }
 }
+
+/* CSS for Animated Line Chart */
+.chart-container {
+  max-width: 600px;
+  height: 400px;
+  margin: auto;
+  position: relative;
+}
+
+/* Optional: Make sure to handle canvas styling if needed */
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
