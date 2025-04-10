@@ -42,13 +42,13 @@ const Register: React.FC = () => {
         setToken(response.token);
         setID(response.id);
         message.success("register successful!");
-        router.push("/users");
+        router.push("/login");
       } else {
         throw new Error("No token received from the server.");
       }
       const autoLoginResponse = await apiService.post<User>("/users/login", payload);
       setUser(autoLoginResponse);
-      router.push("/users");
+      router.push("/login");
     } catch (error) {
       alert("Signup was not successful: " + (error as Error).message);
     }
