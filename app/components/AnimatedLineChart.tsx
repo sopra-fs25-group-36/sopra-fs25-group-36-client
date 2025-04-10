@@ -1,4 +1,138 @@
-"use client";
+// import React, { useEffect, useRef } from "react";
+// import {
+//   Chart,
+//   LineController,
+//   LineElement,
+//   PointElement,
+//   LinearScale,
+//   CategoryScale,
+//   Title,
+//   Tooltip,
+//   Legend,
+// } from "chart.js";
+
+// // Register necessary chart components
+// Chart.register(
+//   LineController,
+//   LineElement,
+//   PointElement,
+//   LinearScale,
+//   CategoryScale,
+//   Title,
+//   Tooltip,
+//   Legend
+// );
+
+// interface AnimatedLineChartProps {
+//   datasets: {
+//     label: string;
+//     data: number[];
+//   }[];
+// }
+
+// const AnimatedLineChart: React.FC<AnimatedLineChartProps> = ({ datasets }) => {
+//   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+//   useEffect(() => {
+//     const ctx = canvasRef.current?.getContext("2d");
+//     if (!ctx) return;
+
+//     // Dynamically generate colors for each dataset
+//     const generateColor = (index: number) => {
+//       const colors = [
+//         "#ff6384", // Always the first color
+//         "#36a2eb",
+//         "#cc65fe",
+//         "#ffce56",
+//         "#ff8c42",
+//         "#4bc0c0",
+//         "#9966ff",
+//         "#ff3d67",
+//       ];
+//       return colors[index % colors.length]; // Cycles through the colors
+//     };
+
+//     // Prepare the chart data
+//     const chartData = {
+//       labels: Array.from({ length: 10 }, (_, i) => `${i + 1}`), // Use labels dynamically
+//       datasets: datasets.map((dataset, index) => ({
+//         label: dataset.label,
+//         data: dataset.data.map((y, i) => ({ x: i + 1, y })), // Mapping dataset to points
+//         borderColor: generateColor(index),
+//         backgroundColor: generateColor(index),
+//         borderWidth: 2,
+//         fill: false,
+//         tension: 0.3,
+//       })),
+//     };
+
+//     const chartInstance = new Chart(ctx, {
+//       type: "line",
+//       data: chartData,
+//       options: {
+//         responsive: true,
+//         maintainAspectRatio: false,
+//         scales: {
+//           x: {
+//             title: {
+//               display: true,
+//               text: "Round", // X-axis label
+//             },
+//             grid: {
+//               display: false, // Remove grid
+//             },
+//           },
+//           y: {
+//             title: {
+//               display: true,
+//               text: "Stock Price (in $)", // Y-axis label
+//             },
+//             min: 0, // Ensure the y-axis always starts from 0
+//             grid: {
+//               display: false, // Remove grid
+//             },
+//             ticks: {
+//               callback: (value) => {
+//                 // Only apply toFixed if value is a number and remove decimals
+//                 if (typeof value === "number") {
+//                   return `$${Math.round(value)}`; // No decimals
+//                 }
+//                 return value;
+//               },
+//             },
+//           },
+//         },
+//         plugins: {
+//           tooltip: {
+//             callbacks: {
+//               label: (context) => {
+//                 const label = context.dataset.label || "";
+//                 const yValue = context.raw.y; // Stock price (y value)
+//                 return `${label}: $${yValue}`; // Tooltip showing round and stock price
+//               },
+//             },
+//           },
+//           legend: {
+//             display: false, // Disable the legend
+//           },
+//         },
+//       },
+//     });
+
+//     // Cleanup on component unmount
+//     return () => {
+//       chartInstance.destroy();
+//     };
+//   }, [datasets]);
+
+//   return (
+//     <div style={{ maxWidth: "600px", height: "400px", margin: "auto" }}>
+//       <canvas ref={canvasRef} />
+//     </div>
+//   );
+// };
+
+// export default AnimatedLineChart;
 
 import React, { useEffect, useRef } from "react";
 import {
@@ -11,10 +145,9 @@ import {
   Title,
   Tooltip,
   Legend,
-  TooltipItem,
 } from "chart.js";
 
-// Register necessary chart.js components
+// Register necessary chart components
 Chart.register(
   LineController,
   LineElement,
@@ -26,49 +159,48 @@ Chart.register(
   Legend
 );
 
-// Function to generate random colors in hex format
-const getRandomColor = () => {
-  const letters = "0123456789ABCDEF";
-  let color = "#";
-  for (let i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
-};
-
-interface Dataset {
-  label: string;
-  data: number[];
+interface AnimatedLineChartProps {
+  datasets: {
+    label: string;
+    data: number[];
+  }[];
 }
 
-interface ChartProps {
-  datasets: Dataset[];
-}
-
-const AnimatedLineChart: React.FC<ChartProps> = ({ datasets }) => {
+const AnimatedLineChart: React.FC<AnimatedLineChartProps> = ({ datasets }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
     const ctx = canvasRef.current?.getContext("2d");
     if (!ctx) return;
 
-    // Generate chart data dynamically based on the input datasets
-    const chartData = {
-      labels: Array.from({ length: datasets[0].data.length }, (_, i) => i + 1),
-      datasets: datasets.map((dataset, index) => {
-        const lineColor = index === 0 ? "#ff6384" : getRandomColor(); // First dataset gets a fixed color
+    // Dynamically generate colors for each dataset
+    const generateColor = (index: number) => {
+      const colors = [
+        "#11e098",
+        "#ff3d67",
+        "#9966ff",
+        "#4bc0c0",
+        "#ff8c42",
+        "#ffce56",
+        "#cc65fe",
+        "#ff6384",
+        "#36a2eb",
+      ];
+      return colors[index % colors.length]; // Cycles through the colors
+    };
 
-        return {
-          label: dataset.label,
-          data: dataset.data,
-          borderColor: lineColor, // Line color
-          pointBackgroundColor: lineColor, // Point color matches the line
-          pointBorderColor: lineColor, // Point border color matches the line
-          backgroundColor: lineColor, // Fill area color (if fill is enabled)
-          fill: true,
-          tension: 0.3,
-        };
-      }),
+    // Prepare the chart data
+    const chartData = {
+      labels: Array.from({ length: 10 }, (_, i) => `${i + 1}`), // Use labels dynamically
+      datasets: datasets.map((dataset, index) => ({
+        label: dataset.label,
+        data: dataset.data.map((y, i) => ({ x: i + 1, y })), // Mapping dataset to points
+        borderColor: generateColor(index),
+        backgroundColor: generateColor(index),
+        borderWidth: 2,
+        fill: false,
+        tension: 0.3,
+      })),
     };
 
     const chartInstance = new Chart(ctx, {
@@ -77,80 +209,67 @@ const AnimatedLineChart: React.FC<ChartProps> = ({ datasets }) => {
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false, // Hide legend
-          },
-          tooltip: {
-            enabled: true, // Enable tooltips
-            callbacks: {
-              title: function (tooltipItems: TooltipItem<"line">[]) {
-                const xLabel = tooltipItems[0]?.label;
-                return `Round ${xLabel}`; // Display the x-axis label (round number)
-              },
-              label: function (tooltipItem: TooltipItem<"line">) {
-                const value = tooltipItem.raw as number;
-                const datasetLabel = tooltipItem.dataset.label;
-                const borderColor = tooltipItem.dataset.borderColor;
-                return `${datasetLabel}: $${value.toFixed(2)} (Color: ${borderColor})`; // Format value as dollars
-              },
-            },
-          },
-        },
         scales: {
           x: {
             title: {
               display: true,
-              text: "Round",
-              font: {
-                size: 14,
-                weight: "bold",
-              },
+              text: "Round", // X-axis label
             },
             grid: {
-              display: false, // Hide grid on x-axis
-            },
-            ticks: {
-              font: {
-                size: 12,
-              },
+              display: false, // Remove grid
             },
           },
           y: {
             title: {
               display: true,
-              text: "Stock Price",
-              font: {
-                size: 14,
-                weight: "bold",
-              },
+              // text: "Stock Price (in $)",
+              text: "Price",
             },
+            min: 0, // Ensure the y-axis always starts from 0
             grid: {
-              display: false, // Hide grid on y-axis
+              display: false, // Remove grid
             },
             ticks: {
-              font: {
-                size: 12,
-              },
-              callback: function (value) {
+              callback: (value) => {
+                // Only apply toFixed if value is a number and remove decimals
                 if (typeof value === "number") {
-                  return "$" + value.toFixed(2); // Format y-axis ticks as dollars
+                  return `$${Math.round(value)}`; // No decimals
                 }
-                return value; // If it's not a number, return it as is
+                return value;
               },
             },
+          },
+        },
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: (context) => {
+                const label = context.dataset.label || "";
+                // Handle both object and number value types
+                const value = context.parsed.y;
+                return `${label}: $${value}`;
+              },
+              title: (context) => {
+                // Show "Round X" in the tooltip title
+                return `Round ${context[0].label}`;
+              },
+            },
+          },
+          legend: {
+            display: false, // Disable the legend
           },
         },
       },
     });
 
+    // Cleanup on component unmount
     return () => {
       chartInstance.destroy();
     };
   }, [datasets]);
 
   return (
-    <div style={{ maxWidth: "600px", height: "400px", margin: "auto" }}>
+    <div style={{ maxWidth: "400px", height: "300px", margin: "auto" }}>
       <canvas ref={canvasRef} />
     </div>
   );
