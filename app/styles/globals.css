@@ -29,13 +29,13 @@
 }
 
 /* Global styles */
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-  background-color: var(--background);
-  color: var(--foreground);
-}
+/*html,*/
+/*body {*/
+/*  max-width: 100vw;*/
+/*  overflow-x: hidden;*/
+/*  background-color: var(--background);*/
+/*  color: var(--foreground);*/
+/*}*/
 
 body {
   font-family: Arial, Helvetica, sans-serif;
@@ -409,6 +409,7 @@ textarea,
   border: 1px solid var(--card-border) !important;
 }
 
+commented out because my styles were overriden
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
@@ -421,9 +422,9 @@ input:-webkit-autofill:active {
 }
 
 /* SVG styles */
-svg {
-  fill: var(--button-text) !important;
-}
+/*svg {*/
+/*  fill: var(--button-text) !important;*/
+/*}*/
 
 /* Placeholder styles */
 input::placeholder,
@@ -447,8 +448,8 @@ textarea::placeholder {
   min-height: 50svh;
   padding: 20px 80px;
   gap: 64px;
-  font-family: var(--font-geist-sans);
-  background-color: var(--background);
+  /*font-family: var(--font-geist-sans);*/
+  /*background-color: var(--background);*/
   color: var(--foreground);
 }
 
@@ -471,7 +472,7 @@ textarea::placeholder {
 }
 
 .main ol {
-  font-family: var(--font-geist-mono);
+  /*font-family: var(--font-geist-mono);*/
   padding-left: 0;
   margin: 0;
   font-size: 14px;
@@ -521,7 +522,7 @@ a.primary {
 }
 
 a.secondary {
-  border-color: var(--gray-alpha-300);
+  /*border-color: var(--gray-alpha-300);*/
   min-width: 180px;
 }
 
@@ -769,3 +770,4 @@ a.secondary {
     padding: 10px 16px !important;
   }
 }
+
