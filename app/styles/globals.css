@@ -1,32 +1,44 @@
 :root {
   --background: #ffffff;
   --foreground: #2e3248;
+
+  --button-text: #11e098;
   --button-primary: #11e09747;
   --button-primary-hover: #11e0975e;
-  --button-text: #11e098;
   --button-primary-bg: #e6f9f2;
+
   --button-secondary: #ffffff;
   --button-secondary-border: #dadce0;
   --button-secondary-hover: #f8f9fa;
+
   --card-background: #f0f2f5;
   --card-border: #d9d9d9;
+
+  --gray-rgb: 0, 0, 0;
+  --gray-alpha-100: #343644;
+  --gray-alpha-200: #2e3248;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #2a304f;
     --foreground: #ffffff;
-    --button-primary: #11e09747;
-    --button-primary-hover: #11e0975e;
-    --button-text: #11e098;
+
     --button-primary-bg: #11e09833;
+
     --button-secondary: #3c4043;
     --button-secondary-border: #5f6368;
     --button-secondary-hover: #5f6368;
+
     --card-background: #1f1f1f;
     --card-border: #434343;
+
+    --gray-rgb: 255, 255, 255;
+    --gray-alpha-100: rgba(var(--gray-rgb), 0.06);
+    --gray-alpha-200: rgba(var(--gray-rgb), 0.145);
   }
 }
+
 
 /* Global styles */
 html,
@@ -60,19 +72,10 @@ a:hover {
   text-decoration: underline;
 }
 
-/* Card container styles */
-.card-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 50vh;
-  padding: 24px;
-  background-color: var(--background);
-}
-
-.card {
-  width: 100%;
-  max-width: 800px;
+/* Common box container styles */
+.card,
+.login-form,
+.register-form {
   background-color: var(--card-background);
   border: 1px solid var(--card-border);
   border-radius: 8px;
@@ -80,7 +83,8 @@ a:hover {
   box-shadow: 0 2px 8px #0000001a;
 }
 
-/* Login and Register form styles */
+/* Container wrappers */
+.card-container,
 .login-container,
 .register-container {
   display: flex;
@@ -91,30 +95,20 @@ a:hover {
   background-color: var(--background);
 }
 
-.login-form,
-.register-form {
-  width: 100%;
-  max-width: 400px;
-  background-color: var(--card-background);
-  border: 1px solid var(--card-border);
-  border-radius: 8px;
-  padding: 24px;
-  box-shadow: 0 2px 8px #0000001a;
-}
 
 /* Button styles */
-.ant-btn {
+.ant-btn,
+.ctas a {
   font-family: Roboto, Arial, sans-serif;
   font-size: 14px;
   font-weight: 500;
   padding: 10px 24px;
   border-radius: 24px;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  text-transform: none;
-  border: none !important;
+  transition: all 0.3s ease;
+  border: none;
   position: relative;
   overflow: hidden;
 }
@@ -215,103 +209,9 @@ a:hover {
   background-color: var(--button-primary-hover) !important;
 }
 
-/* Adjust button spacing */
-.login-form .ant-btn,
-.register-form .ant-btn {
-  width: 100%;
-  margin-top: 16px;
-  border: none !important;
-}
-
-.ant-form-item-label > label {
-  color: var(--foreground) !important; 
-  font-weight: 500;
-}
 
 .ant-form-vertical .ant-form-item {
   margin-bottom: 14px !important;
-}
-
-/* DatePicker Styles */
-.ant-picker {
-  background-color: var(--card-background) !important;
-  color: var(--foreground) !important;
-  border: 1px solid var(--card-border) !important;
-}
-
-.ant-picker-input > input {
-  color: var(--foreground) !important;
-  font-size: 14px !important;
-}
-
-.ant-picker-suffix,
-.ant-picker-clear {
-  color: var(--foreground) !important;
-}
-
-.ant-picker-dropdown {
-  background-color: var(--card-background) !important;
-  border: 1px solid var(--card-border) !important;
-}
-
-.ant-picker-panel {
-  background-color: var(--card-background) !important;
-  border: none !important;
-}
-
-.ant-picker-header,
-.ant-picker-header button {
-  color: var(--foreground) !important;
-}
-
-.ant-picker-cell {
-  color: var(--foreground) !important;
-}
-
-.ant-picker-cell-in-view {
-  color: var(--foreground) !important;
-}
-
-.ant-picker-cell:hover:not(.ant-picker-cell-in-view) .ant-picker-cell-inner,
-.ant-picker-cell:hover:not(.ant-picker-cell-selected):not(.ant-picker-cell-range-start):not(.ant-picker-cell-range-end):not(.ant-picker-cell-range-hover-start):not(.ant-picker-cell-range-hover-end) .ant-picker-cell-inner {
-  background: var(--button-primary-hover) !important;
-}
-
-.ant-picker-cell-in-view.ant-picker-cell-today .ant-picker-cell-inner::before {
-  border-color: var(--button-text) !important;
-}
-
-.ant-picker-cell-in-view.ant-picker-cell-selected .ant-picker-cell-inner,
-.ant-picker-cell-in-view.ant-picker-cell-range-start .ant-picker-cell-inner,
-.ant-picker-cell-in-view.ant-picker-cell-range-end .ant-picker-cell-inner {
-  background: var(--button-primary) !important;
-  color: var(--background) !important;
-}
-
-.ant-picker-time-panel-cell .ant-picker-time-panel-cell-inner {
-  color: var(--foreground) !important;
-}
-
-.ant-picker-time-panel-cell-selected .ant-picker-time-panel-cell-inner {
-  background: var(--button-primary) !important;
-  color: var(--background) !important;
-}
-
-.ant-picker-header-view button:hover {
-  color: var(--button-text) !important;
-}
-
-.ant-picker-today-btn {
-  color: var(--button-text) !important;
-}
-
-.ant-picker-today-btn:hover {
-  color: var(--button-primary-hover) !important;
-}
-
-.ant-input-password {
-  background-color: var(--card-background) !important;
-  color: var(--foreground) !important;
 }
 
 .ant-message-success {
@@ -327,13 +227,6 @@ a:hover {
   .ant-message-success {
     color: #11e098;
   }
-}
-
-/* Form button styles */
-.login-form .ant-btn,
-.register-form .ant-btn {
-  width: 100%;
-  margin-top: 16px;
 }
 
 .ant-typography {
@@ -432,65 +325,6 @@ textarea::placeholder {
   opacity: 0.7;
 }
 
-/* Page module styles */
-.page {
-  --gray-rgb: 0, 0, 0;
-  --gray-alpha-100: #343644;
-  --gray-alpha-200: #2e3248;
-  --button-primary-hover: #2e3248;
-  --button-secondary-hover: #f2f2f2;
-
-  display: grid;
-  grid-template-rows: 20px 1fr 20px;
-  align-items: center;
-  justify-items: center;
-  min-height: 50svh;
-  padding: 20px 80px;
-  gap: 64px;
-  font-family: var(--font-geist-sans);
-  background-color: var(--background);
-  color: var(--foreground);
-}
-
-@media (prefers-color-scheme: dark) {
-  .page {
-    --gray-rgb: 255, 255, 255;
-    --gray-alpha-200: rgba(var(--gray-rgb), 0.145);
-    --gray-alpha-100: rgba(var(--gray-rgb), 0.06);
-    --button-primary-hover: #ccc;
-    --button-secondary-hover: #605858;
-  }
-}
-
-.main {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  grid-row-start: 2;
-  padding-top: 0px;
-}
-
-.main ol {
-  font-family: var(--font-geist-mono);
-  padding-left: 0;
-  margin: 0;
-  font-size: 14px;
-  line-height: 20px;
-  letter-spacing: -0.01em;
-  list-style-position: inside;
-}
-
-.main li:not(:last-of-type) {
-  margin-bottom: 8px;
-}
-
-.main code {
-  font-family: inherit;
-  background: var(--gray-alpha-200);
-  padding: 2px 4px;
-  border-radius: 4px;
-  font-weight: 600;
-}
 
 .ctas {
   display: flex;
@@ -720,18 +554,7 @@ a.secondary {
 
 /* Responsive adjustments */
 @media (max-width: 600px) {
-  .page {
-    padding: 16px;
-    padding-bottom: 40px;
-  }
 
-  .main {
-    align-items: center;
-  }
-
-  .main ol {
-    text-align: center;
-  }
 
   .ctas {
     flex-direction: column;
@@ -785,3 +608,29 @@ canvas {
   height: 100%;
 }
 
+.ant-statistic-title {
+  color: var(--foreground) !important;
+  opacity: 0.8;
+  transition: color 0.3s ease;
+}
+
+.ant-statistic-content {
+  color: var(--foreground) !important;
+  transition: color 0.3s ease;
+}
+
+/* Chart label styles */
+.g2-label {
+  transition: color 0.3s ease !important;
+}
+
+/* Tooltip styling */
+.g2-tooltip {
+  background-color: var(--card-background) !important;
+  border: 1px solid var(--card-border) !important;
+  color: var(--foreground) !important;
+}
+
+.g2-tooltip-title {
+  color: var(--button-text) !important;
+}
