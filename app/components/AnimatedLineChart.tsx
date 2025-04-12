@@ -133,7 +133,7 @@ const AnimatedLineChart: React.FC<AnimatedLineChartProps> = ({ datasets }) => {
   }, [datasets]);
 
   return (
-    <div style={{ maxWidth: "400px", height: "400px", margin: "auto" }}>
+    <div style={{ maxWidth: "400px", height: "300px", margin: "auto" }}>
       <canvas ref={canvasRef} />
     </div>
   );

@@ -11,6 +11,7 @@ import Logo from "@/components/Logo";
 import AnimatedLineChart from "@/components/AnimatedLineChart";
 import BarChartComponent from "@/components/BarChartComponent";
 import PieChartComponent from "@/components/PieChartComponent";
+import LineGraph from "@/components/LineGraph";
 
 const { Title } = Typography;
 
@@ -259,6 +260,9 @@ export default function Dashboard() {
         </div>
         <div style={{ height: "400px" }}>
           <BarChartComponent data={barData} colorMap={categoryColorMap} />
+        </div>
+        <div>
+          <LineGraph datasets={datasets} />
         </div>
       </section>
     </App>
