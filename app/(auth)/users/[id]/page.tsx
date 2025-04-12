@@ -56,7 +56,8 @@ export default function Dashboard() {
   const [isJoinGameModalVisible, setIsJoinGameModalVisible] = useState(false);
   const [form] = Form.useForm();
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const inputRef = useRef<any>(null);
+  // const inputRef = useRef<any>(null);
+  const inputRef = useRef<InputRef>(null);
 
   useEffect(() => {
     if (isJoinGameModalVisible) {
@@ -204,25 +205,38 @@ export default function Dashboard() {
       </div>
 
       <Modal
-        title="Join a Game"
+        title="Enter Game Code"
         open={isJoinGameModalVisible}
+        onOk={handleJoinGameSubmit}
         onCancel={handleJoinGameCancel}
-        footer={[
-          <Button key="cancel" onClick={handleJoinGameCancel}>
-            Cancel
-          </Button>,
-          <Button key="submit" type="primary" onClick={handleJoinGameSubmit}>
-            Join Game
-          </Button>,
-        ]}
+        okText="Join Game"
+        cancelButtonProps={{ style: { display: "none" } }}
+        keyboard={true}
+        closable={true}
+        footer={
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <Button
+              type="primary"
+              onClick={handleJoinGameSubmit}
+              style={{ width: "150px" }} // Adjust width as needed
+            >
+              Join Game
+            </Button>
+          </div>
+        }
       >
-        <Form form={form}>
+        <Form form={form} layout="vertical" onFinish={handleJoinGameSubmit}>
           <Form.Item
             name="gameCode"
-            label="Enter Game Code"
-            rules={[{ required: true, message: "Please input the game code!" }]}
+            label="Game Code"
+            rules={[{ required: true, message: "Please enter the game code" }]}
           >
-            <Input ref={inputRef} />
+            <Input
+              ref={inputRef}
+              placeholder="Enter the game code"
+              size="large"
+              onPressEnter={handleJoinGameSubmit}
+            />
           </Form.Item>
         </Form>
       </Modal>
@@ -240,19 +254,10 @@ export default function Dashboard() {
         <div style={{ gridColumn: "span 2" }}>
           <AnimatedLineChart datasets={datasets} />
         </div>
-        <div style={{ height: "200px" }}>
-          <PieChartComponent
-            data={pieData}
-            colorMap={{
-              Tech: "#1890ff",
-              Finance: "#52c41a",
-              Healthcare: "#faad14",
-              Energy: "#f5222d",
-              Consumer: "#722ed1",
-            }}
-          />
+        <div style={{ height: "400px" }}>
+          <PieChartComponent data={pieData} colorMap={categoryColorMap} />
         </div>
-        <div style={{ height: "200px" }}>
+        <div style={{ height: "400px" }}>
           <BarChartComponent data={barData} colorMap={categoryColorMap} />
         </div>
       </section>

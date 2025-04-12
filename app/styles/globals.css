@@ -14,9 +14,6 @@
   --card-background: #f0f2f5;
   --card-border: #d9d9d9;
 
-  --gray-rgb: 0, 0, 0;
-  --gray-alpha-100: #343644;
-  --gray-alpha-200: #2e3248;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -31,11 +28,8 @@
     --button-secondary-hover: #5f6368;
 
     --card-background: #1f1f1f;
-    --card-border: #434343;
+    --card-border: #d9d9d9;
 
-    --gray-rgb: 255, 255, 255;
-    --gray-alpha-100: rgba(var(--gray-rgb), 0.06);
-    --gray-alpha-200: rgba(var(--gray-rgb), 0.145);
   }
 }
 
@@ -594,43 +588,30 @@ a.secondary {
 }
 
 /* CSS for Animated Line Chart */
-.chart-container {
+.pie-chart-container {
   max-width: 600px;
   height: 400px;
   margin: auto;
   position: relative;
 }
 
-/* Optional: Make sure to handle canvas styling if needed */
 canvas {
   display: block;
   width: 100%;
   height: 100%;
-}
-
-.ant-statistic-title {
   color: var(--foreground) !important;
-  opacity: 0.8;
-  transition: color 0.3s ease;
 }
 
-.ant-statistic-content {
-  color: var(--foreground) !important;
-  transition: color 0.3s ease;
-}
-
-/* Chart label styles */
-.g2-label {
-  transition: color 0.3s ease !important;
-}
-
-/* Tooltip styling */
 .g2-tooltip {
-  background-color: var(--card-background) !important;
+  background-color: var(--background) !important;
   border: 1px solid var(--card-border) !important;
   color: var(--foreground) !important;
 }
 
-.g2-tooltip-title {
-  color: var(--button-text) !important;
+.g2-tooltip-title,
+.g2-label,
+.ant-statistic-title,
+.ant-statistic-content {
+  color: var(--foreground) !important;
+  transition: color 0.3s ease;
 }
