@@ -112,6 +112,26 @@ const LobbyPage: React.FC = () => {
     }
   }, [lobby, currentUserId, router]);
 
+  useEffect(() => {
+    if (lobby && lobby.playerReadyStatuses) {
+      const allReady = Object.values(lobby.playerReadyStatuses).every(status => status);
+      if (allReady) {
+        (async () => {
+          try {
+            // Since game id and lobby id are the same, we use lobbyId for both.
+            // We include the gameId as a query parameter and provide an empty payload.
+            const game = await apiService.post(`/game/${lobbyId}/start?gameId=${lobbyId}`, {});
+            // After a successful start, navigate to the leaderboard page.
+            router.push(`/lobby/${lobbyId}/leader_board`);
+          } catch (error) {
+            console.error("Failed to start game:", error);
+            message.error("Failed to start game");
+          }
+        })();
+      }
+    }
+  }, [lobby, router, apiService, lobbyId]);
+
   const handleReady = async () => {
     if (!currentUserId) return;
     try {
