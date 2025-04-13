@@ -59,7 +59,8 @@ const TransactionPage: React.FC = () => {
 
                 // Optional: dynamically build categories if needed (example logic)
                 const defaultCategories: { [category: string]: string[] } = {
-                    TECH: ["AAPL", "TSLA", "AMZN", "MSFT", "NVDA", "GOOG"],
+                   
+                    TECH: ["AAPL", "TSLA", "AMZN", "MSFT", "NVDA", "GOOG", "INTC",  "NFLX","AMD"],
                     ENERGY: ["XOM", "CVX"],
                     FINANCE: ["JPM", "GS"],
                     HEALTHCARE: ["PFE", "JNJ"],
