@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { App as AntApp, Typography } from "antd";
+import { App as AntApp, Typography, Row, Col } from "antd";
 import Logo from "@/components/Logo";
 import { useApi } from "@/hooks/useApi";
 import Portfolio from "@/components/Portfolio";
@@ -39,7 +39,7 @@ const GamePage: React.FC = () => {
   const { id: gameId } = useParams();
   // const currentUserId = localStorage.getItem("id");
   const [gameDetail, setGameDetail] = useState<GameDetail | null>(null);
-  const [countdown, setCountdown] = useState<number>(300);
+  const [countdown, setCountdown] = useState<number>(300); // Use a fixed 5min countdown
   // const { message } = AntApp.useApp();
 
   // Fetch game detail information for the countdown.
@@ -81,7 +81,7 @@ const GamePage: React.FC = () => {
     <AntApp>
       <div
         style={{
-          maxWidth: 550,
+          maxWidth: 1200,
           margin: "20px auto",
           padding: 2,
           textAlign: "center",
@@ -96,13 +96,30 @@ const GamePage: React.FC = () => {
             </Text>
           </div>
         </div>
-        <Portfolio player={dummyPlayer} />
-        <br />
-        <div>
-          <Title level={2}>Available Stocks</Title>
-        </div>
-        <br />
       </div>
+      {/* <Row gutter={[16, 16]} justify="center" style={{ marginBottom: 24 }}> */}
+      <Row justify="center" style={{ marginBottom: 24 }}>
+        {/* Left container */}
+        <Portfolio player={dummyPlayer} />
+        {/* Right container */}
+        <Col span={12}>
+          <div style={{ marginBottom: 16, textAlign: "center" }}>
+            <Title level={2}>Available Stocks</Title>
+          </div>
+          <div
+            style={{
+              backgroundColor: "#808080",
+              height: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              border: "1px dashed #d9d9d9",
+            }}
+          >
+            <span style={{ color: "#999" }}>[Trading Component]</span>
+          </div>
+        </Col>
+      </Row>
     </AntApp>
   );
 };

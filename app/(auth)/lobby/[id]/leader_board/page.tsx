@@ -46,7 +46,7 @@ const LeaderBoard: React.FC = () => {
 
   const [leaderBoardData, setLeaderBoardData] = useState<TableRecord[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [countdown, setCountdown] = useState<number>(0);
+  const [countdown, setCountdown] = useState<number>(20); // Use a fixed 20s countdown
   const [gameDetail, setGameDetail] = useState<GameDetail | null>(null);
 
   // Fetch leaderboard data based on the gameId.
@@ -118,7 +118,7 @@ const LeaderBoard: React.FC = () => {
 
   // Countdown timer computation using game detail.
   useEffect(() => {
-    const countdownSeconds = 10; // Use a fixed 20-second countdown
+    const countdownSeconds = 20; // Use a fixed 20-second countdown
     const startTime = Date.now();
     const endTime = startTime + countdownSeconds * 1000;
 

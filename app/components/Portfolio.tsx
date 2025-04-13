@@ -10,6 +10,8 @@ import {
   Typography,
   theme,
 } from "antd";
+import BarChart from "@/components/BarChart";
+import PieChart from "@/components/PieChart";
 
 const { Title } = Typography;
 const { darkAlgorithm } = theme;
@@ -47,21 +49,38 @@ const Portfolio: React.FC<{ player: PlayerState }> = ({ player }) => {
   const stockValue = Object.values(categoryTotals).reduce((a, b) => a + b, 0);
   const totalAssets = stockValue + player.cashBalance;
 
+  // Prepare data for Pie and Bar charts
+  const categoryColorMap: Record<string, string> = {
+    Tech: "#1890ff",
+    Finance: "#52c41a",
+    Healthcare: "#faad14",
+    Energy: "#f5222d",
+    Consumer: "#722ed1",
+  };
+  const pieData = Object.entries(categoryTotals).map(([category, value]) => ({
+    type: category.trim(),
+    value,
+  }));
+  const barData = player.stocks
+    .map((stock) => ({
+      name: stock.symbol,
+      value: stock.currentPrice * stock.quantity,
+      category: stock.category,
+    }))
+    .sort((a, b) => b.value - a.value);
+
   return (
     <ConfigProvider
       theme={{
         algorithm: darkAlgorithm,
       }}
     >
-      <div style={{ padding: "16px" }}>
+      <Col span={12}>
         <div style={{ marginBottom: 16, textAlign: "center" }}>
-          <Title level={2} style={{ color: "#fff" }}>
-            Your Portfolio
-          </Title>
+          <Title level={2}>Your Portfolio</Title>
         </div>
-
-        <Row gutter={[16, 16]} justify="center" style={{ marginBottom: 24 }}>
-          <Col xs={22} sm={20} md={8}>
+        <Row>
+          <Col xs={22} sm={24} md={8} lg={8} xl={810}>
             <Card
               style={{
                 borderRadius: 12,
@@ -109,7 +128,11 @@ const Portfolio: React.FC<{ player: PlayerState }> = ({ player }) => {
             </Card>
           </Col>
         </Row>
-      </div>
+        {/* <Row> */}
+        <PieChart data={pieData} colorMap={categoryColorMap} />
+        <BarChart data={barData} colorMap={categoryColorMap} />
+        {/* </Row> */}
+      </Col>
     </ConfigProvider>
   );
 };
