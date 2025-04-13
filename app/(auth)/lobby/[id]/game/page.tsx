@@ -40,6 +40,7 @@ const GamePage: React.FC = () => {
   const { id: gameId } = useParams();
   // const currentUserId = localStorage.getItem("id");
   const [gameDetail, setGameDetail] = useState<GameDetail | null>(null);
+  // const [setGameDetail] = useState<GameDetail | null>(null);
   const [countdown, setCountdown] = useState<number>(300); // Use a fixed 5min countdown
   // const { message } = AntApp.useApp();
 
@@ -60,7 +61,10 @@ const GamePage: React.FC = () => {
 
   // Countdown timer computation using game detail.
   useEffect(() => {
-    const countdownSeconds = 300; // Use a fixed 5min countdown
+    if (!gameDetail) return;
+
+    // const countdownSeconds = gameDetail.timeLimitSeconds;
+    const countdownSeconds = 10; // Use a fixed 5min countdown
     const startTime = Date.now();
     const endTime = startTime + countdownSeconds * 1000;
 
@@ -77,7 +81,8 @@ const GamePage: React.FC = () => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [gameId, router]);
+  }, [gameDetail, gameId, router]);
+
   return (
     <AntApp>
       <div

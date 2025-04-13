@@ -135,7 +135,7 @@ const LobbyPage: React.FC = () => {
         })();
       }
     }
-  }, [lobby, router, apiService, lobbyId]);
+  }, [lobby, router, apiService, lobbyId, message]);
 
   const handleReady = async () => {
     if (!currentUserId) return;

@@ -44,6 +44,11 @@ const LeaderBoard: React.FC = () => {
   const gameId = id ? Number(id) : 0; // Convert to number as needed.
   const currentRound = id ? Number(id) : 0;
 
+  const usdFormatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  });
+
   const [leaderBoardData, setLeaderBoardData] = useState<TableRecord[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [countdown, setCountdown] = useState<number>(20); // Use a fixed 20s countdown
@@ -118,7 +123,10 @@ const LeaderBoard: React.FC = () => {
 
   // Countdown timer computation using game detail.
   useEffect(() => {
-    const countdownSeconds = 20; // Use a fixed 20-second countdown
+    if (!gameDetail) return;
+
+    // const countdownSeconds = gameDetail.timeLimitSeconds;
+    const countdownSeconds = 10; // Use a fixed 20-second countdown
     const startTime = Date.now();
     const endTime = startTime + countdownSeconds * 1000;
 
@@ -135,7 +143,7 @@ const LeaderBoard: React.FC = () => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [id, router]);
+  }, [gameDetail, id, router]);
 
   // Define table columns.
   const columns = [
@@ -143,30 +151,30 @@ const LeaderBoard: React.FC = () => {
       title: "Rank",
       dataIndex: "rank",
       key: "rank",
-      width: "10%",
+      width: "5%",
       align: "center" as const,
     },
     {
       title: "User ID",
       dataIndex: "userId",
       key: "userId",
-      width: "20%",
-      align: "left" as const,
+      width: "10%",
+      align: "center" as const,
     },
     {
       title: "User Name",
       dataIndex: "name",
       key: "name",
-      width: "30%",
-      align: "left" as const,
+      width: "25%",
+      align: "center" as const,
     },
     {
       title: "Total Assets",
       dataIndex: "totalAssets",
       key: "totalAssets",
-      width: "20%",
-      align: "right" as const,
-      render: (value: number) => `$${value.toLocaleString()}`,
+      width: "25%",
+      align: "center" as const,
+      render: (value: number) => usdFormatter.format(value),
     },
   ];
 
@@ -194,7 +202,6 @@ const LeaderBoard: React.FC = () => {
       </div>
       <br />
       <div>
-        {/* Leaderboard Table */}
         <Table
           columns={columns}
           dataSource={leaderBoardData}
