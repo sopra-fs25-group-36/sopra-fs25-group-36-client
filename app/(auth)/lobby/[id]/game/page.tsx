@@ -19,6 +19,7 @@ const dummyPlayer = {
     { symbol: "JPM", quantity: 5, category: "Finance", currentPrice: 130 },
     { symbol: "PFE", quantity: 12, category: "Healthcare", currentPrice: 45 },
     { symbol: "PG", quantity: 3, category: "Consumer", currentPrice: 150 },
+    { symbol: "AMZN", quantity: 10, category: "Tech", currentPrice: 20 },
   ],
   transactionHistory: [
     { stockId: "AAPL", quantity: 5, price: 155, type: "BUY" },
@@ -59,7 +60,7 @@ const GamePage: React.FC = () => {
 
   // Countdown timer computation using game detail.
   useEffect(() => {
-    const countdownSeconds = 10; // Use a fixed 5min countdown
+    const countdownSeconds = 300; // Use a fixed 5min countdown
     const startTime = Date.now();
     const endTime = startTime + countdownSeconds * 1000;
 

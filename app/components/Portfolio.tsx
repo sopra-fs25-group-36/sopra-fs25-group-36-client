@@ -88,7 +88,7 @@ const Portfolio: React.FC<{ player: PlayerState }> = ({ player }) => {
               }}
             >
               <Statistic
-                title="Cash"
+                title="Available Cash"
                 value={player.cashBalance}
                 prefix="$"
                 precision={2}
@@ -96,7 +96,8 @@ const Portfolio: React.FC<{ player: PlayerState }> = ({ player }) => {
             </Card>
           </Col>
 
-          <Col xs={22} sm={20} md={8}>
+          <Col xs={22} sm={24} md={8} lg={8} xl={810}>
+            {" "}
             <Card
               style={{
                 borderRadius: 12,
@@ -104,7 +105,7 @@ const Portfolio: React.FC<{ player: PlayerState }> = ({ player }) => {
               }}
             >
               <Statistic
-                title="Stock Value"
+                title="Portfolio Value"
                 value={stockValue}
                 prefix="$"
                 precision={2}
@@ -112,7 +113,8 @@ const Portfolio: React.FC<{ player: PlayerState }> = ({ player }) => {
             </Card>
           </Col>
 
-          <Col xs={22} sm={20} md={8}>
+          <Col xs={22} sm={24} md={8} lg={8} xl={810}>
+            {" "}
             <Card
               style={{
                 borderRadius: 12,
