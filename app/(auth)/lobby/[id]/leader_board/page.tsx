@@ -4,6 +4,9 @@ import React, { useEffect, useState } from "react";
 import { Table, Typography, message } from "antd";
 import { useApi } from "@/hooks/useApi";
 import { useParams, useRouter } from "next/navigation";
+import Logo from "@/components/Logo";
+
+const { Title, Text } = Typography;
 
 // LeaderBoard DTO from your backend.
 interface LeaderBoardEntry {
@@ -30,15 +33,16 @@ interface TableRecord {
 
 // Interface for game details including timing info.
 interface GameDetail {
-  createdAt: string;       // e.g., "2025-04-12T14:00:00Z"
+  createdAt: string; // e.g., "2025-04-12T14:00:00Z"
   timeLimitSeconds: number; // e.g., 120 for a 2-minute countdown
 }
 
 const LeaderBoard: React.FC = () => {
-  const api = useApi();
+  const apiService = useApi();
   const { id } = useParams(); // Retrieves the dynamic game (or lobby) id.
   const router = useRouter();
   const gameId = id ? Number(id) : 0; // Convert to number as needed.
+  const currentRound = id ? Number(id) : 0;
 
   const [leaderBoardData, setLeaderBoardData] = useState<TableRecord[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -53,19 +57,28 @@ const LeaderBoard: React.FC = () => {
       setLoading(true);
       try {
         // Fetch leaderboard entries from /game/{gameId}/leader.
-        const leaderBoardResponse = await api.get<LeaderBoardEntry[]>(`/game/${gameId}/leader`);
+        const leaderBoardResponse = await apiService.get<LeaderBoardEntry[]>(
+          `/game/${gameId}/leader`
+        );
         // Sort the entries by totalAssets in descending order.
-        const sortedData = leaderBoardResponse.sort((a, b) => b.totalAssets - a.totalAssets);
+        const sortedData = leaderBoardResponse.sort(
+          (a, b) => b.totalAssets - a.totalAssets
+        );
         // For each leaderboard entry, fetch the user name concurrently.
         const formattedData: TableRecord[] = await Promise.all(
           sortedData.map(async (entry, index) => {
             let userName = "Unknown";
             try {
               // Call /users/{userId} to get user details.
-              const userResponse = await api.get<UserGetDTO>(`/users/${entry.userId}`);
+              const userResponse = await apiService.get<UserGetDTO>(
+                `/users/${entry.userId}`
+              );
               userName = userResponse.name;
             } catch (error) {
-              console.error(`Failed to fetch user details for userId ${entry.userId}`, error);
+              console.error(
+                `Failed to fetch user details for userId ${entry.userId}`,
+                error
+              );
             }
             return {
               key: entry.userId,
@@ -86,13 +99,13 @@ const LeaderBoard: React.FC = () => {
     };
 
     fetchLeaderBoard();
-  }, [api, id, gameId]);
+  }, [apiService, id, gameId]);
 
   // Fetch game detail information for the countdown.
   useEffect(() => {
     const fetchGameDetail = async () => {
       try {
-        const detail = await api.get<GameDetail>(`/game/${gameId}`);
+        const detail = await apiService.get<GameDetail>(`/game/${gameId}`);
         setGameDetail(detail);
       } catch (error) {
         console.error("Failed to fetch game details:", error);
@@ -101,14 +114,14 @@ const LeaderBoard: React.FC = () => {
     if (gameId) {
       fetchGameDetail();
     }
-  }, [api, gameId]);
+  }, [apiService, gameId]);
 
   // Countdown timer computation using game detail.
   useEffect(() => {
-    const countdownSeconds = 20; // Use a fixed 20-second countdown
+    const countdownSeconds = 10; // Use a fixed 20-second countdown
     const startTime = Date.now();
     const endTime = startTime + countdownSeconds * 1000;
-  
+
     const timer = setInterval(() => {
       const now = Date.now();
       const remaining = Math.floor((endTime - now) / 1000);
@@ -120,7 +133,7 @@ const LeaderBoard: React.FC = () => {
         setCountdown(remaining);
       }
     }, 1000);
-  
+
     return () => clearInterval(timer);
   }, [id, router]);
 
@@ -158,29 +171,38 @@ const LeaderBoard: React.FC = () => {
   ];
 
   return (
-    <div style={{ padding: "24px" }}>
-      {/* Header with leaderboard title and countdown timer */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 16,
-        }}
-      >
-        <Typography.Title level={2}>Game Leaderboard</Typography.Title>
-        <span style={{ fontSize: "1.25rem", fontWeight: 500 }}>
-          Market Opens in {countdown} s
-        </span>
+    <div
+      style={{
+        maxWidth: 500,
+        margin: "20px auto",
+        padding: 2,
+        textAlign: "center",
+      }}
+    >
+      <Logo />
+      <br />
+      <div>
+        <div style={{ marginBottom: 16 }}>
+          <Text strong style={{ fontSize: "36px" }}>
+            Market Opens in {countdown} s
+          </Text>
+        </div>
       </div>
-      {/* Leaderboard Table */}
-      <Table
-        columns={columns}
-        dataSource={leaderBoardData}
-        loading={loading}
-        pagination={false}
-        bordered
-      />
+      <br />
+      <div>
+        <Title level={2}>Round #{currentRound}</Title>
+      </div>
+      <br />
+      <div>
+        {/* Leaderboard Table */}
+        <Table
+          columns={columns}
+          dataSource={leaderBoardData}
+          loading={loading}
+          pagination={false}
+          bordered
+        />
+      </div>
     </div>
   );
 };

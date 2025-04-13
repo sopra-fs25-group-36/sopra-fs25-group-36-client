@@ -110,14 +110,20 @@ const Dashboard: React.FC = () => {
 
   return (
     <App>
-      <div style={{ maxWidth: 400, margin: "20px auto", padding: 2 }}>
+      <div
+        style={{
+          maxWidth: 400,
+          margin: "20px auto",
+          padding: 2,
+          textAlign: "center",
+        }}
+      >
         <Logo />
         <br />
-        <Title level={2} style={{ textAlign: "center" }}>
+        <Title level={2}>
           {currentUser ? `Welcome, ${currentUser.username}!` : "Welcome!"}
         </Title>
         <br />
-        {/* <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}> */}
         <div
           style={{
             display: "flex",

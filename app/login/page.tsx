@@ -49,7 +49,14 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div style={{ maxWidth: 400, margin: "20px auto", padding: 2 }}>
+    <div
+      style={{
+        maxWidth: 400,
+        margin: "20px auto",
+        padding: 2,
+        textAlign: "center",
+      }}
+    >
       <Logo />
       <Form
         form={form}
@@ -81,11 +88,8 @@ const Login: React.FC = () => {
           </Button>
         </Form.Item>
       </Form>
-      <p style={{ marginTop: 10, textAlign: "center" }}>
-        You do not have an account?{" "}
-        <a href="/register">
-          Register
-        </a>
+      <p style={{ marginTop: 10 }}>
+        You do not have an account? <a href="/register">Register</a>
       </p>
     </div>
   );

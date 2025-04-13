@@ -114,13 +114,18 @@ const LobbyPage: React.FC = () => {
 
   useEffect(() => {
     if (lobby && lobby.playerReadyStatuses) {
-      const allReady = Object.values(lobby.playerReadyStatuses).every(status => status);
+      const allReady = Object.values(lobby.playerReadyStatuses).every(
+        (status) => status
+      );
       if (allReady) {
         (async () => {
           try {
             // Since game id and lobby id are the same, we use lobbyId for both.
             // We include the gameId as a query parameter and provide an empty payload.
-            const game = await apiService.post(`/game/${lobbyId}/start?gameId=${lobbyId}`, {});
+            const game = await apiService.post(
+              `/game/${lobbyId}/start?gameId=${lobbyId}`,
+              {}
+            );
             // After a successful start, navigate to the leaderboard page.
             router.push(`/lobby/${lobbyId}/leader_board`);
           } catch (error) {
@@ -187,6 +192,7 @@ const LobbyPage: React.FC = () => {
     <AntApp>
       <div style={{ maxWidth: 400, margin: "20px auto", padding: 16 }}>
         <Logo />
+        <br />
         <div
           style={{
             textAlign: "center",
@@ -205,7 +211,7 @@ const LobbyPage: React.FC = () => {
               body: {
                 borderRadius: 8,
                 padding: "8px 12px",
-                fontSize: 12,
+                fontSize: 14,
               },
             }}
           >
