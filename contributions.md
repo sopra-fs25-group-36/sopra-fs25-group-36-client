@@ -106,4 +106,6 @@ reason).
 | **[@shirleyl1220]** | [10.4.2025] | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-server/commit/2da490ee97e8458ea6c1a976d3be6c25b142eeb7] | Changed heavily the structure of Stock. Now keeps track of player's asset value, and changes it into PlayerGetDTO, and implemented the API endpoints to send each player's playerstate to front end.   | added backend api points that will send player state data to front end |
 | **[@shirleyl1220]** | [11.4.2025] | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-client/commit/ed3ada6b50ec5beaa4a81dbcb44bb04b79cfdb92] | implemented the Portfoliio view with dummy data. Loaded data into portfolio, plotted two charts using ant-design and antv/g2plot.
 | portfolio view is a required part of the game |
+| **[@JuliusLhamo]** | [14.4.2025] | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-server/commit/ca14b31277ffe8b9dfc6ba2d5824fc52fffbc24f, https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-server/commit/fb2d9c5dab3b2184293f746d285fd206a9f420f4, https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-client/commit/ed3ada6b50ec5beaa4a81dbcb44bb04b79cfdb92] |  this uses an external api so it is requirement of the project |  news api is an external api so a requirement for the project |
+
 
