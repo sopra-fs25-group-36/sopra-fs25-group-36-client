@@ -29,100 +29,106 @@ const { Title } = Typography;
 
 // ---------- DTOs returned by backend ----------
 interface StockHoldingDTO {
-    symbol: string;
-    quantity: number;
-    category: string;
-    currentPrice: number;
+  symbol: string;
+  quantity: number;
+  category: string;
+  currentPrice: number;
 }
 
 interface TransactionDTO {
-    stockId: string;
-    quantity: number;
-    price: number;
-    type: "BUY" | "SELL";
+  stockId: string;
+  quantity: number;
+  price: number;
+  type: "BUY" | "SELL";
 }
 
 interface PlayerStateDTO {
-    userId: number;
-    cashBalance: number;
-    stocks: StockHoldingDTO[];
-    transactionHistory: TransactionDTO[];
+  userId: number;
+  cashBalance: number;
+  stocks: StockHoldingDTO[];
+  transactionHistory: TransactionDTO[];
 }
 // ---------------------------------------------
 
 const GamePage: React.FC = () => {
-    const apiService = useApi();
-    const { id: gameId } = useParams();
+  const apiService = useApi();
+  const { id: gameId } = useParams();
 
-    // In a real app you would obtain the current userId from auth context or next-auth session
-    const userId =
-        typeof window !== "undefined" ? localStorage.getItem("id") ?? "" : "";
+  // In a real app you would obtain the current userId from auth context or next-auth session
+  const userId =
+    typeof window !== "undefined" ? localStorage.getItem("id") ?? "" : "";
 
-    const [player, setPlayer] = useState<PlayerStateDTO | null>(null);
+  const [player, setPlayer] = useState<PlayerStateDTO | null>(null);
 
-    // Fetch live player state once gameId & userId are known
-    useEffect(() => {
-        const fetchPlayerState = async () => {
-            if (!gameId || !userId) return;
-            console.log(
-                `[GamePage] GET /game/${gameId}/players/${userId}/state`
-            );
-            try {
-                const data = await apiService.get<PlayerStateDTO>(
-                    `/game/${gameId}/players/${userId}/state`
-                );
-                console.log("[GamePage] response:", data);
-                setPlayer(data);
-            } catch (error) {
-                console.error("[GamePage] Failed to fetch player state:", error);
-            }
-        };
+  // Fetch live player state once gameId & userId are known
+  useEffect(() => {
+    const fetchPlayerState = async () => {
+      if (!gameId || !userId) return;
+      console.log(
+        `[GamePage] GET /game/${gameId}/players/${userId}/state`
+      );
+      try {
+        const data = await apiService.get<PlayerStateDTO>(
+          `/game/${gameId}/players/${userId}/state`
+        );
+        const stockHolding = await apiService.get<StockHoldingDTO[]>(
+          `/api/stocks/player-holdings/${userId}?gameId=${gameId}`
+        );
+        console.log("[GamePage] response:", data, stockHolding);
+        setPlayer({
+          ...data,
+          stocks: stockHolding
+        });
+      } catch (error) {
+        console.error("[GamePage] Failed to fetch player state:", error);
+      }
+    };
 
-        fetchPlayerState();
-    }, [apiService, gameId, userId]);
+    fetchPlayerState();
+  }, [apiService, gameId, userId]);
 
-    return (
-        <AntApp>
-            <div
-                style={{
-                    maxWidth: 1200,
-                    margin: "20px auto",
-                    padding: 2,
-                    textAlign: "center",
-                }}
-            >
-                <Logo />
-            </div>
+  return (
+    <AntApp>
+      <div
+        style={{
+          maxWidth: 1200,
+          margin: "20px auto",
+          padding: 2,
+          textAlign: "center",
+        }}
+      >
+        <Logo />
+      </div>
 
-            <Row justify="center" style={{ marginBottom: 24 }}>
-                {/* Left container: Portfolio */}
-                {player ? (
-                    <Portfolio player={player} />
-                ) : (
-                    <Spin tip="Loading portfolio..." size="large" />
-                )}
+      <Row justify="center" style={{ marginBottom: 24 }}>
+        {/* Left container: Portfolio */}
+        {player ? (
+          <Portfolio player={player} />
+        ) : (
+          <Spin tip="Loading portfolio..." size="large" />
+        )}
 
-                {/* Right container: trading stub */}
-                <Col span={12}>
-                    <div style={{ marginBottom: 16, textAlign: "center" }}>
-                        <Title level={2}>Available Stocks</Title>
-                    </div>
-                    <div
-                        style={{
-                            backgroundColor: "#808080",
-                            height: "100%",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            border: "1px dashed #d9d9d9",
-                        }}
-                    >
-                        <span style={{ color: "#999" }}>[Trading Component]</span>
-                    </div>
-                </Col>
-            </Row>
-        </AntApp>
-    );
+        {/* Right container: trading stub */}
+        <Col span={12}>
+          <div style={{ marginBottom: 16, textAlign: "center" }}>
+            <Title level={2}>Available Stocks</Title>
+          </div>
+          <div
+            style={{
+              backgroundColor: "#808080",
+              height: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              border: "1px dashed #d9d9d9",
+            }}
+          >
+            <span style={{ color: "#999" }}>[Trading Component]</span>
+          </div>
+        </Col>
+      </Row>
+    </AntApp>
+  );
 };
 
 export default GamePage;
