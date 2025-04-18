@@ -12,6 +12,7 @@ import {
 } from "antd";
 import BarChart from "@/components/BarChart";
 import PieChart from "@/components/PieChart";
+import { PlayerStateDTO } from "@/types/player";
 
 const { Title } = Typography;
 const { darkAlgorithm } = theme;
@@ -31,13 +32,22 @@ interface Transaction {
 }
 
 interface PlayerState {
-  userId: number;
+  userId: string;
   cashBalance: number;
   stocks: StockHolding[];
   transactionHistory: Transaction[];
 }
 
-const Portfolio: React.FC<{ player: PlayerState }> = ({ player }) => {
+interface PieChartProps {
+  data: { type: string; value: number }[];
+  colorMap: Record<string, string>;
+}
+
+interface PortfolioProps {
+  player: PlayerStateDTO | null; // ← safe prop
+}
+const Portfolio: React.FC<PortfolioProps> = ({ player }) => {
+  if (!player) return null;
   const categoryTotals: Record<string, number> = {};
 
   player.stocks.forEach((stock) => {
@@ -69,91 +79,79 @@ const Portfolio: React.FC<{ player: PlayerState }> = ({ player }) => {
     .sort((a, b) => b.value - a.value);
 
   return (
-    <ConfigProvider theme={{ algorithm: darkAlgorithm }}>
-      <Col span={12}>
-        <div style={{ marginBottom: 16, textAlign: "center" }}>
-          <Title level={2}>Your Portfolio</Title>
-        </div>
+      <ConfigProvider theme={{ algorithm: darkAlgorithm }}>
+        <Row gutter={[16, 16]}>
+          <Col span={24} style={{ textAlign: "center" }}>
+            <Title level={2}>Your Portfolio</Title>
+          </Col>
 
-        <Row>
-          <Col xs={22} sm={24} md={8} lg={8} xl={810}>
-            <Card
-              style={{
-                borderRadius: 12,
-                boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
-              }}
-            >
+          <Col xs={24} sm={12} md={8}>
+            <Card>
               <Statistic
-                title="Available Cash"
-                value={player.cashBalance}
-                prefix="$"
-                precision={2}
+                  title="Available Cash"
+                  value={player.cashBalance}
+                  prefix="$"
+                  precision={2}
+              />
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} md={8}>
+            <Card>
+              <Statistic
+                  title="Portfolio Value"
+                  value={stockValue}
+                  prefix="$"
+                  precision={2}
+              />
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} md={8}>
+            <Card>
+              <Statistic
+                  title="Total Assets"
+                  value={totalAssets}
+                  prefix="$"
+                  precision={2}
               />
             </Card>
           </Col>
 
-          <Col xs={22} sm={24} md={8} lg={8} xl={810}>
-            <Card
-              style={{
-                borderRadius: 12,
-                boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
-              }}
-            >
-              <Statistic
-                title="Portfolio Value"
-                value={stockValue}
-                prefix="$"
-                precision={2}
-              />
-            </Card>
-          </Col>
-
-          <Col xs={22} sm={24} md={8} lg={8} xl={810}>
-            <Card
-              style={{
-                borderRadius: 12,
-                boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
-              }}
-            >
-              <Statistic
-                title="Total Assets"
-                value={totalAssets}
-                prefix="$"
-                precision={2}
-              />
-            </Card>
+          <Col span={24}>
+            {player.stocks.length === 0 ? (
+                <div
+                    style={{
+                      padding: 20,
+                      textAlign: "center",
+                      backgroundColor: "#fffbe6",
+                      border: "1px solid #ffe58f",
+                      borderRadius: 8,
+                      minHeight: 300,
+                    }}
+                >
+                  <Title level={5} style={{ color: "#faad14" }}>
+                    You do not currently have any stocks in your portfolio.
+                  </Title>
+                  <p>
+                    Buy some stocks on the left and hit <strong>Submit</strong> — you'll see your holdings here next round!
+                  </p>
+                </div>
+            ) : (
+                <div
+                    style={{
+                      maxHeight: "600px",
+                      overflowY: "auto",
+                      paddingRight: 8,
+                    }}
+                >
+                  <PieChart data={pieData} colorMap={categoryColorMap} />
+                  <div style={{ height: 32 }} />
+                  <BarChart data={barData} colorMap={categoryColorMap} />
+                </div>
+            )}
           </Col>
         </Row>
-
-        {/* if we are at round 1, no stocks owned*/}
-        {player.stocks.length === 0 ? (
-          <div
-            style={{
-              marginTop: 24,
-              padding: 20,
-              textAlign: "center",
-              minHeight: 400,
-              backgroundColor: "#fffbe6",
-              border: "1px solid #ffe58f",
-              borderRadius: 8,
-            }}
-          >
-            <Title level={5} style={{ color: "#faad14" }}>
-              You do not currently have any stocks in your portfolio.
-            </Title>
-            <p style={{ fontSize: 14 }}>
-              Buy some stocks on the left and hit <strong>"Submit"</strong> — you'll see your stock holdings here in the next round!
-            </p>
-          </div>
-        ) : (
-          <>
-            <PieChart data={pieData} colorMap={categoryColorMap} />
-            <BarChart data={barData} colorMap={categoryColorMap} />
-          </>
-        )}
-      </Col>
-    </ConfigProvider>
+      </ConfigProvider>
   );
 };
 
-export default Portfolio;
+export default Portfolio

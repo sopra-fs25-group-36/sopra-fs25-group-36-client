@@ -95,7 +95,7 @@ const TransactionPage: React.FC = () => {
 
         fetchStockData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [api, gameId]); // Rerun when gameId changes
+    }, [api, gameId, round]); // Rerun when gameId changes
 
     const handleAmountChange = (symbol: string, value: number | null, type: "buy" | "sell") => {
         const setter = type === "buy" ? setBuyAmounts : setSellAmounts;
