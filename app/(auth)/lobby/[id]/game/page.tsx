@@ -1,14 +1,14 @@
+
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import { App as AntApp, Typography, Row, Col } from "antd";
 import Logo from "@/components/Logo";
 import { useApi } from "@/hooks/useApi";
 import Portfolio from "@/components/Portfolio";
-// import { User } from "@/types/user";
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 const dummyPlayer = {
   userId: 42,
@@ -28,105 +28,71 @@ const dummyPlayer = {
   ],
 };
 
-// Interface for game details including timing info.
 interface GameDetail {
-  createdAt: string; // e.g., "2025-04-12T14:00:00Z"
-  timeLimitSeconds: number; // e.g., 120 for a 2-minute countdown
+  createdAt: string;
+  timeLimitSeconds: number;
 }
+
 const GamePage: React.FC = () => {
   const apiService = useApi();
-  const router = useRouter();
-  //const { id } = useParams(); // Retrieves the dynamic game (or lobby) id.
   const { id: gameId } = useParams();
-  // const currentUserId = localStorage.getItem("id");
   const [gameDetail, setGameDetail] = useState<GameDetail | null>(null);
-  // const [setGameDetail] = useState<GameDetail | null>(null);
-  const [countdown, setCountdown] = useState<number>(300); // Use a fixed 5min countdown
-  // const { message } = AntApp.useApp();
 
-  // Fetch game detail information for the countdown.
+  // Fetch game detail and log the request/response for debugging.
   useEffect(() => {
     const fetchGameDetail = async () => {
+      if (!gameId) return;
+      console.log(`[GamePage] GET /game/${gameId}`);
       try {
         const detail = await apiService.get<GameDetail>(`/game/${gameId}`);
+        console.log("[GamePage] response:", detail);
+
         setGameDetail(detail);
       } catch (error) {
-        console.error("Failed to fetch game details:", error);
+        console.error("[GamePage] Failed to fetch game details:", error);
       }
     };
-    if (gameId) {
-      fetchGameDetail();
-    }
+
+    fetchGameDetail();
   }, [apiService, gameId]);
 
-  // Countdown timer computation using game detail.
-  useEffect(() => {
-    if (!gameDetail) return;
-
-    // const countdownSeconds = gameDetail.timeLimitSeconds;
-    const countdownSeconds = 10; // Use a fixed 5min countdown
-    const startTime = Date.now();
-    const endTime = startTime + countdownSeconds * 1000;
-
-    const timer = setInterval(() => {
-      const now = Date.now();
-      const remaining = Math.floor((endTime - now) / 1000);
-      if (remaining <= 0) {
-        clearInterval(timer);
-        setCountdown(0);
-        router.push(`/lobby/${gameId}/leader_board`);
-      } else {
-        setCountdown(remaining);
-      }
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [gameDetail, gameId, router]);
-
   return (
-    <AntApp>
-      <div
-        style={{
-          maxWidth: 1200,
-          margin: "20px auto",
-          padding: 2,
-          textAlign: "center",
-        }}
-      >
-        <Logo />
-        <br />
-        <div>
-          <div style={{ marginBottom: 16 }}>
-            <Text strong style={{ fontSize: "36px" }}>
-              Market Closes in {countdown} s
-            </Text>
-          </div>
-        </div>
-      </div>
-      {/* <Row gutter={[16, 16]} justify="center" style={{ marginBottom: 24 }}> */}
-      <Row justify="center" style={{ marginBottom: 24 }}>
-        {/* Left container */}
-        <Portfolio player={dummyPlayer} />
-        {/* Right container */}
-        <Col span={12}>
-          <div style={{ marginBottom: 16, textAlign: "center" }}>
-            <Title level={2}>Available Stocks</Title>
-          </div>
-          <div
+      <AntApp>
+        <div
             style={{
-              backgroundColor: "#808080",
-              height: "100%",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              border: "1px dashed #d9d9d9",
+              maxWidth: 1200,
+              margin: "20px auto",
+              padding: 2,
+              textAlign: "center",
             }}
-          >
-            <span style={{ color: "#999" }}>[Trading Component]</span>
-          </div>
-        </Col>
-      </Row>
-    </AntApp>
+        >
+          <Logo />
+        </div>
+
+        <Row justify="center" style={{ marginBottom: 24 }}>
+          {/* Left container */}
+          <Portfolio player={dummyPlayer} />
+
+          {/* Right container */}
+          <Col span={12}>
+            <div style={{ marginBottom: 16, textAlign: "center" }}>
+              <Title level={2}>Available Stocks</Title>
+            </div>
+            <div
+                style={{
+                  backgroundColor: "#808080",
+                  height: "100%",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  border: "1px dashed #d9d9d9",
+                }}
+            >
+              <span style={{ color: "#999" }}>[Trading Component]</span>
+            </div>
+          </Col>
+        </Row>
+      </AntApp>
   );
 };
 
