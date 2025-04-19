@@ -79,78 +79,75 @@ const Portfolio: React.FC<PortfolioProps> = ({ player }) => {
     .sort((a, b) => b.value - a.value);
 
   return (
-      <ConfigProvider theme={{ algorithm: darkAlgorithm }}>
-        <Row gutter={[16, 16]}>
-          <Col span={24} style={{ textAlign: "center" }}>
-            <Title level={2}>Your Portfolio</Title>
-          </Col>
+    <ConfigProvider theme={{ algorithm: darkAlgorithm }}>
+      <Row gutter={[16, 16]}>
 
-          <Col xs={24} sm={12} md={8}>
-            <Card>
-              <Statistic
-                  title="Available Cash"
-                  value={player.cashBalance}
-                  prefix="$"
-                  precision={2}
-              />
-            </Card>
-          </Col>
-          <Col xs={24} sm={12} md={8}>
-            <Card>
-              <Statistic
-                  title="Portfolio Value"
-                  value={stockValue}
-                  prefix="$"
-                  precision={2}
-              />
-            </Card>
-          </Col>
-          <Col xs={24} sm={12} md={8}>
-            <Card>
-              <Statistic
-                  title="Total Assets"
-                  value={totalAssets}
-                  prefix="$"
-                  precision={2}
-              />
-            </Card>
-          </Col>
+        <Col xs={24} sm={12} md={8}>
+          <Card>
+            <Statistic
+              title="Available Cash"
+              value={player.cashBalance}
+              prefix="$"
+              precision={2}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} md={8}>
+          <Card>
+            <Statistic
+              title="Portfolio Value"
+              value={stockValue}
+              prefix="$"
+              precision={2}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} md={8}>
+          <Card>
+            <Statistic
+              title="Total Assets"
+              value={totalAssets}
+              prefix="$"
+              precision={2}
+            />
+          </Card>
+        </Col>
 
-          <Col span={24}>
-            {player.stocks.length === 0 ? (
-                <div
-                    style={{
-                      padding: 20,
-                      textAlign: "center",
-                      backgroundColor: "#fffbe6",
-                      border: "1px solid #ffe58f",
-                      borderRadius: 8,
-                      minHeight: 300,
-                    }}
-                >
-                  <Title level={5} style={{ color: "#faad14" }}>
-                    You do not currently have any stocks in your portfolio.
-                  </Title>
-                  <p>
-                    Buy some stocks on the left and hit <strong>Submit</strong> — you'll see your holdings here next round!
-                  </p>
-                </div>
-            ) : (
-                <div
-                    style={{
-                      maxHeight: "600px",
-                      overflowY: "auto",
-                      paddingRight: 8,
-                    }}
-                >
-                  <PieChart data={pieData} colorMap={categoryColorMap} />
-                  <div style={{ height: 32 }} />
-                  <BarChart data={barData} colorMap={categoryColorMap} />
-                </div>
-            )}
-          </Col>
-        </Row>
-      </ConfigProvider>
+        <Col span={24}>
+          {player.stocks.length === 0 ? (
+            <div
+              style={{
+                padding: 20,
+                textAlign: "center",
+                backgroundColor: "#fffbe6",
+                border: "1px solid #ffe58f",
+                borderRadius: 8,
+                minHeight: 300,
+              }}
+            >
+              <Title level={5} style={{ color: "#faad14" }}>
+                You do not currently have any stocks in your portfolio.
+              </Title>
+              <p>
+                Buy some stocks on the left and hit <strong>Submit</strong> — you'll see your holdings here next round!
+              </p>
+            </div>
+          ) : (
+            <div
+              style={{
+                maxHeight: "600px",
+                overflowY: "auto",
+                paddingRight: 8,
+              }}
+            >
+              <PieChart data={pieData} colorMap={categoryColorMap} />
+              <div style={{ height: 32 }} />
+              <BarChart data={barData} colorMap={categoryColorMap} />
+            </div>
+          )}
+        </Col>
+      </Row>
+    </ConfigProvider>
   );
 };
 
