@@ -10,8 +10,12 @@ import { StockPriceGetDTO } from "@/types/stock";
 import StockChart from "@/components/StockChart"; // Import the chart component
 import { StockDataPointDTO } from "@/types/chart"; // Import the DTO type for chart data
 
+interface TransactionListProps {
+    onToggleLayout: () => void;
+}
+
 // --- MAIN TransactionPage COMPONENT (Modified) ---
-const TransactionPage: React.FC = () => {
+const TransactionPage: React.FC<TransactionListProps> = ({ onToggleLayout }) => {
     const router = useRouter();
     const { id } = useParams();
     const gameId = Number(id);
@@ -201,7 +205,7 @@ const TransactionPage: React.FC = () => {
                 <Typography.Title level={2} style={{ color: "#fff", margin: 0 }}>
                     Trade Stocks - Round {round ?? '...'}
                 </Typography.Title>
-                <Button type="primary" onClick={() => router.push("/portfolio")} style={{ fontWeight: "bold" }}>
+                <Button type="primary" onClick={onToggleLayout} style={{ fontWeight: "bold" }}>
                     My Portfolio
                 </Button>
             </div>
@@ -221,7 +225,7 @@ const TransactionPage: React.FC = () => {
                     overflowY: 'auto'
                 }}>
                     <Typography.Title level={4} style={{ color: "#e5e7eb", marginBottom: '20px', borderBottom: '1px solid #4b5563', paddingBottom: '10px' }}>
-                        Your Actions
+                        Your Transactions
                     </Typography.Title>
 
                     {isLoading ? (
