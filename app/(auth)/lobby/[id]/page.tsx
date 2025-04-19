@@ -7,7 +7,6 @@ import Logo from "@/components/Logo";
 import { useApi } from "@/hooks/useApi";
 import { Lobby } from "@/types/lobby";
 import { User } from "@/types/user";
-import Instructions from "@/components/Instructions";
 
 const { Title, Text } = Typography;
 
@@ -127,7 +126,7 @@ const LobbyPage: React.FC = () => {
               {}
             );
             // After a successful start, navigate to the leaderboard page.
-            router.push(`/lobby/${lobbyId}/leader_board`);
+            router.push(`/lobby/${lobbyId}/instruction`);
           } catch (error) {
             console.error("Failed to start game:", error);
             message.error("Failed to start game");
@@ -313,13 +312,6 @@ const LobbyPage: React.FC = () => {
           </div>
         )}
       </div>
-
-      {/* Modal for guiding user */}
-      <Instructions
-        visible={modalVisible}
-        steps={steps} // Pass the steps here
-        onClose={() => setModalVisible(false)}
-      />
     </AntApp>
   );
 };
