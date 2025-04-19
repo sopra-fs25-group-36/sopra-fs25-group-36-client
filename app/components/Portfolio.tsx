@@ -129,7 +129,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ player }) => {
                 You do not currently have any stocks in your portfolio.
               </Title>
               <p>
-                Buy some stocks on the left and hit <strong>Submit</strong> — you'll see your holdings here next round!
+                Buy some stocks on the left and hit <strong>Submit</strong> — you will see your holdings here next round!
               </p>
             </div>
           ) : (
