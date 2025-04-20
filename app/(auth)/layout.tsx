@@ -1,6 +1,6 @@
 "use client";
 
-import Account from "@/components/Account";
+import UserAccount from "@/components/UserAccount";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function AuthLayout({
@@ -14,7 +14,7 @@ export default function AuthLayout({
 
   return (
     <div style={{ position: "relative" }}>
-      {isAuthenticated && <Account />}
+      {isAuthenticated && <UserAccount />}
       {children}
     </div>
   );

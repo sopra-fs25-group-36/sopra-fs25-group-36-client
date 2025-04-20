@@ -1,8 +1,8 @@
-"use client"; // Important if using Plotly directly in a client component
+"use client";
 
 import React, { useEffect, useRef } from "react";
-import Plotly from "plotly.js-dist"; // Use the distribution bundle
-import { StockDataPointDTO } from "@/types/chart"; // Assuming you create this type based on the DTO
+import Plotly from "plotly.js-dist";
+import { StockDataPointDTO } from "@/types/chart";
 
 interface StockChartProps {
   data: StockDataPointDTO[];
@@ -13,89 +13,69 @@ const StockChart: React.FC<StockChartProps> = ({ data, symbol }) => {
   const chartDivRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!chartDivRef.current || !data || data.length === 0) {
-      // If no div ref or no data, do nothing or clear previous chart
-      if (chartDivRef.current) {
-        Plotly.purge(chartDivRef.current); // Clear previous plot if data becomes empty
+    const chartDiv = chartDivRef.current;
+
+    if (!chartDiv || !data || data.length === 0) {
+      if (chartDiv) {
+        Plotly.purge(chartDiv);
       }
       return;
     }
 
-    // Prepare data for Plotly Candlestick chart
-    const trace = {
-      x: data.map((d) => d.date), // Assumes date is a string like 'YYYY-MM-DD'
-      close: data.map((d) => d.close),
-      high: data.map((d) => d.high),
-      low: data.map((d) => d.low),
-      open: data.map((d) => d.open),
+    // Filter out any invalid data points (where any OHLC is null/undefined)
+    const filteredData = data.filter(
+      (d) =>
+        d.open != null &&
+        d.close != null &&
+        d.high != null &&
+        d.low != null &&
+        d.date != null
+    );
 
-      // Candlestick colors
-      increasing: { line: { color: "#4ade80" } }, // Green
-      decreasing: { line: { color: "#f87171" } }, // Red
-
+    const trace: Partial<Plotly.CandlestickData> = {
+      x: filteredData.map((d) => d.date),
+      close: filteredData.map((d) => d.close as number),
+      high: filteredData.map((d) => d.high as number),
+      low: filteredData.map((d) => d.low as number),
+      open: filteredData.map((d) => d.open as number),
+      increasing: { line: { color: "#4ade80" } },
+      decreasing: { line: { color: "#f87171" } },
       type: "candlestick",
-      xaxis: "x",
-      yaxis: "y",
-      name: symbol, // Legend name
-    } as Partial<Plotly.CandlestickData> as Plotly.CandlestickData; // Explicit casting
+      name: symbol,
+    };
 
     const layout: Partial<Plotly.Layout> = {
       title: `${symbol} Daily Chart`,
       dragmode: "zoom",
       margin: { r: 10, t: 45, b: 40, l: 60 },
-      showlegend: false, // Candlestick name usually not needed as legend
+      showlegend: false,
       xaxis: {
         autorange: true,
-        // domain: [0, 1], // Usually defaults are fine
-        // range: [/* calculate range or leave autorange */],
-        rangeslider: {
-          // Add range slider at the bottom
-          visible: true,
-          // range: [/* Optional initial range for slider */]
-        },
+        rangeslider: { visible: true },
         title: "Date",
         type: "date",
       },
       yaxis: {
         autorange: true,
-        // domain: [0, 1],
-        // range: [/* calculate range or leave autorange */],
         title: "Price",
         type: "linear",
       },
-      plot_bgcolor: "#1f2937", // Match background
-      paper_bgcolor: "#1f2937", // Match background
-      font: {
-        color: "var(--foreground)", // Light text color
-      },
+      plot_bgcolor: "#1f2937",
+      paper_bgcolor: "#1f2937",
+      font: { color: "var(--foreground)" },
     };
 
-    // Ensure the div is clean before plotting
-    Plotly.purge(chartDivRef.current);
-    // Create the plot
-    Plotly.newPlot(chartDivRef.current, [trace], layout);
+    Plotly.purge(chartDiv);
+    Plotly.newPlot(chartDiv, [trace], layout);
 
-    // Optional: Add resize listener if needed
-    // const handleResize = () => {
-    //   if (chartDivRef.current) {
-    //     Plotly.Plots.resize(chartDivRef.current);
-    //   }
-    // };
-    // window.addEventListener('resize', handleResize);
-
-    // Cleanup function to remove plot and listener on unmount or data change
     return () => {
-      // window.removeEventListener('resize', handleResize);
-      if (chartDivRef.current) {
-        Plotly.purge(chartDivRef.current); // Clean up the plot when component unmounts/rerenders
+      if (chartDiv) {
+        Plotly.purge(chartDiv);
       }
     };
-  }, [data, symbol]); // Re-run effect when data or symbol changes
+  }, [data, symbol]);
 
-  return (
-    <div ref={chartDivRef} style={{ width: "100%", height: "500px" }}></div>
-  );
-  // Adjust height as needed
+  return <div ref={chartDivRef} style={{ width: "100%", height: "500px" }} />;
 };
 
 export default StockChart;

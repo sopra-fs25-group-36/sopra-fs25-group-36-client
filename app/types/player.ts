@@ -1,5 +1,3 @@
-
-
 export interface StockHoldingDTO {
     symbol: string;
     quantity: number;

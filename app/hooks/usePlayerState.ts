@@ -3,29 +3,28 @@ import { useState, useEffect } from "react";
 import { useApi } from "./useApi";
 import { StockHoldingDTO, PlayerStateDTO } from "@/types/player";
 
-
 // ——— DTOs ——————————————————————————————————————————————————————————————————
 
-export interface StockHoldingDTO {
-    symbol: string;
-    quantity: number;
-    category: string;
-    currentPrice: number;
-}
+// export interface StockHoldingDTO {
+//     symbol: string;
+//     quantity: number;
+//     category: string;
+//     currentPrice: number;
+// }
 
-export interface TransactionDTO {
-    stockId: string;
-    quantity: number;
-    price: number;
-    type: "BUY" | "SELL";
-}
+// export interface TransactionDTO {
+//     stockId: string;
+//     quantity: number;
+//     price: number;
+//     type: "BUY" | "SELL";
+// }
 
-export interface PlayerStateDTO {
-    userId: string;
-    cashBalance: number;
-    stocks: StockHoldingDTO[];
-    transactionHistory: TransactionDTO[];
-}
+// export interface PlayerStateDTO {
+//     userId: string;
+//     cashBalance: number;
+//     stocks: StockHoldingDTO[];
+//     transactionHistory: TransactionDTO[];
+// }
 
 // ——— usePlayerState Hook ——————————————————————————————————————————————————
 
@@ -61,12 +60,16 @@ export default function usePlayerState(gameId: string) {
                     stocks: holdings,
                 });
                 setError(null);
-            } catch (e: any) {
+            } catch (e: unknown) {
                 setPlayer(null);
-                setError(e);
-            } finally {
+                if (e instanceof Error) {
+                  setError(e);
+                } else {
+                  setError(new Error("An unexpected error occurred"));
+                }
+              } finally {
                 setIsLoading(false);
-            }
+              }
         })();
     }, [api, gameId, userId]);
 
