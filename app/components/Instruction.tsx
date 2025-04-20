@@ -1,4 +1,3 @@
-/* components/InstructionTile.tsx */
 import React from "react";
 import { Card, Typography } from "antd";
 import type { ReactNode } from "react";

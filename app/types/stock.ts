@@ -1,4 +1,3 @@
-
 export interface StockPriceGetDTO {
   symbol: string;
   round: number;

@@ -1,5 +1,3 @@
-// src/types/chart.ts
-
 export interface StockDataPointDTO {
     symbol: string;
     date: string; // Expecting 'YYYY-MM-DD' string from backend for Plotly

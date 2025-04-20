@@ -1,10 +1,9 @@
-"use client"; // Mark this component as a Client Component
+"use client";
 
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-// Define the props interface
 interface LogoProps {
   width?: number;
   height?: number;

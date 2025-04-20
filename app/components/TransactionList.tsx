@@ -1,20 +1,21 @@
 "use client";
 
-import { InputNumber, Button, Typography, message, Spin, Modal } from "antd";
+import Image from "next/image"; // make sure this is imported
+import { InputNumber, Button, Typography, message, Spin, Modal } from "antd"; // Import Spin, Modal
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import Image from "next/image";
 import { useGame } from "@/hooks/useGame";
 import { useApi } from "@/hooks/useApi";
 
 import { StockPriceGetDTO } from "@/types/stock";
-import StockChart from "@/components/StockChart";
-import { StockDataPointDTO } from "@/types/chart";
+import StockChart from "@/components/StockChart"; // Import the chart component
+import { StockDataPointDTO } from "@/types/chart"; // Import the DTO type for chart data
 
 interface TransactionListProps {
   onToggleLayout: () => void;
 }
 
+// --- MAIN TransactionPage COMPONENT (Modified) ---
 const TransactionPage: React.FC<TransactionListProps> = ({
   onToggleLayout,
 }) => {
@@ -26,17 +27,22 @@ const TransactionPage: React.FC<TransactionListProps> = ({
   const { round, timer } = useGame(gameId);
   const currentUserId = localStorage.getItem("id");
 
+  // State for transactions
   const [buyAmounts, setBuyAmounts] = useState<{ [symbol: string]: number }>(
     {}
   );
   const [sellAmounts, setSellAmounts] = useState<{ [symbol: string]: number }>(
     {}
   );
+
+  // State for current round stock list
   const [currentStocks, setCurrentStocks] = useState<StockPriceGetDTO[]>([]);
   const [categories, setCategories] = useState<{
     [category: string]: StockPriceGetDTO[];
-  }>({});
+  }>({}); // Store categorized API data
   const [isLoading, setIsLoading] = useState(true);
+
+  // State for Chart Modal
   const [selectedStockSymbol, setSelectedStockSymbol] = useState<string | null>(
     null
   );
@@ -44,6 +50,7 @@ const TransactionPage: React.FC<TransactionListProps> = ({
   const [isChartLoading, setIsChartLoading] = useState<boolean>(false);
   const [chartError, setChartError] = useState<string | null>(null);
 
+  // Fetch current round stock data
   useEffect(() => {
     const fetchStockData = async () => {
       if (!gameId || isNaN(gameId)) {
@@ -59,8 +66,9 @@ const TransactionPage: React.FC<TransactionListProps> = ({
         const data = await api.get<StockPriceGetDTO[]>(
           `/api/stocks/${gameId}/stocks`
         );
-        setCurrentStocks(data);
+        setCurrentStocks(data); // Keep the flat list if needed elsewhere
 
+        // Categorize the fetched data (using your existing logic)
         const defaultCategories: { [category: string]: string[] } = {
           TECH: [
             "AAPL",
@@ -77,10 +85,13 @@ const TransactionPage: React.FC<TransactionListProps> = ({
           FINANCE: ["JPM", "GS"],
           HEALTHCARE: ["PFE", "JNJ"],
           CONSUMER: ["PG"],
-          MISC: ["IBM"],
+          // Add IBM if it's consistently part of your game stocks
+          MISC: ["IBM"], // Example if IBM doesn't fit others
         };
 
         const categorizedData: { [category: string]: StockPriceGetDTO[] } = {};
+        // const apiSymbols = new Set(data.map((item) => item.symbol));
+
         for (const [category, symbolsInCategory] of Object.entries(
           defaultCategories
         )) {
@@ -90,9 +101,10 @@ const TransactionPage: React.FC<TransactionListProps> = ({
           if (stocksInCategory.length > 0) {
             categorizedData[category] = stocksInCategory.sort((a, b) =>
               a.symbol.localeCompare(b.symbol)
-            );
+            ); // Sort within category
           }
         }
+        // Handle stocks from API not in default categories (optional)
         const uncategorized = data.filter(
           (stock) =>
             !Object.values(defaultCategories).flat().includes(stock.symbol)
@@ -104,6 +116,7 @@ const TransactionPage: React.FC<TransactionListProps> = ({
         }
 
         setCategories(categorizedData);
+        console.log("Categorized stock data:", categorizedData);
       } catch (err) {
         console.error("Failed to fetch stock data", err);
         message.error("Could not load stock data for this round.");
@@ -113,7 +126,7 @@ const TransactionPage: React.FC<TransactionListProps> = ({
     };
 
     fetchStockData();
-  }, [api, gameId, round]);
+  }, [api, gameId, round]); // Rerun when gameId changes
 
   const handleAmountChange = (
     symbol: string,
@@ -125,10 +138,12 @@ const TransactionPage: React.FC<TransactionListProps> = ({
   };
 
   const getCurrentPrice = (symbol: string): number | undefined => {
+    // Find price from the categorized data for efficiency if available
     for (const category in categories) {
       const stock = categories[category].find((s) => s.symbol === symbol);
       if (stock) return stock.price;
     }
+    // Fallback to flat list if needed (though should be in categories)
     return currentStocks.find((stock) => stock.symbol === symbol)?.price;
   };
 
@@ -142,18 +157,29 @@ const TransactionPage: React.FC<TransactionListProps> = ({
       );
       return;
     }
+    console.log(
+      `${type.toUpperCase()}`,
+      symbol,
+      "amount:",
+      amount,
+      "price:",
+      price
+    );
+    // Add your actual API call logic here
     message.info(
       `Processing ${type} ${amount} of ${symbol} at $${price.toFixed(2)}...`
     );
   };
 
+  //   // --- Function to show chart ---
   const showChartForStock = async (symbol: string) => {
     setSelectedStockSymbol(symbol);
     setIsChartLoading(true);
     setChartError(null);
-    setChartData([]);
+    setChartData([]); // Clear previous data
 
     try {
+      // Make API call to your new chart endpoint
       const historyData = await api.get<StockDataPointDTO[]>(
         `/api/charts/${symbol}/daily`
       );
@@ -162,23 +188,30 @@ const TransactionPage: React.FC<TransactionListProps> = ({
       } else {
         setChartError(`No historical data found for ${symbol}.`);
       }
-    } catch (err) {
-      const error = err as Error;
-      console.error(`Failed to fetch chart data for ${symbol}`, error);
-      setChartError(
-        `Could not load chart data for ${symbol}. ${error.message || ""}`
-      );
+    } catch (err: unknown) {
+      console.error(`Failed to fetch chart data for ${symbol}`, err);
+
+      const errorMessage =
+        err instanceof Error ? err.message : "An unknown error occurred.";
+
+      setChartError(`Could not load chart data for ${symbol}. ${errorMessage}`);
       message.error(`Could not load chart data for ${symbol}.`);
+    } finally {
+      setIsChartLoading(false);
     }
   };
 
   const handleCloseChartModal = () => {
     setSelectedStockSymbol(null);
-    setChartData([]);
+    setChartData([]); // Clear data when closing
     setChartError(null);
   };
 
+  // --- Submit Round Logic (Placeholder) ---
   const handleSubmitRound = async () => {
+    //Reuse logic from previous steps to gather transactions
+
+    //  );
     for (const [key, value] of Object.entries(sellAmounts)) {
       const response = await apiService.post<string>(
         `/api/transaction/${gameId}/submit?userId=${currentUserId}`,
@@ -206,6 +239,7 @@ const TransactionPage: React.FC<TransactionListProps> = ({
     setTimeout(() => router.push(`/lobby/${gameId}/leader_board`), 1000);
   };
 
+  // -- Main Render --
   return (
     <div
       style={{
@@ -214,6 +248,7 @@ const TransactionPage: React.FC<TransactionListProps> = ({
         color: "var(--foreground)",
       }}
     >
+      {/* Header Area */}
       <div
         style={{
           display: "flex",
@@ -235,20 +270,23 @@ const TransactionPage: React.FC<TransactionListProps> = ({
         </Button>
       </div>
 
+      {/* Main Content Area (Flex Container) */}
+      {/* Using previous layout structure */}
       <div style={{ display: "flex", gap: "30px", alignItems: "stretch" }}>
+        {/* Left Pane: Transaction Area */}
         <div
           style={{
-            flex: "1 1 100%",
+            flex: "1 1 100%", // Take full width if no table
             backgroundColor: "var(--card-background)",
             borderRadius: "16px",
             padding: "24px",
             border: "1px solid #374151",
-            maxHeight: "calc(85vh)",
+            maxHeight: "calc(85vh)", // Adjusted height
             overflowY: "auto",
           }}
         >
           <Typography.Title
-            level={3}
+            level={4}
             style={{
               color: "var(--background)",
               marginBottom: "20px",
@@ -309,20 +347,19 @@ const TransactionPage: React.FC<TransactionListProps> = ({
                         gap: "15px",
                       }}
                     >
+                      {/* Icon */}
+
                       <Image
                         src={`/icons/${stock.symbol}.png`}
                         alt={`${stock.symbol} icon`}
                         width={24}
                         height={24}
-                        style={{
-                          objectFit: "contain",
-                        }}
-                        onError={(e) => {
-                          e.currentTarget.src = "/icons/default.png";
-                        }}
+                        style={{ objectFit: "contain" }}
                       />
+
+                      {/* Symbol - CLICKABLE FOR CHART */}
                       <span
-                        onClick={() => showChartForStock(stock.symbol)}
+                        onClick={() => showChartForStock(stock.symbol)} // <-- Call chart function
                         title={`View chart for ${stock.symbol}`}
                         style={{
                           fontWeight: "600",
@@ -333,9 +370,11 @@ const TransactionPage: React.FC<TransactionListProps> = ({
                       >
                         {stock.symbol}
                       </span>
+                      {/* Price */}
                       <span style={{ fontWeight: "500", textAlign: "right" }}>
                         ${stock.price.toFixed(2)}
                       </span>
+                      {/* Buy Controls */}
                       <div
                         style={{
                           display: "flex",
@@ -367,6 +406,7 @@ const TransactionPage: React.FC<TransactionListProps> = ({
                           Buy
                         </Button>
                       </div>
+                      {/* Sell Controls */}
                       <div
                         style={{
                           display: "flex",
@@ -407,8 +447,12 @@ const TransactionPage: React.FC<TransactionListProps> = ({
             ))
           )}
         </div>
+
+        {/* Removed Right Pane: Stock Info Table */}
+        {/* <div style={{ flex: '1 1 40%', alignSelf: 'stretch' }}> ... table ... </div> */}
       </div>
 
+      {/* Submit & Timer (Fixed Position) */}
       <div
         style={{
           position: "fixed",
@@ -420,6 +464,7 @@ const TransactionPage: React.FC<TransactionListProps> = ({
           gap: "20px",
         }}
       >
+        {/* Timer */}
         <div
           style={{
             backgroundColor: "rgba(59, 130, 246, 0.2)",
@@ -429,25 +474,16 @@ const TransactionPage: React.FC<TransactionListProps> = ({
             backdropFilter: "blur(4px)",
           }}
         >
-          <Typography.Text
-            style={{ color: "#93c5fd", fontWeight: "bold", fontSize: "1rem" }}
-          >
+          <Typography.Text style={{ fontWeight: "bold", fontSize: "1rem" }}>
             Time left: {timer === null ? "..." : `${timer}s`}
           </Typography.Text>
         </div>
+        {/* Submit Button */}
         <Button
           type="primary"
           size="large"
           onClick={handleSubmitRound}
           disabled={isLoading}
-          style={{
-            backgroundColor: "#2563eb",
-            color: "white",
-            border: "none",
-            padding: "10px 20px",
-            fontWeight: "bold",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
-          }}
         >
           Submit Round
         </Button>
@@ -455,13 +491,13 @@ const TransactionPage: React.FC<TransactionListProps> = ({
 
       <Modal
         title={`Stock Chart: ${selectedStockSymbol || ""}`}
-        open={!!selectedStockSymbol}
+        open={!!selectedStockSymbol} // Show modal when a symbol is selected
         onCancel={handleCloseChartModal}
-        footer={null}
-        width={900}
-        style={{ top: 20 }}
-        maskClosable={true}
-        destroyOnClose={true}
+        footer={null} // No OK/Cancel buttons needed
+        width={900} // Adjust width as needed
+        style={{ top: 20 }} // Position modal slightly from top
+        maskClosable={true} // Allow closing by clicking outside
+        destroyOnClose={true} // Unmount chart component when modal closes
       >
         {isChartLoading ? (
           <div
@@ -482,14 +518,15 @@ const TransactionPage: React.FC<TransactionListProps> = ({
             {chartError}
           </Typography.Text>
         ) : chartData.length > 0 && selectedStockSymbol ? (
+          // Render the chart component only when data is ready
           <StockChart data={chartData} symbol={selectedStockSymbol} />
         ) : (
+          // Fallback case if data is empty but no error (might happen briefly)
           <Typography.Text
             style={{
               display: "block",
               textAlign: "center",
               marginTop: "20px",
-              color: "#9ca3af",
             }}
           >
             No chart data available.
