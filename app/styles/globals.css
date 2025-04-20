@@ -13,7 +13,6 @@
 
   --card-background: #f0f2f5;
   --card-border: #d9d9d9;
-
 }
 
 @media (prefers-color-scheme: dark) {
@@ -27,9 +26,9 @@
     --button-secondary-border: #5f6368;
     --button-secondary-hover: #5f6368;
 
-    --card-background: #1f1f1f;
+    /* --card-background: #1f1f1f; */
+    --card-background: #1f2937;
     --card-border: #808080;
-
   }
 }
 
@@ -219,7 +218,7 @@ a:hover {
   }
 
   .ant-message-success {
-    color: #11e098;
+    color: var(--button-text);
   }
 }
 
@@ -257,6 +256,7 @@ a:hover {
 }
 
 .ant-modal-title {
+  /* color: var(--button-text) !important; */
   color: var(--foreground) !important;
 }
 
@@ -606,6 +606,7 @@ canvas {
   background-color: var(--background) !important;
   border: 1px solid var(--card-border) !important;
   color: var(--foreground) !important;
+  /* color: var(--button-text) !important; */
 }
 
 .g2-tooltip-title,
@@ -613,5 +614,10 @@ canvas {
 .ant-statistic-title,
 .ant-statistic-content {
   color: var(--foreground) !important;
+  /* color: var(--button-text) !important; */
   transition: color 0.3s ease;
 }
+
+/* p {
+  color: var(--foreground);
+} */

@@ -1,4 +1,3 @@
-/* app/lobby/[id]/instruction/page.tsx */
 "use client";
 
 import React, { useState } from "react";
@@ -23,7 +22,7 @@ interface TileProps {
   title: string;
   description: string;
   icon: ReactNode;
-  onClick: () => void;            // ← add click handler
+  onClick: () => void; // ← add click handler
 }
 
 const InstructionTile: React.FC<TileProps> = ({
@@ -35,7 +34,7 @@ const InstructionTile: React.FC<TileProps> = ({
   <Card
     hoverable
     className="tile"
-    onClick={onClick}               // ← hook up click
+    onClick={onClick} // ← hook up click
     style={{ flex: 1, cursor: "pointer" }} // make whole card clickable
   >
     <div className="tileIcon">{icon}</div>
@@ -149,7 +148,7 @@ export default function InstructionPage() {
           <Col xs={24} sm={12} lg={8} key={s.title} style={{ display: "flex" }}>
             <InstructionTile
               {...s}
-              onClick={() => openImage(s.img)}        // ← show modal
+              onClick={() => openImage(s.img)} // ← show modal
             />
           </Col>
         ))}

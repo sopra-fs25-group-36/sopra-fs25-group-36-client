@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { Pie, PieConfig } from "@ant-design/plots";
+// import { Pie, PieConfig } from "@ant-design/plots";
+import { Pie } from "@ant-design/plots";
 
 interface PieChartProps {
   data: { type: string; value: number }[];
@@ -20,7 +21,7 @@ const PieChart: React.FC<PieChartProps> = ({ data, colorMap }) => {
       type: "inner" as const,
       offset: -30,
       content: ({ percent }: { percent: number }) =>
-          `${(percent * 100).toFixed(0)}%`,
+        `${(percent * 100).toFixed(0)}%`,
       style: {
         fontSize: 14,
         textAlign: "center" as const,
@@ -29,6 +30,7 @@ const PieChart: React.FC<PieChartProps> = ({ data, colorMap }) => {
   };
 
   // ② Cast to PieConfig only at the spread site
-  return <Pie {...config} />;};
+  return <Pie {...config} />;
+};
 
 export default PieChart;

@@ -17,31 +17,31 @@ import { PlayerStateDTO } from "@/types/player";
 const { Title } = Typography;
 const { darkAlgorithm } = theme;
 
-interface StockHolding {
-  symbol: string;
-  quantity: number;
-  category: string;
-  currentPrice: number;
-}
+// interface StockHolding {
+//   symbol: string;
+//   quantity: number;
+//   category: string;
+//   currentPrice: number;
+// }
 
-interface Transaction {
-  stockId: string;
-  quantity: number;
-  price: number;
-  type: string;
-}
+// interface Transaction {
+//   stockId: string;
+//   quantity: number;
+//   price: number;
+//   type: string;
+// }
 
-interface PlayerState {
-  userId: string;
-  cashBalance: number;
-  stocks: StockHolding[];
-  transactionHistory: Transaction[];
-}
+// interface PlayerState {
+//   userId: string;
+//   cashBalance: number;
+//   stocks: StockHolding[];
+//   transactionHistory: Transaction[];
+// }
 
-interface PieChartProps {
-  data: { type: string; value: number }[];
-  colorMap: Record<string, string>;
-}
+// interface PieChartProps {
+//   data: { type: string; value: number }[];
+//   colorMap: Record<string, string>;
+// }
 
 interface PortfolioProps {
   player: PlayerStateDTO | null; // ← safe prop
@@ -81,7 +81,6 @@ const Portfolio: React.FC<PortfolioProps> = ({ player }) => {
   return (
     <ConfigProvider theme={{ algorithm: darkAlgorithm }}>
       <Row gutter={[16, 16]}>
-
         <Col xs={24} sm={12} md={8}>
           <Card>
             <Statistic
@@ -119,17 +118,20 @@ const Portfolio: React.FC<PortfolioProps> = ({ player }) => {
               style={{
                 padding: 20,
                 textAlign: "center",
-                backgroundColor: "#fffbe6",
-                border: "1px solid #ffe58f",
+                // backgroundColor: "#ffffff",
+                background: "var(--card-background)",
+                // border: "1px solid #ffe58f",
                 borderRadius: 8,
                 minHeight: 300,
               }}
             >
-              <Title level={5} style={{ color: "#faad14" }}>
+              {/* <Title level={5} style={{ color: "var(--foreground)" }}> */}
+              <Title level={5}>
                 You do not currently have any stocks in your portfolio.
               </Title>
               <p>
-                Buy some stocks on the left and hit <strong>Submit</strong> — you will see your holdings here next round!
+                Buy some stocks on the left and hit <strong>Submit</strong> —
+                you will see your holdings here next round!
               </p>
             </div>
           ) : (
@@ -151,4 +153,4 @@ const Portfolio: React.FC<PortfolioProps> = ({ player }) => {
   );
 };
 
-export default Portfolio
+export default Portfolio;

@@ -21,23 +21,24 @@ const LobbyPage: React.FC = () => {
   const [countdown, setCountdown] = useState<number>(300);
   const { message } = AntApp.useApp();
 
-  const [modalVisible, setModalVisible] = useState<boolean>(false); // Modal visibility state
+  // const [modalVisible, setModalVisible] = useState<boolean>(false); // Modal visibility state
+  // const [setModalVisible] = useState<boolean>(false); // Modal visibility state
 
   // Steps for the guide
-  const steps = [
-    {
-      title: `Welcome to the Lobby #${lobbyId}!`,
-      content: "Click the 'Ready' button to signal your readiness.",
-    },
-    {
-      title: "Copy Invite Link",
-      content: `Copy the invite link to share with others, by clicking on the 'Lobby #${lobbyId}'`,
-    },
-    {
-      title: "Game Countdown",
-      content: "Watch the countdown to see when the game will start.",
-    },
-  ];
+  // const steps = [
+  //   {
+  //     title: `Welcome to the Lobby #${lobbyId}!`,
+  //     content: "Click the 'Ready' button to signal your readiness.",
+  //   },
+  //   {
+  //     title: "Copy Invite Link",
+  //     content: `Copy the invite link to share with others, by clicking on the 'Lobby #${lobbyId}'`,
+  //   },
+  //   {
+  //     title: "Game Countdown",
+  //     content: "Watch the countdown to see when the game will start.",
+  //   },
+  // ];
 
   useEffect(() => {
     const fetchLobby = async () => {
@@ -119,13 +120,17 @@ const LobbyPage: React.FC = () => {
       if (allReady) {
         (async () => {
           try {
-            // Since game id and lobby id are the same, we use lobbyId for both.
-            // We include the gameId as a query parameter and provide an empty payload.
-            const game = await apiService.post(
+            //// Since game id and lobby id are the same, we use lobbyId for both.
+            //// We include the gameId as a query parameter and provide an empty payload.
+            // const game = await apiService.post(
+            //   `/game/${lobbyId}/start?gameId=${lobbyId}`,
+            //   {}
+            // );
+            await apiService.post(
               `/game/${lobbyId}/start?gameId=${lobbyId}`,
               {}
             );
-            // After a successful start, navigate to the leaderboard page.
+            //// After a successful start, navigate to the leaderboard page.
             router.push(`/lobby/${lobbyId}/instruction`);
           } catch (error) {
             console.error("Failed to start game:", error);
@@ -181,11 +186,11 @@ const LobbyPage: React.FC = () => {
   }
 
   // Show modal when user enters the lobby
-  useEffect(() => {
-    if (lobbyId) {
-      setModalVisible(true);
-    }
-  }, [lobbyId]);
+  // useEffect(() => {
+  //   if (lobbyId) {
+  //     setModalVisible(true);
+  //   }
+  // }, [lobbyId]);
 
   return (
     <AntApp>
