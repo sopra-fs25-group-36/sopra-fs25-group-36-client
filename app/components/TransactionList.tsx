@@ -22,7 +22,6 @@ const TransactionPage: React.FC<TransactionListProps> = ({
   const router = useRouter();
   const { id } = useParams();
   const gameId = Number(id);
-  const api = useApi();
   const apiService = useApi();
   const { round, timer } = useGame(gameId);
   const currentUserId = localStorage.getItem("id");
@@ -63,7 +62,7 @@ const TransactionPage: React.FC<TransactionListProps> = ({
       setCategories({});
 
       try {
-        const data = await api.get<StockPriceGetDTO[]>(
+        const data = await apiService.get<StockPriceGetDTO[]>(
           `/api/stocks/${gameId}/stocks`
         );
         setCurrentStocks(data); // Keep the flat list if needed elsewhere
@@ -126,7 +125,7 @@ const TransactionPage: React.FC<TransactionListProps> = ({
     };
 
     fetchStockData();
-  }, [api, gameId, round]); // Rerun when gameId changes
+  }, [apiService, gameId, round]); // Rerun when gameId changes
 
   const handleAmountChange = (
     symbol: string,
@@ -180,7 +179,7 @@ const TransactionPage: React.FC<TransactionListProps> = ({
 
     try {
       // Make API call to your new chart endpoint
-      const historyData = await api.get<StockDataPointDTO[]>(
+      const historyData = await apiService.get<StockDataPointDTO[]>(
         `/api/charts/${symbol}/daily`
       );
       if (historyData && historyData.length > 0) {

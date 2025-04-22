@@ -33,6 +33,7 @@ interface TableRecord {
 
 // Interface for game details including timing info.
 interface GameDetail {
+  currentRound: number;
   createdAt: string; // e.g., "2025-04-12T14:00:00Z"
   timeLimitSeconds: number; // e.g., 120 for a 2-minute countdown
 }
@@ -42,7 +43,7 @@ const LeaderBoard: React.FC = () => {
   const { id } = useParams(); // Retrieves the dynamic game (or lobby) id.
   const router = useRouter();
   const gameId = id ? Number(id) : 0; // Convert to number as needed.
-  const currentRound = id ? Number(id) : 0;
+  // const currentRound = id ? Number(id) : 0;
 
   const usdFormatter = new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -53,6 +54,7 @@ const LeaderBoard: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [countdown, setCountdown] = useState<number>(20); // Use a fixed 20s countdown
   const [gameDetail, setGameDetail] = useState<GameDetail | null>(null);
+  const currentRound = gameDetail?.currentRound ?? 0;
 
   // Fetch leaderboard data based on the gameId.
   useEffect(() => {
