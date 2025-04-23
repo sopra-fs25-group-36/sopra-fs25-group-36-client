@@ -50,16 +50,16 @@ const PieChart: React.FC<PieChartProps> = ({ data, colorMap = {} }) => {
     if (!el) return;
 
     // Default color mapping
-    const defaultColorMap: Record<string, string> = {
-      Tech: "#1890ff",
-      Finance: "#52c41a",
-      Healthcare: "#faad14",
-      Energy: "#f5222d",
-      Consumer: "#722ed1",
-    };
+    //const defaultColorMap: Record<string, string> = {
+      //Tech: "#1890ff",
+      //Finance: "#52c41a",
+      //Healthcare: "#faad14",
+      //Energy: "#f5222d",
+      //Consumer: "#722ed1",
+    //};
 
     // Merge the provided colorMap with the default one
-    const mergedColorMap = { ...defaultColorMap, ...colorMap };
+    //const mergedColorMap = { ...defaultColorMap, ...colorMap };
 
     const config: PieOptions = {
       data,
