@@ -14,15 +14,15 @@ const BarChart: React.FC<BarChartProps> = ({ data, colorMap = {} }) => {
     const el = containerRef.current;
     if (!el) return;
 
-    const defaultColorMap: Record<string, string> = {
-      Tech: "#1890ff",
-      Finance: "#52c41a",
-      Healthcare: "#faad14",
-      Energy: "#f5222d",
-      Consumer: "#722ed1",
-    };
+    //const defaultColorMap: Record<string, string> = {
+      //Tech: "#1890ff",
+      //Finance: "#52c41a",
+      //Healthcare: "#faad14",
+      //Energy: "#f5222d",
+      //Consumer: "#722ed1",
+    //};
 
-    const mergedColorMap = { ...defaultColorMap, ...colorMap };
+    //const mergedColorMap = { ...defaultColorMap, ...colorMap };
 
     const config: BarOptions = {
       data,
