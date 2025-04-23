@@ -614,10 +614,6 @@ canvas {
 .ant-statistic-title,
 .ant-statistic-content {
   color: var(--foreground) !important;
-  /* color: var(--button-text) !important; */
   transition: color 0.3s ease;
 }
 
-/* p {
-  color: var(--foreground);
-} */

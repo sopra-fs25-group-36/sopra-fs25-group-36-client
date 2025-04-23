@@ -271,7 +271,7 @@ const TransactionPage: React.FC<TransactionListProps> = ({
 
       {/* Main Content Area (Flex Container) */}
       {/* Using previous layout structure */}
-      <div style={{ display: "flex", gap: "30px", alignItems: "stretch" }}>
+      <div style={{ display: "flex", gap: "25px", alignItems: "stretch" }}>
         {/* Left Pane: Transaction Area */}
         <div
           style={{
@@ -279,7 +279,7 @@ const TransactionPage: React.FC<TransactionListProps> = ({
             backgroundColor: "var(--card-background)",
             borderRadius: "16px",
             padding: "24px",
-            border: "1px solid #374151",
+            // border: "1px solid #374151",
             maxHeight: "calc(85vh)", // Adjusted height
             overflowY: "auto",
           }}
@@ -469,7 +469,6 @@ const TransactionPage: React.FC<TransactionListProps> = ({
             backgroundColor: "rgba(59, 130, 246, 0.2)",
             padding: "8px 16px",
             borderRadius: "8px",
-            border: "1px solid rgba(59, 130, 246, 0.4)",
             backdropFilter: "blur(4px)",
           }}
         >

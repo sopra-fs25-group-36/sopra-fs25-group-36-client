@@ -30,18 +30,29 @@ const BarChart: React.FC<BarChartProps> = ({ data, colorMap = {} }) => {
       yField: "name",
       // isHorizontal: true,
       seriesField: "category",
-      color: ({ category }: { category?: string }) =>
-        category ? mergedColorMap[category] || "#ccc" : "#ccc",
-      label: {
-        position: "right",
-        formatter: (datum: Record<string, unknown>) => {
-          const value = datum.value as number;
-          return `\$${value.toFixed(2)}`;
-        },
-      },
+      // color: ({ category }: { category?: string }) =>
+      //   category ? mergedColorMap[category] || "#11e098" : "#11e098",
+      label: false,
+      // label: {
+      //   position: "right",
+      //   formatter: (datum) => `\$${(datum.value as number).toFixed(2)}`,
+      // },
+      // label: {
+      //   position: "right",
+      //   formatter: (datum: Record<string, unknown>) => {
+      //     const value = datum.value as number;
+      //     return `\$${value.toFixed(2)}`;
+      //   },
+      // },
+      // tooltip: {
+      //   showTitle: false,
+      //   formatter: (datum: Record<string, unknown>) => ({
+      //     name: datum.name as string,
+      //     value: `\$${(datum.value as number).toFixed(2)}`,
+      //   }),
       tooltip: {
         showTitle: false,
-        formatter: (datum: Record<string, unknown>) => ({
+        formatter: (datum) => ({
           name: datum.name as string,
           value: `\$${(datum.value as number).toFixed(2)}`,
         }),
