@@ -207,7 +207,12 @@ a:hover {
   margin-bottom: 14px !important;
 }
 
-.ant-message-success {
+.ant-message,
+.ant-message-success,
+.ant-message-error,
+.ant-message-info,
+.ant-message-warning,
+.ant-message-loading {
   color: #000000;
 }
 
@@ -217,7 +222,12 @@ a:hover {
     color: #ffffff !important;
   }
 
-  .ant-message-success {
+  .ant-message,
+  .ant-message-success,
+  .ant-message-error,
+  .ant-message-info,
+  .ant-message-warning,
+  .ant-message-loading {
     color: var(--button-text);
   }
 }
