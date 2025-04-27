@@ -19,7 +19,6 @@ interface LeaderBoardEntry {
 interface UserGetDTO {
   id: number;
   name: string;
-  // ...other properties if needed
 }
 
 // Interface for table records.
@@ -43,7 +42,6 @@ const LeaderBoard: React.FC = () => {
   const { id } = useParams(); // Retrieves the dynamic game (or lobby) id.
   const router = useRouter();
   const gameId = id ? Number(id) : 0; // Convert to number as needed.
-  // const currentRound = id ? Number(id) : 0;
 
   const usdFormatter = new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -127,8 +125,7 @@ const LeaderBoard: React.FC = () => {
   useEffect(() => {
     if (!gameDetail) return;
 
-    // const countdownSeconds = gameDetail.timeLimitSeconds;
-    const countdownSeconds = 10; // Use a fixed 20-second countdown
+    const countdownSeconds = 20; // Use a fixed 20-second countdown
     const startTime = Date.now();
     const endTime = startTime + countdownSeconds * 1000;
 

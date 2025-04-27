@@ -98,7 +98,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ player }) => {
         ) : (
           <div
             style={{
-              height: 450,
+              height: 300,
             }}
           >
             <PieChart data={pieData} colorMap={categoryColorMap} />

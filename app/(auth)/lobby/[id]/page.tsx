@@ -57,10 +57,10 @@ export default function LobbyPage() {
 
   /* -------- when EVERYONE is ready, start the game -------- */
   useEffect(() => {
-    if (!lobby) return;                       // nothing yet
+    if (!lobby) return; // nothing yet
 
     const allReady = Object.values(lobby.playerReadyStatuses).every(Boolean);
-    if (!allReady) return;                    // wait until everyone is ready
+    if (!allReady) return; // wait until everyone is ready
 
     (async () => {
       try {
@@ -75,18 +75,20 @@ export default function LobbyPage() {
       }
     })();
   }, [lobby, api, lobbyId, router, message]);
-  
+
   /* -------- usernames -------- */
   useEffect(() => {
     if (!lobby) return;
     const ids = Object.keys(lobby.playerReadyStatuses);
-    ids.forEach(async id => {
+    ids.forEach(async (id) => {
       if (userMap[id]) return;
       try {
-        const { username } = await api.get<{ username: string }>(`/users/${id}`);
-        setUserMap(prev => ({ ...prev, [id]: username }));
+        const { username } = await api.get<{ username: string }>(
+          `/users/${id}`
+        );
+        setUserMap((prev) => ({ ...prev, [id]: username }));
       } catch {
-        setUserMap(prev => ({ ...prev, [id]: `User ${id}` }));
+        setUserMap((prev) => ({ ...prev, [id]: `User ${id}` }));
       }
     });
   }, [lobby, api, userMap]);
@@ -94,7 +96,9 @@ export default function LobbyPage() {
   /* -------- ready -------- */
   const handleReady = async () => {
     try {
-      await api.post(`/lobby/${lobbyId}/ready`, { userId: Number(currentUserId) });
+      await api.post(`/lobby/${lobbyId}/ready`, {
+        userId: Number(currentUserId),
+      });
     } catch {
       message.error("Could not update ready status");
     }
@@ -109,7 +113,12 @@ export default function LobbyPage() {
           ready,
         })),
         ...Array.from(
-          { length: Math.max(0, TOTAL_SLOTS - Object.keys(lobby.playerReadyStatuses).length) },
+          {
+            length: Math.max(
+              0,
+              TOTAL_SLOTS - Object.keys(lobby.playerReadyStatuses).length
+            ),
+          },
           () => ({ uid: "", username: "Empty Slot", ready: false })
         ),
       ]
@@ -138,7 +147,9 @@ export default function LobbyPage() {
         </div>
 
         <div style={{ textAlign: "center", marginBottom: 16 }}>
-          <Text strong style={{ fontSize: 36 }}>Game starts in: {countdown}s</Text>
+          <Text strong style={{ fontSize: 36 }}>
+            Game starts in: {countdown}s
+          </Text>
         </div>
 
         <List
@@ -146,24 +157,47 @@ export default function LobbyPage() {
           dataSource={players}
           renderItem={({ username, ready }) => (
             <List.Item>
-              <span style={{
-                fontWeight: username === "Empty Slot" ? "normal" : "bold",
-                color: username === "Empty Slot" ? undefined : ready ? "#11e098" : "red"
-              }}>
+              <span
+                style={{
+                  fontWeight: username === "Empty Slot" ? "normal" : "bold",
+                  color:
+                    username === "Empty Slot"
+                      ? undefined
+                      : ready
+                        ? "#11e098"
+                        : "red",
+                }}
+              >
                 {username}
               </span>
-              <span style={{
-                fontWeight: username === "Empty Slot" ? "normal" : "bold",
-                color: username === "Empty Slot" ? undefined : ready ? "#11e098" : "red"
-              }}>
-                {username === "Empty Slot" ? "" : ready ? "Ready ✅" : "Not Ready ❌"}
+              <span
+                style={{
+                  fontWeight: username === "Empty Slot" ? "normal" : "bold",
+                  color:
+                    username === "Empty Slot"
+                      ? undefined
+                      : ready
+                        ? "#11e098"
+                        : "red",
+                }}
+              >
+                {username === "Empty Slot"
+                  ? ""
+                  : ready
+                    ? "Ready ✅"
+                    : "Not Ready ❌"}
               </span>
             </List.Item>
           )}
         />
 
         {!lobby?.playerReadyStatuses?.[currentUserId] && (
-          <Button type="primary" block onClick={handleReady} style={{ marginTop: 16 }}>
+          <Button
+            type="primary"
+            block
+            onClick={handleReady}
+            style={{ marginTop: 16 }}
+          >
             Ready
           </Button>
         )}
