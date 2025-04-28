@@ -22,6 +22,15 @@ const StockChart: React.FC<StockChartProps> = ({ data, symbol }) => {
       return;
     }
 
+    // Read the computed styles
+    const computedStyles = getComputedStyle(document.documentElement);
+    const backgroundColor = computedStyles
+      .getPropertyValue("--background")
+      .trim();
+    const foregroundColor = computedStyles
+      .getPropertyValue("--foreground")
+      .trim();
+
     // Filter out any invalid data points (where any OHLC is null/undefined)
     const filteredData = data.filter(
       (d) =>
@@ -60,9 +69,12 @@ const StockChart: React.FC<StockChartProps> = ({ data, symbol }) => {
         title: "Price",
         type: "linear",
       },
-      plot_bgcolor: "#1f2937",
-      paper_bgcolor: "#1f2937",
-      font: { color: "var(--foreground)" },
+      // plot_bgcolor: "#1f2937", //"var(--background)"
+      // paper_bgcolor: "#1f2937", //"var(--background)"
+      // font: { color: "#ffffff" }, //"var(--foreground)"
+      plot_bgcolor: backgroundColor,
+      paper_bgcolor: backgroundColor,
+      font: { color: foregroundColor },
     };
 
     Plotly.purge(chartDiv);

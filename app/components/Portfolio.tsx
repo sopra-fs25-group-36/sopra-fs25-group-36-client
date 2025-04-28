@@ -31,10 +31,12 @@ const Portfolio: React.FC<PortfolioProps> = ({ player }) => {
     Energy: "#f5222d",
     Consumer: "#722ed1",
   };
+
   const pieData = Object.entries(categoryTotals).map(([category, value]) => ({
     type: category.trim(),
     value,
   }));
+
   const barData = player.stocks
     .map((stock) => ({
       name: stock.symbol,

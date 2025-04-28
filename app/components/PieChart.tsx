@@ -27,6 +27,15 @@ const PieChart: React.FC<PieChartProps> = ({ data, colorMap = {} }) => {
           formatter: (text: string) => text,
         },
       },
+      tooltip: {
+        formatter: (datum) => ({
+          name: datum.type,
+          value: new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
+          }).format(datum.value),
+        }),
+      },
     };
 
     const plot = new Pie(el, config);
