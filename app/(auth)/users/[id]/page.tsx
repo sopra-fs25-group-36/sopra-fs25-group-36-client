@@ -84,7 +84,7 @@ const Dashboard: React.FC = () => {
       }
       // Post to the joinLobby endpoint using lobbyCode as the lobby id.
       const targetLobby = await apiService.post<Lobby>(
-        `/${lobbyId}/joinLobby`,
+        `/lobby/${lobbyId}/joinLobby`,
         {
           userId: Number(userId),
         }

@@ -20,6 +20,8 @@ export default function LobbyPage() {
   const [userMap, setUserMap] = useState<Record<string, string>>({});
   const [countdown, setCountdown] = useState(0);
   const [currentUserId, setCurrentUserId] = useState("");
+  const [joinedLobby, setJoinedLobby] = useState(false);
+  const [startInitiated, setStartInitiated] = useState(false);
 
   useEffect(() => setCurrentUserId(localStorage.getItem("id") ?? ""), []);
 
@@ -42,6 +44,7 @@ export default function LobbyPage() {
   /* -------- derived countdown -------- */
   useEffect(() => {
     if (!lobby) return;
+    if (!lobby || startInitiated) return;
     const endTime = lobby.createdAt + lobby.timeLimitSeconds * 1000;
 
     const tick = () => {
@@ -57,24 +60,31 @@ export default function LobbyPage() {
 
   /* -------- when EVERYONE is ready, start the game -------- */
   useEffect(() => {
-    if (!lobby) return; // nothing yet
-
+    if (!lobby || startInitiated) return;
+  
     const allReady = Object.values(lobby.playerReadyStatuses).every(Boolean);
-    if (!allReady) return; // wait until everyone is ready
-
+    if (!allReady) return;
+  
+    const hostId = Math.min(
+      ...Object.keys(lobby.playerReadyStatuses).map(Number)
+    );
+    const amHost = Number(currentUserId) === hostId;
+  
     (async () => {
-      try {
-        // start the game on the backend (same call you had before)
-        await api.post(`/game/${lobbyId}/start?gameId=${lobbyId}`, {});
-
-        // then go to the instruction screen
-        router.push(`/lobby/${lobbyId}/instruction`);
-      } catch (err) {
-        console.error("Failed to start game", err);
-        message.error("Failed to start game");
+      if (amHost) {
+        try {
+          await api.post(`/game/${lobbyId}/start?gameId=${lobbyId}`, {});
+        } catch (err) {
+          // If we lost the race, the game is likely already started – ignore
+          console.warn("Start failed (likely already started)", err);
+        }
       }
+  
+      setStartInitiated(true);
+      router.push(`/lobby/${lobbyId}/instruction`);
     })();
-  }, [lobby, api, lobbyId, router, message]);
+  }, [lobby, api, lobbyId, router, currentUserId, startInitiated]);
+  
 
   /* -------- usernames -------- */
   useEffect(() => {
@@ -92,6 +102,22 @@ export default function LobbyPage() {
       }
     });
   }, [lobby, api, userMap]);
+
+  /* -------- join lobby once -------- */
+  useEffect(() => {
+    if (!currentUserId || joinedLobby) return;             // wait for id & avoid repeats
+    (async () => {
+      try {
+        await api.post(`/lobby/${lobbyId}/joinLobby`, {
+          userId: Number(currentUserId),
+        });
+        setJoinedLobby(true);                              // remember we’ve joined
+        fetchLobby();                                      // refresh immediately (optional)
+      } catch {
+        message.error("Could not join lobby");
+      }
+    })();
+  }, [api, lobbyId, currentUserId, joinedLobby, fetchLobby, message]);
 
   /* -------- ready -------- */
   const handleReady = async () => {
