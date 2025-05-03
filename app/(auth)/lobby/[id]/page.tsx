@@ -42,7 +42,6 @@ export default function LobbyPage() {
 
   /* -------- derived countdown -------- */
   useEffect(() => {
-    if (!lobby) return;
     if (!lobby || startInitiated) return;
     const endTime = lobby.createdAt + lobby.timeLimitSeconds * 1000;
 
@@ -55,20 +54,20 @@ export default function LobbyPage() {
     tick();
     const int = setInterval(tick, 1000);
     return () => clearInterval(int);
-  }, [lobby, router, currentUserId]);
+  }, [lobby, router, currentUserId, startInitiated]);
 
   /* -------- when EVERYONE is ready, start the game -------- */
   useEffect(() => {
     if (!lobby || startInitiated) return;
-  
+
     const allReady = Object.values(lobby.playerReadyStatuses).every(Boolean);
     if (!allReady) return;
-  
+
     const hostId = Math.min(
       ...Object.keys(lobby.playerReadyStatuses).map(Number)
     );
     const amHost = Number(currentUserId) === hostId;
-  
+
     (async () => {
       if (amHost) {
         try {
@@ -78,12 +77,11 @@ export default function LobbyPage() {
           console.warn("Start failed (likely already started)", err);
         }
       }
-  
+
       setStartInitiated(true);
-      router.push(`/lobby/${lobbyId}/instruction`);
+      router.push(`/lobby/${lobbyId}/leader_board`);
     })();
   }, [lobby, api, lobbyId, router, currentUserId, startInitiated]);
-  
 
   /* -------- usernames -------- */
   useEffect(() => {
@@ -111,6 +109,11 @@ export default function LobbyPage() {
     } catch {
       message.error("Could not update ready status");
     }
+  };
+
+  /* -------- show instruction -------- */
+  const handleShowInstruction = () => {
+    router.push(`/lobby/${lobbyId}/instruction`);
   };
 
   /* -------- players with placeholders -------- */
@@ -173,8 +176,8 @@ export default function LobbyPage() {
                     username === "Empty Slot"
                       ? undefined
                       : ready
-                        ? "#11e098"
-                        : "red",
+                      ? "#11e098"
+                      : "red",
                 }}
               >
                 {username}
@@ -186,15 +189,15 @@ export default function LobbyPage() {
                     username === "Empty Slot"
                       ? undefined
                       : ready
-                        ? "#11e098"
-                        : "red",
+                      ? "#11e098"
+                      : "red",
                 }}
               >
                 {username === "Empty Slot"
                   ? ""
                   : ready
-                    ? "Ready ✅"
-                    : "Not Ready ❌"}
+                  ? "Ready ✅"
+                  : "Not Ready ❌"}
               </span>
             </List.Item>
           )}
@@ -205,11 +208,14 @@ export default function LobbyPage() {
             type="primary"
             block
             onClick={handleReady}
-            style={{ marginTop: 16 }}
-          >
+            style={{ marginTop: 16 }}>
             Ready
           </Button>
         )}
+
+        <Button block onClick={handleShowInstruction} style={{ marginTop: 8 }}>
+          Show Instruction
+        </Button>
       </div>
     </AntApp>
   );

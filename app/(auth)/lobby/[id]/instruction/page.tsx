@@ -160,9 +160,9 @@ export default function InstructionPage() {
         <Button
           type="primary"
           size="large"
-          onClick={goto(`/lobby/${lobbyId}/leader_board`)}
+          onClick={goto(`/lobby/${lobbyId}`)}
         >
-          Got it - take me to the game
+          Got it - back to the lobby
         </Button>
       </div>
 
