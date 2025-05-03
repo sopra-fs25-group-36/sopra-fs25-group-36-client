@@ -20,7 +20,6 @@ export default function LobbyPage() {
   const [userMap, setUserMap] = useState<Record<string, string>>({});
   const [countdown, setCountdown] = useState(0);
   const [currentUserId, setCurrentUserId] = useState("");
-  const [joinedLobby, setJoinedLobby] = useState(false);
   const [startInitiated, setStartInitiated] = useState(false);
 
   useEffect(() => setCurrentUserId(localStorage.getItem("id") ?? ""), []);
