@@ -103,22 +103,6 @@ export default function LobbyPage() {
     });
   }, [lobby, api, userMap]);
 
-  /* -------- join lobby once -------- */
-  useEffect(() => {
-    if (!currentUserId || joinedLobby) return;             // wait for id & avoid repeats
-    (async () => {
-      try {
-        await api.post(`/lobby/${lobbyId}/joinLobby`, {
-          userId: Number(currentUserId),
-        });
-        setJoinedLobby(true);                              // remember we’ve joined
-        fetchLobby();                                      // refresh immediately (optional)
-      } catch {
-        message.error("Could not join lobby");
-      }
-    })();
-  }, [api, lobbyId, currentUserId, joinedLobby, fetchLobby, message]);
-
   /* -------- ready -------- */
   const handleReady = async () => {
     try {
