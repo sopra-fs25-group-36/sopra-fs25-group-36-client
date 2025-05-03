@@ -89,10 +89,10 @@ const Dashboard: React.FC = () => {
           userId: Number(userId),
         }
       );
-      if (targetLobby && targetLobby.id && targetLobby.active) {
+      if (targetLobby?.id) {
         router.push(`/lobby/${targetLobby.id}`);
       } else {
-        console.error("Failed to join lobby, the lobby is no longer valid");
+        message.error("Failed to join lobby");
       }
     } catch (error) {
       console.error("Error joining lobby:", error);

@@ -9,7 +9,7 @@ import { Lobby } from "@/types/lobby";
 
 const { Title, Text } = Typography;
 const TOTAL_SLOTS = 5;
-export const dynamic = "force-dynamic";
+
 export default function LobbyPage() {
   const { id: lobbyId } = useParams<{ id: string }>();
   const router = useRouter();
