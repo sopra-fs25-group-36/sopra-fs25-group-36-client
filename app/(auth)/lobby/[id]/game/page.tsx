@@ -8,9 +8,7 @@ import Portfolio from "@/components/Portfolio";
 const { Title } = Typography;
 
 export default function GamePage() {
-  // 1️⃣ Grab the raw param
   const { id } = useParams();
-  // 2️⃣ Normalize to a single string
   const gameId =
     typeof id === "string"
       ? id
@@ -18,7 +16,6 @@ export default function GamePage() {
         ? id[0]
         : "";
 
-  // 3️⃣ Pass that into your hook
   const { player, isLoading, error } = usePlayerState(gameId);
 
   if (isLoading) return <Spin tip="Loading portfolio…" size="large" />;

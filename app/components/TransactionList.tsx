@@ -2,7 +2,7 @@
 
 import Image from "next/image"; // make sure this is imported
 import { InputNumber, Button, Typography, message, Spin, Modal } from "antd"; // Import Spin, Modal
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useGame } from "@/hooks/useGame";
 import { useApi } from "@/hooks/useApi";
@@ -14,8 +14,11 @@ import { StockDataPointDTO } from "@/types/chart"; // Import the DTO type for ch
 interface TransactionListProps {
   onToggleLayout: () => void;
 }
+interface RoundStatusDTO {
+  allSubmitted: boolean;
+  roundEnded: boolean;
+}
 
-// --- MAIN TransactionPage COMPONENT (Modified) ---
 const TransactionPage: React.FC<TransactionListProps> = ({
   onToggleLayout,
 }) => {
@@ -48,6 +51,12 @@ const TransactionPage: React.FC<TransactionListProps> = ({
   const [chartData, setChartData] = useState<StockDataPointDTO[]>([]);
   const [isChartLoading, setIsChartLoading] = useState<boolean>(false);
   const [chartError, setChartError] = useState<string | null>(null);
+
+  // Polling the page to check if everyone submitted
+  const [hasSubmitted, setHasSubmitted] = useState(false);                // ← NEW
+  const [waitingForOthers, setWaitingForOthers] = useState(false);        // ← NEW
+  const [lastRoundAtSubmit, setLastRoundAtSubmit] = useState<number>(round); // ← NEW
+  const pollRef = useRef<NodeJS.Timeout | null>(null);                   // ← NEW
 
   // Fetch current round stock data
   useEffect(() => {
@@ -170,6 +179,73 @@ const TransactionPage: React.FC<TransactionListProps> = ({
     );
   };
 
+  // --- POLLING FUNCTION ---
+  const startPollingStatus = (submittedRound: number) => {
+    const poll = async () => {
+      console.log(`🔄 Polling status (lastRound=${submittedRound})…`);
+      try {
+        const roundParam = submittedRound ?? 0;
+        const { allSubmitted, roundEnded } = await apiService.get<RoundStatusDTO>(
+            `/game/${gameId}/status?lastRound=${submittedRound}`
+        );
+        console.log("Polling with lastRound:", roundParam);
+        console.log(`✅ Poll response: allSubmitted=${allSubmitted}, roundEnded=${roundEnded}`);
+
+        if (allSubmitted || roundEnded) {
+          console.log("🚀 Condition met, redirecting to transition page");
+          router.push(`/lobby/${gameId}/game/transition`);
+        } else {
+          pollRef.current = setTimeout(poll, 3000);
+        }
+      } catch {
+        pollRef.current = setTimeout(poll, 5000);
+      }
+    };
+    console.log("Polling with lastRound:", submittedRound);
+
+    void poll();
+  };
+
+  // --- CLEAN UP POLL TIMER ---
+  useEffect(() => {
+    return () => {
+      if (pollRef.current) clearTimeout(pollRef.current);
+    };
+  }, []);
+
+  // --- SUBMIT ROUND (wired to polling) ---
+  const handleSubmitRound = async () => {
+    try {
+      // 1) send all your sell tx
+      for (const [symbol, qty] of Object.entries(sellAmounts)) {
+        await apiService.post(`/api/transaction/${gameId}/submit?userId=${currentUserId}`, {
+          stockId: symbol,
+          quantity: qty,
+          type: "SELL",
+        });
+      }
+      // 2) send all your buy tx
+      for (const [symbol, qty] of Object.entries(buyAmounts)) {
+        await apiService.post(`/api/transaction/${gameId}/submit?userId=${currentUserId}`, {
+          stockId: symbol,
+          quantity: qty,
+          type: "BUY",
+        });
+      }console.log(
+          `✅ handleSubmitRound: current round = ${round}, passing lastRound = ${round - 1}`
+      );
+      // 3) trigger the waiting overlay + polling
+      setHasSubmitted(true);
+      setWaitingForOthers(true);
+      setLastRoundAtSubmit(round);
+      startPollingStatus(round-1);
+
+    } catch (err) {
+      console.error(err);
+      message.error("Failed to submit transactions. Try again.");
+    }
+  };
+
   //   // --- Function to show chart ---
   const showChartForStock = async (symbol: string) => {
     setSelectedStockSymbol(symbol);
@@ -206,37 +282,37 @@ const TransactionPage: React.FC<TransactionListProps> = ({
     setChartError(null);
   };
 
-  // --- Submit Round Logic (Placeholder) ---
-  const handleSubmitRound = async () => {
-    //Reuse logic from previous steps to gather transactions
-
-    //  );
-    for (const [key, value] of Object.entries(sellAmounts)) {
-      const response = await apiService.post<string>(
-        `/api/transaction/${gameId}/submit?userId=${currentUserId}`,
-        {
-          stockId: key,
-          quantity: value,
-          type: "SELL",
-        }
-      );
-      console.log(response);
-    }
-
-    for (const [key, value] of Object.entries(buyAmounts)) {
-      const response = await apiService.post<string>(
-        `/api/transaction/${gameId}/submit?userId=${currentUserId}`,
-        {
-          stockId: key,
-          quantity: value,
-          type: "BUY",
-        }
-      );
-      console.log(response);
-    }
-
-    setTimeout(() => router.push(`/lobby/${gameId}/leader_board`), 1000);
-  };
+  // // --- Submit Round Logic (Placeholder) ---
+  // const handleSubmitRound = async () => {
+  //   //Reuse logic from previous steps to gather transactions
+  //
+  //   //  );
+  //   for (const [key, value] of Object.entries(sellAmounts)) {
+  //     const response = await apiService.post<string>(
+  //       `/api/transaction/${gameId}/submit?userId=${currentUserId}`,
+  //       {
+  //         stockId: key,
+  //         quantity: value,
+  //         type: "SELL",
+  //       }
+  //     );
+  //     console.log(response);
+  //   }
+  //
+  //   for (const [key, value] of Object.entries(buyAmounts)) {
+  //     const response = await apiService.post<string>(
+  //       `/api/transaction/${gameId}/submit?userId=${currentUserId}`,
+  //       {
+  //         stockId: key,
+  //         quantity: value,
+  //         type: "BUY",
+  //       }
+  //     );
+  //     console.log(response);
+  //   }
+  //
+  //   setTimeout(() => router.push(`/lobby/${gameId}/leader_board`), 1000);
+  // };
 
   // -- Main Render --
   return (
@@ -481,12 +557,31 @@ const TransactionPage: React.FC<TransactionListProps> = ({
           type="primary"
           size="large"
           onClick={handleSubmitRound}
-          disabled={isLoading}
+          disabled={hasSubmitted || isLoading}
         >
           Submit Round
         </Button>
       </div>
-
+      {/* Waiting Overlay for early submitters */}
+      {hasSubmitted && waitingForOthers && (
+          <div style={{
+            position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
+            backgroundColor: "rgba(0,0,0,0.4)",
+            display: "flex", justifyContent: "center", alignItems: "center",
+            pointerEvents: "none", zIndex: 999
+          }}>
+            <div style={{
+              pointerEvents: "auto",
+              padding: 16,
+              background: "white",
+              borderRadius: 4
+            }}>
+              <Typography.Text>
+                Transaction Successful. Waiting for the rest of the players to make their transaction…
+              </Typography.Text>
+            </div>
+          </div>
+      )}
       <Modal
         title={`Stock Chart: ${selectedStockSymbol || ""}`}
         open={!!selectedStockSymbol} // Show modal when a symbol is selected

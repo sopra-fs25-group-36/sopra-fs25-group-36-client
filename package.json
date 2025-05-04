@@ -16,15 +16,18 @@
     "@ant-design/plots": "^2.3.3",
     "@ant-design/v5-patch-for-react-19": "^1.0.3",
     "@antv/g2plot": "^2.4.33",
+    "@stomp/stompjs": "^7.1.1",
     "@tanstack/react-query": "^5.72.2",
     "@tanstack/react-query-devtools": "^5.71.10",
     "antd": "^5.24.6",
     "date-fns": "^4.1.0",
+    "framer-motion": "^12.9.4",
     "next": "^15.2.0",
     "plotly.js-dist": "^3.0.1",
     "plotly.js-dist-min": "^3.0.1",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "sockjs-client": "^1.6.1"
   },
   "devDependencies": {
     "@types/node": "^22.13.5",
