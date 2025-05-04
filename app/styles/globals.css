@@ -88,6 +88,23 @@ a:hover {
   background-color: var(--background);
 }
 
+.tile {
+  border-radius: 16px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  min-height: 240px;
+  transition: transform 0.1s ease;
+}
+.tile:hover {
+  transform: translateY(-4px);
+}
+.tileIcon {
+  font-size: 40px;
+  line-height: 1;
+  margin-bottom: 16px;
+}
 
 /* Button styles */
 .ant-btn,
@@ -221,7 +238,6 @@ a:hover {
   .ant-input-password {
     color: #ffffff !important;
   }
-
   .ant-message,
   .ant-message-success,
   .ant-message-error,
@@ -268,6 +284,15 @@ a:hover {
 .ant-modal-title {
   /* color: var(--button-text) !important; */
   color: var(--foreground) !important;
+}
+
+.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: var(--button-text)!important;
+  font-weight: 600;
+}
+
+.ant-tabs-tab:not(.ant-tabs-tab-active):hover .ant-tabs-tab-btn {
+  color: var(--button-primary-hover)!important;
 }
 
 
@@ -627,3 +652,13 @@ canvas {
   transition: color 0.3s ease;
 }
 
+.wrapper {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px 16px 64px;
+  text-align: center;
+}
+
+.grid {
+  margin-bottom: 48px;
+}
