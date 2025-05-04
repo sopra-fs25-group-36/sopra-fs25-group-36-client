@@ -212,6 +212,15 @@ const TransactionPage: React.FC<TransactionListProps> = ({
     const transactions = [];
     //  );
     for (const [key, value] of Object.entries(sellAmounts)) {
+      const response = await apiService.post<string>(
+        `/api/transaction/${gameId}/submit?userId=${currentUserId}`,
+        {
+          stockId: key,
+          quantity: value,
+          type: "SELL",
+        }
+      );
+      console.log(response);
       transactions.push({
         stockId: key,
         quantity: value,
@@ -220,6 +229,15 @@ const TransactionPage: React.FC<TransactionListProps> = ({
     }
 
     for (const [key, value] of Object.entries(buyAmounts)) {
+      const response = await apiService.post<string>(
+        `/api/transaction/${gameId}/submit?userId=${currentUserId}`,
+        {
+          stockId: key,
+          quantity: value,
+          type: "BUY",
+        }
+      );
+      console.log(response);
       transactions.push({
         stockId: key,
         quantity: value,
@@ -232,7 +250,7 @@ const TransactionPage: React.FC<TransactionListProps> = ({
       transactions
     );
 
-    console.log(response)
+    console.log(response);
 
     setTimeout(() => router.push(`/lobby/${gameId}/leader_board`), 1000);
   };
