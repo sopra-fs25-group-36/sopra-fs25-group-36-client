@@ -209,31 +209,30 @@ const TransactionPage: React.FC<TransactionListProps> = ({
   // --- Submit Round Logic (Placeholder) ---
   const handleSubmitRound = async () => {
     //Reuse logic from previous steps to gather transactions
-
+    const transactions = [];
     //  );
     for (const [key, value] of Object.entries(sellAmounts)) {
-      const response = await apiService.post<string>(
-        `/api/transaction/${gameId}/submit?userId=${currentUserId}`,
-        {
-          stockId: key,
-          quantity: value,
-          type: "SELL",
-        }
-      );
-      console.log(response);
+      transactions.push({
+        stockId: key,
+        quantity: value,
+        type: "SELL",
+      });
     }
 
     for (const [key, value] of Object.entries(buyAmounts)) {
-      const response = await apiService.post<string>(
-        `/api/transaction/${gameId}/submit?userId=${currentUserId}`,
-        {
-          stockId: key,
-          quantity: value,
-          type: "BUY",
-        }
-      );
-      console.log(response);
+      transactions.push({
+        stockId: key,
+        quantity: value,
+        type: "BUY",
+      });
     }
+
+    const response = await apiService.post<string>(
+      `/api/transaction/${gameId}/submit?userId=${currentUserId}`,
+      transactions
+    );
+
+    console.log(response)
 
     setTimeout(() => router.push(`/lobby/${gameId}/leader_board`), 1000);
   };
@@ -314,19 +313,6 @@ const TransactionPage: React.FC<TransactionListProps> = ({
           ) : (
             Object.entries(categories).map(([cat, stocks]) => (
               <div key={cat} style={{ marginBottom: "24px" }}>
-                <h3
-                  style={{
-                    fontSize: "18px",
-                    fontWeight: "600",
-                    marginBottom: "12px",
-                    color: "var(--foreground)",
-                    borderBottom: "2px solid #4b5563",
-                    paddingBottom: "4px",
-                    display: "inline-block",
-                  }}
-                >
-                  {cat}
-                </h3>
                 <ul
                   style={{
                     display: "flex",
@@ -336,6 +322,58 @@ const TransactionPage: React.FC<TransactionListProps> = ({
                     listStyle: "none",
                   }}
                 >
+                  <li
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "225px 1fr 1fr",
+                      alignItems: "center",
+                      gap: "15px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                      }}
+                    >
+                      <h3
+                        style={{
+                          fontSize: "18px",
+                          fontWeight: "600",
+                          marginBottom: "12px",
+                          color: "var(--foreground)",
+                          borderBottom: "2px solid #4b5563",
+                          paddingBottom: "4px",
+                          display: "inline-block",
+                        }}
+                      >
+                        {cat}
+                      </h3>
+                    </div>
+                    {/* Buy Controls */}
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                        fontWeight: "600",
+                      }}
+                    >
+                      Buy
+                    </div>
+                    {/* Sell Controls */}
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                        fontWeight: "600",
+                      }}
+                    >
+                      Sell
+                    </div>
+                  </li>
                   {stocks.map((stock) => (
                     <li
                       key={stock.symbol}
@@ -394,16 +432,6 @@ const TransactionPage: React.FC<TransactionListProps> = ({
                           }}
                           controls={false}
                         />
-                        <Button
-                          onClick={() => handleTransaction(stock.symbol, "buy")}
-                          disabled={
-                            !buyAmounts[stock.symbol] ||
-                            buyAmounts[stock.symbol] <= 0
-                          }
-                          size="small"
-                        >
-                          Buy
-                        </Button>
                       </div>
                       {/* Sell Controls */}
                       <div
@@ -426,18 +454,6 @@ const TransactionPage: React.FC<TransactionListProps> = ({
                           }}
                           controls={false}
                         />
-                        <Button
-                          onClick={() =>
-                            handleTransaction(stock.symbol, "sell")
-                          }
-                          disabled={
-                            !sellAmounts[stock.symbol] ||
-                            sellAmounts[stock.symbol] <= 0
-                          }
-                          size="small"
-                        >
-                          Sell
-                        </Button>
                       </div>
                     </li>
                   ))}
