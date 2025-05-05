@@ -38,7 +38,8 @@ const TransactionPage: React.FC<TransactionListProps> = ({
   );
 
   // State for current round stock list
-  const [currentStocks, setCurrentStocks] = useState<StockPriceGetDTO[]>([]);
+  // const [currentStocks, setCurrentStocks] = useState<StockPriceGetDTO[]>([]);
+  const [, setCurrentStocks] = useState<StockPriceGetDTO[]>([]);
   const [categories, setCategories] = useState<{
     [category: string]: StockPriceGetDTO[];
   }>({}); // Store categorized API data
@@ -53,10 +54,11 @@ const TransactionPage: React.FC<TransactionListProps> = ({
   const [chartError, setChartError] = useState<string | null>(null);
 
   // Polling the page to check if everyone submitted
-  const [hasSubmitted, setHasSubmitted] = useState(false);                // ← NEW
-  const [waitingForOthers, setWaitingForOthers] = useState(false);        // ← NEW
-  const [lastRoundAtSubmit, setLastRoundAtSubmit] = useState<number>(round); // ← NEW
-  const pollRef = useRef<NodeJS.Timeout | null>(null);                   // ← NEW
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [waitingForOthers, setWaitingForOthers] = useState(false);
+  // const [lastRoundAtSubmit, setLastRoundAtSubmit] = useState<number>(round);
+  const [, setLastRoundAtSubmit] = useState<number>(round);
+  const pollRef = useRef<NodeJS.Timeout | null>(null);
 
   // Fetch current round stock data
   useEffect(() => {
@@ -145,39 +147,39 @@ const TransactionPage: React.FC<TransactionListProps> = ({
     setter((prev) => ({ ...prev, [symbol]: value ?? 0 }));
   };
 
-  const getCurrentPrice = (symbol: string): number | undefined => {
-    // Find price from the categorized data for efficiency if available
-    for (const category in categories) {
-      const stock = categories[category].find((s) => s.symbol === symbol);
-      if (stock) return stock.price;
-    }
-    // Fallback to flat list if needed (though should be in categories)
-    return currentStocks.find((stock) => stock.symbol === symbol)?.price;
-  };
+  // const getCurrentPrice = (symbol: string): number | undefined => {
+  //   // Find price from the categorized data for efficiency if available
+  //   for (const category in categories) {
+  //     const stock = categories[category].find((s) => s.symbol === symbol);
+  //     if (stock) return stock.price;
+  //   }
+  //   // Fallback to flat list if needed (though should be in categories)
+  //   return currentStocks.find((stock) => stock.symbol === symbol)?.price;
+  // };
 
-  const handleTransaction = (symbol: string, type: "buy" | "sell") => {
-    const amount = type === "buy" ? buyAmounts[symbol] : sellAmounts[symbol];
-    const price = getCurrentPrice(symbol);
+  // const handleTransaction = (symbol: string, type: "buy" | "sell") => {
+  //   const amount = type === "buy" ? buyAmounts[symbol] : sellAmounts[symbol];
+  //   const price = getCurrentPrice(symbol);
 
-    if (price === undefined) {
-      message.error(
-        `Price data missing for ${symbol}. Cannot process transaction.`
-      );
-      return;
-    }
-    console.log(
-      `${type.toUpperCase()}`,
-      symbol,
-      "amount:",
-      amount,
-      "price:",
-      price
-    );
-    // Add your actual API call logic here
-    message.info(
-      `Processing ${type} ${amount} of ${symbol} at $${price.toFixed(2)}...`
-    );
-  };
+  //   if (price === undefined) {
+  //     message.error(
+  //       `Price data missing for ${symbol}. Cannot process transaction.`
+  //     );
+  //     return;
+  //   }
+  //   console.log(
+  //     `${type.toUpperCase()}`,
+  //     symbol,
+  //     "amount:",
+  //     amount,
+  //     "price:",
+  //     price
+  //   );
+  //   // Add your actual API call logic here
+  //   message.info(
+  //     `Processing ${type} ${amount} of ${symbol} at $${price.toFixed(2)}...`
+  //   );
+  // };
 
   // --- POLLING FUNCTION ---
   const startPollingStatus = (submittedRound: number) => {
@@ -185,11 +187,14 @@ const TransactionPage: React.FC<TransactionListProps> = ({
       console.log(`🔄 Polling status (lastRound=${submittedRound})…`);
       try {
         const roundParam = submittedRound ?? 0;
-        const { allSubmitted, roundEnded } = await apiService.get<RoundStatusDTO>(
-          `/game/${gameId}/status?lastRound=${submittedRound}`
-        );
+        const { allSubmitted, roundEnded } =
+          await apiService.get<RoundStatusDTO>(
+            `/game/${gameId}/status?lastRound=${submittedRound}`
+          );
         console.log("Polling with lastRound:", roundParam);
-        console.log(`✅ Poll response: allSubmitted=${allSubmitted}, roundEnded=${roundEnded}`);
+        console.log(
+          `✅ Poll response: allSubmitted=${allSubmitted}, roundEnded=${roundEnded}`
+        );
 
         if (allSubmitted || roundEnded) {
           console.log("🚀 Condition met, redirecting to transition page");
@@ -244,13 +249,11 @@ const TransactionPage: React.FC<TransactionListProps> = ({
         `✅ handleSubmitRound: current round = ${round}, passing lastRound = ${round - 1}`
       );
 
-
       // 3) trigger the waiting overlay + polling
       setHasSubmitted(true);
       setWaitingForOthers(true);
       setLastRoundAtSubmit(round);
       startPollingStatus(round - 1);
-
     } catch (err) {
       console.error(err);
       message.error("Failed to submit transactions. Try again.");
@@ -363,8 +366,8 @@ const TransactionPage: React.FC<TransactionListProps> = ({
               <Spin size="large" />
             </div>
           ) : Object.keys(categories).length === 0 ? (
-            <Typography.Text style={{ color: "#9ca3af" }}>
-              No stocks available for trading this round.
+            <Typography.Text style={{ color: "var(--foreground)" }}>
+              ❌ No stocks available for trading this round. 💲
             </Typography.Text>
           ) : (
             Object.entries(categories).map(([cat, stocks]) => (
@@ -544,7 +547,13 @@ const TransactionPage: React.FC<TransactionListProps> = ({
             backdropFilter: "blur(4px)",
           }}
         >
-          <Typography.Text style={{ fontWeight: "bold", fontSize: "1rem" }}>
+          <Typography.Text
+            style={{
+              fontWeight: "bold",
+              fontSize: "1rem",
+              color: "var(--foreground)",
+            }}
+          >
             Time left: {timer === null ? "..." : `${timer}s`}
           </Typography.Text>
         </div>
@@ -560,20 +569,32 @@ const TransactionPage: React.FC<TransactionListProps> = ({
       </div>
       {/* Waiting Overlay for early submitters */}
       {hasSubmitted && waitingForOthers && (
-        <div style={{
-          position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: "rgba(0,0,0,0.4)",
-          display: "flex", justifyContent: "center", alignItems: "center",
-          pointerEvents: "none", zIndex: 999
-        }}>
-          <div style={{
-            pointerEvents: "auto",
-            padding: 16,
-            background: "white",
-            borderRadius: 4
-          }}>
-            <Typography.Text>
-              Transaction Successful. Waiting for the rest of the players to make their transaction…
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0,0,0,0.4)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            pointerEvents: "none",
+            zIndex: 999,
+          }}
+        >
+          <div
+            style={{
+              pointerEvents: "auto",
+              padding: 16,
+              background: "white",
+              borderRadius: 4,
+            }}
+          >
+            <Typography.Text style={{ color: "var(--foreground)" }}>
+              Transaction Successful. Waiting for the rest of the players to
+              make their transaction…
             </Typography.Text>
           </div>
         </div>
@@ -602,7 +623,12 @@ const TransactionPage: React.FC<TransactionListProps> = ({
         ) : chartError ? (
           <Typography.Text
             type="danger"
-            style={{ display: "block", textAlign: "center", marginTop: "20px" }}
+            style={{
+              display: "block",
+              textAlign: "center",
+              marginTop: "20px",
+              color: "var(--foreground)",
+            }}
           >
             {chartError}
           </Typography.Text>
@@ -616,6 +642,7 @@ const TransactionPage: React.FC<TransactionListProps> = ({
               display: "block",
               textAlign: "center",
               marginTop: "20px",
+              color: "var(--foreground)",
             }}
           >
             No chart data available.

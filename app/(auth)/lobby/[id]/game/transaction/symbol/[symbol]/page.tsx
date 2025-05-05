@@ -4,12 +4,12 @@ import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import { Typography, Spin, Button, message } from "antd";
-import StockChart from "@/components/StockChart"; // Assuming StockChart is in components
-import { StockDataPointDTO } from "@/types/chart"; // Assuming types/chart.ts exists
+import StockChart from "@/components/StockChart";
+import { StockDataPointDTO } from "@/types/chart";
 
 const SymbolDetailPage: React.FC = () => {
   const router = useRouter();
-  const params = useParams(); // Use useParams to get dynamic route segments
+  const params = useParams();
   const api = useApi();
 
   // Extract symbol, handle potential array/undefined, and ensure uppercase
@@ -32,7 +32,7 @@ const SymbolDetailPage: React.FC = () => {
     const fetchChartData = async () => {
       setIsLoading(true);
       setError(null);
-      setChartData([]); // Clear previous data
+      setChartData([]);
 
       try {
         const historyData = await api.get<StockDataPointDTO[]>(
@@ -79,16 +79,11 @@ const SymbolDetailPage: React.FC = () => {
     };
 
     fetchChartData();
-  }, [api, symbol]); // Re-fetch if the symbol changes
-
-  // Find gameId to navigate back correctly - needed from parent route usually
-  // For simplicity here, we just use router.back()
-  // const { id: gameId } = useParams(); // This might not work depending on nested layout params
+  }, [api, symbol]);
 
   return (
     <div
       style={{
-        //backgroundColor: "#111827", // Darker main background
         padding: "30px",
         minHeight: "100vh",
         color: "var(--foreground)",
@@ -112,21 +107,23 @@ const SymbolDetailPage: React.FC = () => {
 
       <div
         style={{
-          //   backgroundColor: "#1f2937", // Inner content background
           borderRadius: "16px",
           padding: "24px",
           border: "1px solid #374151",
-          minHeight: "600px", // Ensure container has height
+          minHeight: "600px",
           display: "flex",
-          flexDirection: "column", // Align items vertically
-          alignItems: "center", // Center horizontally
-          justifyContent: "center", // Center vertically if no chart
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
         {isLoading ? (
           <Spin size="large" tip="Loading chart data..." />
         ) : error ? (
-          <Typography.Text type="danger" style={{ fontSize: "1.1rem" }}>
+          <Typography.Text
+            type="danger"
+            style={{ fontSize: "1.1rem", color: "var(--foreground)" }}
+          >
             {error}
           </Typography.Text>
         ) : chartData.length > 0 && symbol ? (
@@ -136,7 +133,7 @@ const SymbolDetailPage: React.FC = () => {
           </div>
         ) : (
           // Fallback if no data and no specific error (should ideally be caught by error state)
-          <Typography.Text style={{ color: "#9ca3af" }}>
+          <Typography.Text style={{ color: "var(--foreground)" }}>
             No chart data available to display for {symbol}.
           </Typography.Text>
         )}
