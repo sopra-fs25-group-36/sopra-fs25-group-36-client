@@ -2,7 +2,7 @@
 
 import Image from "next/image"; // make sure this is imported
 import { InputNumber, Button, Typography, message, Spin, Modal } from "antd"; // Import Spin, Modal
-import React, {useEffect, useRef, useState} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useGame } from "@/hooks/useGame";
 import { useApi } from "@/hooks/useApi";
@@ -186,7 +186,7 @@ const TransactionPage: React.FC<TransactionListProps> = ({
       try {
         const roundParam = submittedRound ?? 0;
         const { allSubmitted, roundEnded } = await apiService.get<RoundStatusDTO>(
-            `/game/${gameId}/status?lastRound=${submittedRound}`
+          `/game/${gameId}/status?lastRound=${submittedRound}`
         );
         console.log("Polling with lastRound:", roundParam);
         console.log(`✅ Poll response: allSubmitted=${allSubmitted}, roundEnded=${roundEnded}`);
@@ -219,11 +219,6 @@ const TransactionPage: React.FC<TransactionListProps> = ({
       const transactions = [];
       // 1) send all your sell tx
       for (const [symbol, qty] of Object.entries(sellAmounts)) {
-        await apiService.post(`/api/transaction/${gameId}/submit?userId=${currentUserId}`, {
-          stockId: symbol,
-          quantity: qty,
-          type: "SELL",
-        });
         transactions.push({
           stockId: symbol,
           quantity: qty,
@@ -232,29 +227,21 @@ const TransactionPage: React.FC<TransactionListProps> = ({
       }
       // 2) send all your buy tx
       for (const [symbol, qty] of Object.entries(buyAmounts)) {
-        await apiService.post(`/api/transaction/${gameId}/submit?userId=${currentUserId}`, {
-          stockId: symbol,
-          quantity: qty,
-          type: "BUY",
-        });
         transactions.push({
           stockId: symbol,
           quantity: qty,
           type: "BUY",
         });
-      }console.log(
-          `✅ handleSubmitRound: current round = ${round}, passing lastRound = ${round - 1}`
-      );
+      }
 
-      //seungju's part
       const bulkResponse = await apiService.post(
-          `/api/transaction/${gameId}/submit?userId=${currentUserId}`,
-          transactions
+        `/api/transaction/${gameId}/submit?userId=${currentUserId}`,
+        transactions
       );
       console.log("Bulk submission response:", bulkResponse);
 
       console.log(
-          `✅ handleSubmitRound: current round = ${round}, passing lastRound = ${round - 1}`
+        `✅ handleSubmitRound: current round = ${round}, passing lastRound = ${round - 1}`
       );
 
 
@@ -262,7 +249,7 @@ const TransactionPage: React.FC<TransactionListProps> = ({
       setHasSubmitted(true);
       setWaitingForOthers(true);
       setLastRoundAtSubmit(round);
-      startPollingStatus(round-1);
+      startPollingStatus(round - 1);
 
     } catch (err) {
       console.error(err);
@@ -573,23 +560,23 @@ const TransactionPage: React.FC<TransactionListProps> = ({
       </div>
       {/* Waiting Overlay for early submitters */}
       {hasSubmitted && waitingForOthers && (
+        <div style={{
+          position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: "rgba(0,0,0,0.4)",
+          display: "flex", justifyContent: "center", alignItems: "center",
+          pointerEvents: "none", zIndex: 999
+        }}>
           <div style={{
-            position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
-            backgroundColor: "rgba(0,0,0,0.4)",
-            display: "flex", justifyContent: "center", alignItems: "center",
-            pointerEvents: "none", zIndex: 999
+            pointerEvents: "auto",
+            padding: 16,
+            background: "white",
+            borderRadius: 4
           }}>
-            <div style={{
-              pointerEvents: "auto",
-              padding: 16,
-              background: "white",
-              borderRadius: 4
-            }}>
-              <Typography.Text>
-                Transaction Successful. Waiting for the rest of the players to make their transaction…
-              </Typography.Text>
-            </div>
+            <Typography.Text>
+              Transaction Successful. Waiting for the rest of the players to make their transaction…
+            </Typography.Text>
           </div>
+        </div>
       )}
       <Modal
         title={`Stock Chart: ${selectedStockSymbol || ""}`}
