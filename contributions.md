@@ -121,3 +121,20 @@ reason).
 | **[@LiakosKari]** | [23.4.2025] | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-client/commit/45bf9cd057c03c4bcb472d4bfc8eb0c85687c4ed] | Fixing hard coded css and adopt to the rest proect style | Fixing hard coded css and adopt to the rest proect style |
 | **[@JianwenCao]** | [25.4.2025] | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-client/commit/adcdcc06d5b5136dc1aaab59ba17066516f369a8] | Lobby counting down crash error|
 | **[@JianwenCao]** | [25.4.2025] | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-server/commit/580b87090557bfb0ecb47fd89ba149711f34027d] | Fix 4 tests|
+| **[@sing-it]** | [18.4.2025] | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-server/commit/f7f1bc8a62ac26f3ab1e3719daca16020d7ac96b] | fixed transactionrequest DTOand update playerstate dto and stockprice getDTO|
+| **[@sing-it]** | [18.4.2025] | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-server/commit/cbacba24ea687214a3019bd673cf606019646448] |refetching api everyday at 1am,  auto categorizing symbol by industry, restructrue Service based on the Game vs Stock responsibility(stock price, stocks, categories) |
+| **[@sing-it]** | [18.4.2025] | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-client/commit/92626191bd80b262abf4cc58d9e3ac67324f64a5] | fucntion to send transaction result to server|
+| **[@sing-it]** | [19.4.2025] | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-client/commit/dae1b3373da0a68b7ebb77c1886a7467cc4a15ec] | layout arrangment_divide the page, full screen + added google icon
+ |
+| **[@sing-it]** | [19.4.2025] | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-client/commit/3de0b2449444f7642de36b3b2201e5789af74a76] | fix the error in the portfolio page_player loading|
+| **[@sing-it]** | [25.4.2025] | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-server/commit/a8f71b1488247bb7ad3044f3623b7cf46d9aada0] | make the test work inside the pipeline & deployment and set the sonarqube coverage test |
+
+
+## Contributions Week 5 & 6 - [29.04.2025] to [5.5.2025]
+
+| **Student**       | **Date**    | **Link to Commit**                                                                                                  | **Description**                                          | **Relevance**                                            |
+| ----------------- | ----------- | ------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- |
+| **[@sing-it]** | [4.5.2025] | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-server/commit/efae5d7a739ac6886137ec13b7373af9e27594d7] |batch the transaction submit(and delte the buy/sell buttons) |
+| **[@sing-it]** | [4.5.2025] | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-server/commit/e3e2782e8439b04d824af3110c82ae0e65dc4dc0] |limit stocks  per round to 10 and randomize the stocks every round |
+| **[@sing-it]** | [4.5.2025] | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-client/commit/70c5c2e91575192ef9af9a08c267f8929d239e09] |batch transaction submit + remove buy/sell buttons |
+
