@@ -11,7 +11,7 @@ import { StockPriceGetDTO } from "@/types/stock"; // Adjust path as needed
 import StockChart from "@/components/StockChart";    // Adjust path as needed
 import { StockDataPointDTO } from "@/types/chart";   // Adjust path as needed
 import { PlayerHolding } from "@/types/player";    // Adjust path as needed
-import { companyDescriptions } from "../data/companyDescriptions"; // Adjust path as needed
+import { companyDescriptions } from "@/data/companyDescriptions";
 
 interface TransactionPageProps { // Renamed from TransactionListProps for clarity if this is the main page
   onToggleLayout: () => void;
