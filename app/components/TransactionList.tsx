@@ -34,10 +34,10 @@ const TransactionPage: React.FC<TransactionListProps> = ({
   const [buyAmounts, setBuyAmounts] = useState<{ [symbol: string]: number }>({});
   const [sellAmounts, setSellAmounts] = useState<{ [symbol: string]: number }>({});
 
-  const [currentStocks, setCurrentStocks] = useState<StockPriceGetDTO[]>([]); // Keep flat list if needed
+  const [currentStocks, setCurrentStocks] = useState<StockPriceGetDTO[]>([]);
   const [categories, setCategories] = useState<{ [category: string]: StockPriceGetDTO[] }>({});
   const [isLoading, setIsLoading] = useState(true);
-  const [currentRoundMarketDate, setCurrentRoundMarketDate] = useState<string | null>(null); // For chart filtering
+  const [currentRoundMarketDate, setCurrentRoundMarketDate] = useState<string | null>(null);
 
   const [selectedStockSymbol, setSelectedStockSymbol] = useState<string | null>(null);
   const [chartData, setChartData] = useState<StockDataPointDTO[]>([]);
@@ -46,9 +46,10 @@ const TransactionPage: React.FC<TransactionListProps> = ({
 
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [waitingForOthers, setWaitingForOthers] = useState(false);
-  const [, setLastRoundAtSubmit] = useState<number>(round); // Unused state setter, can be `_`
+  const [, setLastRoundAtSubmit] = useState<number>(round);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
 
+  // ... (useEffect for fetchStockData - no changes needed here for this specific request) ...
   useEffect(() => {
     const fetchStockData = async () => {
       if (!gameId || isNaN(gameId)) {
@@ -62,7 +63,6 @@ const TransactionPage: React.FC<TransactionListProps> = ({
       setCurrentRoundMarketDate(null);
 
       try {
-        // Assuming API returns StockPriceGetDTO[] where each item has a .date
         const data = await apiService.get<StockPriceGetDTO[]>(
           `/api/stocks/${gameId}/stocks`
         );
@@ -76,10 +76,7 @@ const TransactionPage: React.FC<TransactionListProps> = ({
         } else if (!data || data.length === 0) {
           console.log("No stock data returned for this round.");
         }
-
         setCurrentStocks(data);
-
-        // Categorize data
         const defaultCategories: { [category: string]: string[] } = {
           TECH: ["AAPL", "TSLA", "AMZN", "MSFT", "NVDA", "GOOG", "INTC", "NFLX", "AMD"],
           ENERGY: ["XOM", "CVX"],
@@ -88,16 +85,12 @@ const TransactionPage: React.FC<TransactionListProps> = ({
           CONSUMER: ["PG"],
           MISC: ["IBM"],
         };
-
         const categorizedData: { [category: string]: StockPriceGetDTO[] } = {};
-        
-        // Prefer API category if available and reliable, otherwise use defaultCategories
         data.forEach(stock => {
-          let assignedCategory = "OTHER"; // Default
-          // Attempt to use API provided category
+          let assignedCategory = "OTHER";
           if (stock.category && Object.keys(defaultCategories).includes(stock.category.toUpperCase())) {
             assignedCategory = stock.category.toUpperCase();
-          } else { // Fallback to client-side defaultCategories
+          } else {
             for (const [cat, symbolsInCategory] of Object.entries(defaultCategories)) {
               if (symbolsInCategory.includes(stock.symbol)) {
                 assignedCategory = cat;
@@ -105,21 +98,15 @@ const TransactionPage: React.FC<TransactionListProps> = ({
               }
             }
           }
-          
           if (!categorizedData[assignedCategory]) {
             categorizedData[assignedCategory] = [];
           }
           categorizedData[assignedCategory].push(stock);
         });
-
-        // Sort stocks within each category
         for (const category in categorizedData) {
             categorizedData[category].sort((a, b) => a.symbol.localeCompare(b.symbol));
         }
-
         setCategories(categorizedData);
-        console.log("Categorized stock data:", categorizedData);
-
       } catch (err) {
         console.error("Failed to fetch stock data", err);
         message.error("Could not load stock data for this round.");
@@ -127,10 +114,11 @@ const TransactionPage: React.FC<TransactionListProps> = ({
         setIsLoading(false);
       }
     };
-
     fetchStockData();
   }, [apiService, gameId, round]);
 
+
+  // ... (handleAmountChange, polling functions, handleSubmitRound - no changes needed here) ...
   const handleAmountChange = (
     symbol: string,
     value: number | null,
@@ -149,7 +137,6 @@ const TransactionPage: React.FC<TransactionListProps> = ({
             `/game/${gameId}/status?lastRound=${submittedRound}`
           );
         console.log(`✅ Poll response: allSubmitted=${allSubmitted}, roundEnded=${roundEnded}`);
-
         if (allSubmitted || roundEnded) {
           console.log("🚀 Condition met, redirecting to transition page");
           router.push(`/lobby/${gameId}/game/transition`);
@@ -158,7 +145,7 @@ const TransactionPage: React.FC<TransactionListProps> = ({
         }
       } catch (error){
         console.error("Polling failed:", error);
-        pollRef.current = setTimeout(poll, 5000); // Retry after longer delay
+        pollRef.current = setTimeout(poll, 5000);
       }
     };
     void poll();
@@ -183,83 +170,100 @@ const TransactionPage: React.FC<TransactionListProps> = ({
       for (const [symbol, qty] of Object.entries(buyAmounts)) {
         if (qty > 0) transactions.push({ stockId: symbol, quantity: qty, type: "BUY" });
       }
-
       if (transactions.length === 0) {
         message.info("No transactions to submit.");
-        // Decide if you still want to mark as submitted and poll
-        // For now, let's assume submitting an empty round is valid for polling
       }
-
       await apiService.post(
         `/api/transaction/${gameId}/submit?userId=${currentUserId}`,
         transactions
       );
       message.success("Transactions submitted successfully!");
-
       setHasSubmitted(true);
       setWaitingForOthers(true);
-      setLastRoundAtSubmit(round); // Update for polling logic
-      startPollingStatus(round -1); // Poll with the round that was just completed from user's perspective
-
+      setLastRoundAtSubmit(round);
+      startPollingStatus(round -1);
     } catch (err) {
       console.error("Failed to submit transactions:", err);
       message.error("Failed to submit transactions. Please try again.");
     }
   };
 
+
+  // --- MODIFIED showChartForStock function ---
   const showChartForStock = async (symbol: string) => {
     setSelectedStockSymbol(symbol);
     setIsChartLoading(true);
     setChartError(null);
     setChartData([]);
 
-    if (!currentRoundMarketDate) {
-      console.warn(`Cannot filter chart data: Current round's market date is unknown for ${symbol}.`);
-      // Proceed to show full history, or show an error/warning in chart
-      // For now, let's allow showing full history if date is missing, but log it.
-    }
+    const MAX_DATA_POINTS_FOR_CHART = 60; // Define how many recent data points you want
 
     try {
-      const historyData = await apiService.get<StockDataPointDTO[]>(
+      // 1. Fetch all available historical data
+      const fullHistoryData = await apiService.get<StockDataPointDTO[]>(
         `/api/charts/${symbol}/daily`
       );
 
-      if (historyData && historyData.length > 0) {
-        let Gg = historyData
-        if (currentRoundMarketDate) {
-          try {
-            const roundEndDate = new Date(currentRoundMarketDate + "T00:00:00Z"); // Ensure parsing as UTC date
+      if (!fullHistoryData || fullHistoryData.length === 0) {
+        setChartError(`No historical data found for ${symbol}.`);
+        setIsChartLoading(false);
+        return;
+      }
 
-            const filteredData = historyData.filter(dataPoint => {
-              const pointDate = new Date(dataPoint.date + "T00:00:00Z"); // Ensure parsing as UTC date
-              return pointDate <= roundEndDate;
-            });
-
-            if (filteredData.length > 0) {
-              setChartData(filteredData);
-            } else {
-              setChartError(`No historical data found for ${symbol} up to ${currentRoundMarketDate}. Showing all available data.`);
-              setChartData(historyData); // Show all if filter results in empty
-            }
-          } catch (dateParseError) {
-            console.error("Error parsing dates for chart filtering:", dateParseError);
-            setChartError("Error processing date for chart. Showing all available data.");
-            setChartData(historyData); // Fallback to full data on parsing error
-          }
-        } else {
-          setChartData(historyData); // No date to filter by, show all
+      // 2. Filter by currentRoundMarketDate (if available)
+      let relevantHistoryData = fullHistoryData;
+      if (currentRoundMarketDate) {
+        try {
+          const roundEndDate = new Date(currentRoundMarketDate + "T00:00:00Z"); // Parse as UTC
+          relevantHistoryData = fullHistoryData.filter(dataPoint => {
+            const pointDate = new Date(dataPoint.date + "T00:00:00Z"); // Parse as UTC
+            return pointDate <= roundEndDate;
+          });
+        } catch (dateParseError) {
+          console.error("Error parsing dates for chart filtering:", dateParseError);
+          setChartError("Error processing date for chart. Showing all available data up to today.");
+          // Fallback to using all data up to today (or all data if no currentRoundMarketDate)
+          // but still apply the 60-day limit later.
+          // If currentRoundMarketDate parsing fails, relevantHistoryData remains fullHistoryData
         }
       } else {
-        setChartError(`No historical data found for ${symbol}.`);
+        console.warn(`currentRoundMarketDate is not set. Chart will show last 60 points of available history for ${symbol}.`);
+        // relevantHistoryData remains fullHistoryData
       }
+
+      if (relevantHistoryData.length === 0) {
+          setChartError(`No historical data found for ${symbol} up to ${currentRoundMarketDate || 'the latest available date'}.`);
+          setIsChartLoading(false);
+          return;
+      }
+
+      // 3. Sort the relevant data by date in ascending order (oldest to newest)
+      // This is important if the API doesn't guarantee order, and for slicing the most recent.
+      // Your ChartDataService already sorts by date ASC, so this might be redundant but safe.
+      relevantHistoryData.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+
+      // 4. Take the last MAX_DATA_POINTS_FOR_CHART (e.g., 60) data points
+      const finalChartData = relevantHistoryData.slice(-MAX_DATA_POINTS_FOR_CHART);
+
+      if (finalChartData.length > 0) {
+        setChartData(finalChartData);
+      } else {
+        // This case should be rare if relevantHistoryData had items, but as a fallback:
+        setChartError(`Not enough data to display the last ${MAX_DATA_POINTS_FOR_CHART} days for ${symbol}.`);
+        // Optionally, show whatever is available if less than 60:
+        // setChartData(relevantHistoryData);
+      }
+
     } catch (err: unknown) {
-      console.error(`Failed to fetch chart data for ${symbol}`, err);
+      console.error(`Failed to fetch or process chart data for ${symbol}`, err);
       const errorMessage = err instanceof Error ? err.message : "An unknown error occurred.";
       setChartError(`Could not load chart data: ${errorMessage}`);
     } finally {
       setIsChartLoading(false);
     }
   };
+  // --- END MODIFIED showChartForStock function ---
 
   const handleCloseChartModal = () => {
     setSelectedStockSymbol(null);
@@ -269,8 +273,10 @@ const TransactionPage: React.FC<TransactionListProps> = ({
 
   const selectedCompanyInfo = selectedStockSymbol ? companyDescriptions[selectedStockSymbol] : null;
 
+  // ... (return statement with JSX - no changes needed here) ...
   return (
     <div style={{ padding: "30px", minHeight: "100vh", color: "var(--foreground)" }}>
+      {/* Header Area */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "30px", padding: "0 10px" }}>
         <Typography.Title level={2} style={{ margin: 0, color: "var(--foreground)" }}>
           Trade Stocks - Round {round ?? "..."}
@@ -280,6 +286,7 @@ const TransactionPage: React.FC<TransactionListProps> = ({
         </Button>
       </div>
 
+      {/* Main Content Area */}
       <div style={{ display: "flex", gap: "25px", alignItems: "stretch" }}>
         <div
           style={{
@@ -334,7 +341,7 @@ const TransactionPage: React.FC<TransactionListProps> = ({
                         width={24}
                         height={24}
                         style={{ objectFit: "contain" }}
-                        onError={(e) => (e.currentTarget.src = "/icons/DEFAULT.png")} // Fallback icon
+                        onError={(e) => (e.currentTarget.src = "/icons/DEFAULT.png")}
                       />
                       <span
                         onClick={() => showChartForStock(stock.symbol)}
@@ -375,6 +382,7 @@ const TransactionPage: React.FC<TransactionListProps> = ({
         </div>
       </div>
 
+      {/* Submit & Timer (Fixed Position) */}
       <div style={{ position: "fixed", bottom: "20px", right: "30px", zIndex: 1000, display: "flex", alignItems: "center", gap: "20px" }}>
         <div style={{ backgroundColor: "rgba(59, 130, 246, 0.2)", padding: "8px 16px", borderRadius: "8px", backdropFilter: "blur(4px)" }}>
           <Typography.Text style={{ fontWeight: "bold", fontSize: "1rem", color: "var(--foreground)" }}>
@@ -386,6 +394,7 @@ const TransactionPage: React.FC<TransactionListProps> = ({
         </Button>
       </div>
 
+      {/* Waiting Overlay */}
       {hasSubmitted && waitingForOthers && (
         <Modal
           open={true}
@@ -406,6 +415,7 @@ const TransactionPage: React.FC<TransactionListProps> = ({
         </Modal>
       )}
 
+      {/* Chart Modal */}
       <Modal
         title={<Typography.Title level={4} style={{margin:0, color: "var(--foreground-on-modal, #333)"}}>{`Stock Chart: ${selectedStockSymbol || ""}`}</Typography.Title>}
         open={!!selectedStockSymbol}
@@ -414,7 +424,7 @@ const TransactionPage: React.FC<TransactionListProps> = ({
         width={900}
         style={{ top: 20 }}
         maskClosable={true}
-        destroyOnClose={true} // Important to reset chart state
+        destroyOnClose={true}
         bodyStyle={{ backgroundColor: "var(--modal-background, white)", color: "var(--foreground-on-modal, #333)"}}
       >
         {isChartLoading ? (
