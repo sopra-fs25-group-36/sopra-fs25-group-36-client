@@ -17,6 +17,7 @@ interface TransactionListProps {
 interface RoundStatusDTO {
   allSubmitted: boolean;
   roundEnded: boolean;
+  nextRoundStartTime: number;
 }
 
 const TransactionPage: React.FC<TransactionListProps> = ({
@@ -187,7 +188,7 @@ const TransactionPage: React.FC<TransactionListProps> = ({
       console.log(`🔄 Polling status (lastRound=${submittedRound})…`);
       try {
         const roundParam = submittedRound ?? 0;
-        const { allSubmitted, roundEnded } =
+        const { allSubmitted, roundEnded,nextRoundStartTime } =
           await apiService.get<RoundStatusDTO>(
             `/game/${gameId}/status?lastRound=${submittedRound}`
           );
@@ -197,8 +198,15 @@ const TransactionPage: React.FC<TransactionListProps> = ({
         );
 
         if (allSubmitted || roundEnded) {
-          console.log("🚀 Condition met, redirecting to transition page");
-          router.push(`/lobby/${gameId}/game/transition`);
+          const waitTime = nextRoundStartTime - Date.now();
+          if (waitTime > 0) {
+            console.log(' Waiting ${waitTime}ms for synchronized start...');
+            setTimeout(() => {
+              router.push(`/lobby/${gameId}/game/transition`);
+            }, waitTime);
+          } else {
+            router.push(`/lobby/${gameId}/game/transition`);
+          }
         } else {
           pollRef.current = setTimeout(poll, 3000);
         }
@@ -253,7 +261,7 @@ const TransactionPage: React.FC<TransactionListProps> = ({
       setHasSubmitted(true);
       setWaitingForOthers(true);
       setLastRoundAtSubmit(round);
-      startPollingStatus(round - 1);
+      startPollingStatus(round);
     } catch (err) {
       console.error(err);
       message.error("Failed to submit transactions. Try again.");
