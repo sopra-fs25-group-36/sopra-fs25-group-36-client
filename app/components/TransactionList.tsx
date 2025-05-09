@@ -596,7 +596,7 @@ const TransactionPage: React.FC<TransactionListProps> = ({
             style={{
               pointerEvents: "auto",
               padding: 16,
-              background: "white",
+              background: "var(--background)",
               borderRadius: 4,
             }}
           >
