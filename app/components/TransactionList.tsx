@@ -19,6 +19,20 @@ interface RoundStatusDTO {
   roundEnded: boolean;
   nextRoundStartTime: number;
 }
+interface PlayerStateDTO {
+  cashBalance: number;
+  playerStocks: Record<string, number>;
+}
+
+interface GameResponseDTO {
+  playerStates: Record<string, PlayerStateDTO>;
+}
+
+interface TransactionDTO {
+  stockId: string;
+  quantity: number;
+  type: "BUY" | "SELL";
+}
 
 const TransactionPage: React.FC<TransactionListProps> = ({
   onToggleLayout,
@@ -146,7 +160,7 @@ const TransactionPage: React.FC<TransactionListProps> = ({
   useEffect(() => {
     const fetchPlayerState = async () => {
       try {
-        const game = await apiService.get<any>(`/game/${gameId}`);
+        const game = await apiService.get<GameResponseDTO>(`/game/${gameId}`);
         const ps = game?.playerStates?.[currentUserId];
         if (ps) {
           setPlayerCash(ps.cashBalance);
@@ -161,7 +175,7 @@ const TransactionPage: React.FC<TransactionListProps> = ({
     };
   
     if (gameId && !isNaN(gameId)) fetchPlayerState();
-  }, [apiService, gameId, round]);
+  }, [apiService, gameId, round, currentUserId]);
 
   const handleAmountChange = (
     symbol: string,
@@ -256,7 +270,7 @@ const TransactionPage: React.FC<TransactionListProps> = ({
     let latestHoldings = playerHoldings;
   
     try {
-      const game = await apiService.get<any>(`/game/${gameId}`);
+      const game = await apiService.get<GameResponseDTO>(`/game/${gameId}`);
       const ps = game?.playerStates?.[currentUserId];
       if (!ps) {
         message.error("Could not retrieve your current balance / portfolio.");
@@ -332,7 +346,7 @@ const TransactionPage: React.FC<TransactionListProps> = ({
   
     // ---------- ORIGINAL SUBMISSION (unchanged) ----------
     try {
-      const transactions: any[] = [];
+      const transactions: TransactionDTO[] = [];
   
       for (const [symbol, qty] of Object.entries(sellAmounts)) {
         if (qty && qty > 0) {
