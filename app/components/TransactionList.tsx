@@ -28,7 +28,9 @@ const TransactionPage: React.FC<TransactionListProps> = ({
   const gameId = Number(id);
   const apiService = useApi();
   const { round, timer } = useGame(gameId);
-  const currentUserId = localStorage.getItem("id");
+  const currentUserId: string = localStorage.getItem("id") ?? "";
+  const [playerCash, setPlayerCash] = useState<number>(0);
+  const [playerHoldings, setPlayerHoldings] = useState<Record<string, number>>({});
 
   // State for transactions
   const [buyAmounts, setBuyAmounts] = useState<{ [symbol: string]: number }>(
@@ -61,6 +63,8 @@ const TransactionPage: React.FC<TransactionListProps> = ({
   const [, setLastRoundAtSubmit] = useState<number>(round);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
 
+
+  
   // Fetch current round stock data
   useEffect(() => {
     const fetchStockData = async () => {
@@ -138,6 +142,26 @@ const TransactionPage: React.FC<TransactionListProps> = ({
 
     fetchStockData();
   }, [apiService, gameId, round]); // Rerun when gameId changes
+
+  useEffect(() => {
+    const fetchPlayerState = async () => {
+      try {
+        const game = await apiService.get<any>(`/game/${gameId}`);
+        const ps = game?.playerStates?.[currentUserId];
+        if (ps) {
+          setPlayerCash(ps.cashBalance);
+          setPlayerHoldings(ps.playerStocks ?? {});
+        } else {
+          message.error("Could not find your player state for this game.");
+        }
+      } catch (err) {
+        console.error("Failed to fetch player state", err);
+        message.error("Could not load your balance/portfolio.");
+      }
+    };
+  
+    if (gameId && !isNaN(gameId)) fetchPlayerState();
+  }, [apiService, gameId, round]);
 
   const handleAmountChange = (
     symbol: string,
@@ -228,36 +252,105 @@ const TransactionPage: React.FC<TransactionListProps> = ({
 
   // --- SUBMIT ROUND (wired to polling) ---
   const handleSubmitRound = async () => {
+    let latestCash = playerCash;
+    let latestHoldings = playerHoldings;
+  
     try {
-      const transactions = [];
-      // 1) send all your sell tx
-      for (const [symbol, qty] of Object.entries(sellAmounts)) {
-        transactions.push({
-          stockId: symbol,
-          quantity: qty,
-          type: "SELL",
-        });
+      const game = await apiService.get<any>(`/game/${gameId}`);
+      const ps = game?.playerStates?.[currentUserId];
+      if (!ps) {
+        message.error("Could not retrieve your current balance / portfolio.");
+        return;
       }
-      // 2) send all your buy tx
-      for (const [symbol, qty] of Object.entries(buyAmounts)) {
-        transactions.push({
-          stockId: symbol,
-          quantity: qty,
-          type: "BUY",
-        });
-      }
+      latestCash = ps.cashBalance;
+      latestHoldings = ps.playerStocks ?? {};
+  
+      // keep React state in sync for the UI
+      setPlayerCash(latestCash);
+      setPlayerHoldings(latestHoldings);
+    } catch (err) {
+      console.error("Failed to refresh player state", err);
+      message.error("Network error while checking your balance.");
+      return;
+    }
 
+    // ---------- VALIDATION ----------
+    let costOfBuys = 0;
+    let proceedsFromSells = 0;
+  
+    // Helper to look up a price inside the already‑categorised list
+    const priceFor = (sym: string) => {
+      for (const cat in categories) {
+        const p = categories[cat].find(s => s.symbol === sym)?.price;
+        if (p !== undefined) return p;
+      }
+      return undefined;        // should not happen
+    };
+  
+    // Check BUYS
+    for (const [symbol, qty] of Object.entries(buyAmounts)) {
+      if (qty && qty > 0) {
+        const price = priceFor(symbol);
+        if (price === undefined) {
+          message.error(`Price data missing for ${symbol}.`);
+          return;
+        }
+        costOfBuys += price * qty;
+      }
+    }
+  
+    // Check SELLS + share ownership
+    for (const [symbol, qty] of Object.entries(sellAmounts)) {
+      if (qty && qty > 0) {
+        const price = priceFor(symbol);
+        if (price === undefined) {
+          message.error(`Price data missing for ${symbol}.`);
+          return;
+        }
+        proceedsFromSells += price * qty;
+  
+        const owned = latestHoldings[symbol] ?? 0;
+        if (qty > owned) {
+          Modal.error({
+            title: "Not enough shares",
+            content: `You tried to sell ${qty} × ${symbol}, but you only own ${owned}.`,
+          });
+          return;
+        }
+      }
+    }
+  
+    // Cash check (sales first, then buys)
+    const newCash = latestCash + proceedsFromSells - costOfBuys;
+    if (newCash < 0) {
+      Modal.error({
+        title: "Insufficient funds",
+        content: `You are $${Math.abs(newCash).toFixed(2)} short for these purchases.`,
+      });
+      return;
+    }
+  
+    // ---------- ORIGINAL SUBMISSION (unchanged) ----------
+    try {
+      const transactions: any[] = [];
+  
+      for (const [symbol, qty] of Object.entries(sellAmounts)) {
+        if (qty && qty > 0) {
+          transactions.push({ stockId: symbol, quantity: qty, type: "SELL" });
+        }
+      }
+      for (const [symbol, qty] of Object.entries(buyAmounts)) {
+        if (qty && qty > 0) {
+          transactions.push({ stockId: symbol, quantity: qty, type: "BUY" });
+        }
+      }
+  
       const bulkResponse = await apiService.post(
         `/api/transaction/${gameId}/submit?userId=${currentUserId}`,
         transactions
       );
       console.log("Bulk submission response:", bulkResponse);
-
-      console.log(
-        `✅ handleSubmitRound: current round = ${round}, passing lastRound = ${round - 1}`
-      );
-
-      // 3) trigger the waiting overlay + polling
+  
       setHasSubmitted(true);
       setWaitingForOthers(true);
       setLastRoundAtSubmit(round);
