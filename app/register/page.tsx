@@ -2,20 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import useLocalStorage from "@/hooks/useLocalStorage";
-import { Input, Button, Form, Alert, Radio, Image, message } from "antd";
+import { Input, Button, Form, Alert, message } from "antd";
 import { useApi } from "@/hooks/useApi";
 import { useState } from "react";
 import Logo from "@/components/Logo";
 import { User } from "@/types/user";
-
-// Define the avatar options
-const avatarOptions = [
-  { index: 1, label: "Bill Gates", value: "/avatars/avatar1.jpg" },
-  { index: 2, label: "Elon Mask", value: "/avatars/avatar2.jpg" },
-  { index: 4, label: "Avatar 4", value: "/avatars/avatar4.jpg" },
-  { index: 6, label: "Avatar 6", value: "/avatars/avatar6.jpg" },
-  { index: 7, label: "Steve Jobs", value: "/avatars/avatar7.jpg" },
-];
 
 const Register: React.FC = () => {
   const router = useRouter();
@@ -124,25 +115,6 @@ const Register: React.FC = () => {
             placeholder="Verify your password"
             autoComplete="off"
           />
-        </Form.Item>
-        <Form.Item
-          name="avatar"
-          label="Select Avatar"
-          rules={[{ required: true, message: "Please select an avatar!" }]}
-        >
-          <Radio.Group>
-            {avatarOptions.map((option) => (
-              <Radio key={option.index} value={option.index}>
-                <Image
-                  src={option.value}
-                  alt={option.label}
-                  width={35}
-                  height={35}
-                  style={{ borderRadius: "50%" }}
-                />
-              </Radio>
-            ))}
-          </Radio.Group>
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit" block>
