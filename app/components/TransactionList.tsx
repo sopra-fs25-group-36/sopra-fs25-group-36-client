@@ -1,40 +1,49 @@
 "use client";
 
-import Image from "next/image"; // make sure this is imported
-import { InputNumber, Button, Typography, message, Spin, Modal } from "antd"; // Import Spin, Modal
+import Image from "next/image";
+import { InputNumber, Button, Typography, message, Spin, Modal } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useGame } from "@/hooks/useGame";
 import { useApi } from "@/hooks/useApi";
 
 import { StockPriceGetDTO } from "@/types/stock";
-import StockChart from "@/components/StockChart"; // Import the chart component
-import { StockDataPointDTO } from "@/types/chart"; // Import the DTO type for chart data
+import StockChart from "@/components/StockChart";
+import { StockDataPointDTO } from "@/types/chart";
+import { companyDescriptions } from "@/data/companyDescriptions"; // Added from old version
 
-interface TransactionListProps {
+// Interface for player holdings (simplified from PlayerStateDTO or PlayerHolding)
+interface PlayerHoldingItem {
+  symbol: string;
+  quantity: number;
+}
+
+interface TransactionPageProps {
   onToggleLayout: () => void;
 }
+
 interface RoundStatusDTO {
   allSubmitted: boolean;
   roundEnded: boolean;
-  nextRoundStartTime: number;
+  nextRoundStartTime: number; // From new version
 }
-interface PlayerStateDTO {
+
+interface PlayerStateDTO { // From new version
   cashBalance: number;
   playerStocks: Record<string, number>;
 }
 
-interface GameResponseDTO {
+interface GameResponseDTO { // From new version
   playerStates: Record<string, PlayerStateDTO>;
 }
 
-interface TransactionDTO {
+interface TransactionDTO { // From new version
   stockId: string;
   quantity: number;
   type: "BUY" | "SELL";
 }
 
-const TransactionPage: React.FC<TransactionListProps> = ({
+const TransactionPage: React.FC<TransactionPageProps> = ({
   onToggleLayout,
 }) => {
   const router = useRouter();
@@ -42,593 +51,422 @@ const TransactionPage: React.FC<TransactionListProps> = ({
   const gameId = Number(id);
   const apiService = useApi();
   const { round, timer } = useGame(gameId);
-  const currentUserId: string = localStorage.getItem("id") ?? "";
-  const [playerCash, setPlayerCash] = useState<number>(0);
-  const [playerHoldings, setPlayerHoldings] = useState<Record<string, number>>({});
+  const currentUserId = typeof window !== 'undefined' ? localStorage.getItem("id") : null;
 
   // State for transactions
-  const [buyAmounts, setBuyAmounts] = useState<{ [symbol: string]: number }>(
-    {}
-  );
-  const [sellAmounts, setSellAmounts] = useState<{ [symbol: string]: number }>(
-    {}
-  );
+  const [buyAmounts, setBuyAmounts] = useState<{ [symbol: string]: number }>({});
+  const [sellAmounts, setSellAmounts] = useState<{ [symbol: string]: number }>({});
 
-  // State for current round stock list
-  // const [currentStocks, setCurrentStocks] = useState<StockPriceGetDTO[]>([]);
-  const [, setCurrentStocks] = useState<StockPriceGetDTO[]>([]);
-  const [categories, setCategories] = useState<{
-    [category: string]: StockPriceGetDTO[];
-  }>({}); // Store categorized API data
-  const [isLoading, setIsLoading] = useState(true);
+  // State for stock list, categories, and market date
+  const [categories, setCategories] = useState<{ [category: string]: StockPriceGetDTO[] }>({});
+  const [currentRoundMarketDate, setCurrentRoundMarketDate] = useState<string | null>(null); // Added from old
+
+  // State for player cash and holdings
+  const [playerCash, setPlayerCash] = useState<number>(0); // From new
+  const [playerHoldings, setPlayerHoldings] = useState<{ [symbol: string]: number }>({}); // Combined
+
+  // Loading states
+  const [isPageLoading, setIsPageLoading] = useState(true); // Combined loading state
 
   // State for Chart Modal
-  const [selectedStockSymbol, setSelectedStockSymbol] = useState<string | null>(
-    null
-  );
+  const [selectedStockSymbol, setSelectedStockSymbol] = useState<string | null>(null);
   const [chartData, setChartData] = useState<StockDataPointDTO[]>([]);
   const [isChartLoading, setIsChartLoading] = useState<boolean>(false);
   const [chartError, setChartError] = useState<string | null>(null);
 
-  // Polling the page to check if everyone submitted
+  // Polling state
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [waitingForOthers, setWaitingForOthers] = useState(false);
-  // const [lastRoundAtSubmit, setLastRoundAtSubmit] = useState<number>(round);
   const [, setLastRoundAtSubmit] = useState<number>(round);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
 
-
-  
-  // Fetch current round stock data
   useEffect(() => {
-    const fetchStockData = async () => {
-      if (!gameId || isNaN(gameId)) {
-        setIsLoading(false);
-        message.error("Invalid Game ID.");
+    const fetchInitialData = async () => {
+      if (!gameId || isNaN(gameId) || !currentUserId) {
+        setIsPageLoading(false);
+        if (!currentUserId && typeof window !== 'undefined') message.error("User ID not found. Please log in again.");
+        else if (isNaN(gameId)) message.error("Invalid Game ID in URL.");
         return;
       }
-      setIsLoading(true);
-      setCurrentStocks([]);
+
+      setIsPageLoading(true);
       setCategories({});
+      setCurrentRoundMarketDate(null);
+      setPlayerHoldings({});
+      setBuyAmounts({});
+      setSellAmounts({});
+      setHasSubmitted(false);
+      setWaitingForOthers(false);
 
       try {
-        const data = await apiService.get<StockPriceGetDTO[]>(
-          `/api/stocks/${gameId}/stocks`
-        );
-        setCurrentStocks(data); // Keep the flat list if needed elsewhere
+        // Fetch stock prices
+        const stockPriceData = await apiService.get<StockPriceGetDTO[]>(`/api/stocks/${gameId}/stocks`);
+        if (stockPriceData && stockPriceData.length > 0 && stockPriceData[0].date) {
+          setCurrentRoundMarketDate(stockPriceData[0].date);
+        } else if (stockPriceData && stockPriceData.length > 0) {
+          message.warning("Market date for current round not found; chart might show all historical data.");
+        }
 
-        // Categorize the fetched data (using your existing logic)
         const defaultCategories: { [category: string]: string[] } = {
-          TECH: [
-            "AAPL",
-            "TSLA",
-            "AMZN",
-            "MSFT",
-            "NVDA",
-            "GOOG",
-            "INTC",
-            "NFLX",
-            "AMD",
-          ],
-          ENERGY: ["XOM", "CVX"],
-          FINANCE: ["JPM", "GS"],
-          HEALTHCARE: ["PFE", "JNJ"],
-          CONSUMER: ["PG"],
-          // Add IBM if it's consistently part of your game stocks
-          MISC: ["IBM"], // Example if IBM doesn't fit others
+          TECH: ["AAPL", "TSLA", "AMZN", "MSFT", "NVDA", "GOOG", "INTC", "NFLX", "AMD"],
+          ENERGY: ["XOM", "CVX"], FINANCE: ["JPM", "GS"], HEALTHCARE: ["PFE", "JNJ"],
+          CONSUMER: ["PG"], MISC: ["IBM"],
         };
-
         const categorizedData: { [category: string]: StockPriceGetDTO[] } = {};
-        // const apiSymbols = new Set(data.map((item) => item.symbol));
-
-        for (const [category, symbolsInCategory] of Object.entries(
-          defaultCategories
-        )) {
-          const stocksInCategory = data.filter((stock) =>
-            symbolsInCategory.includes(stock.symbol)
-          );
-          if (stocksInCategory.length > 0) {
-            categorizedData[category] = stocksInCategory.sort((a, b) =>
-              a.symbol.localeCompare(b.symbol)
-            ); // Sort within category
+        (stockPriceData || []).forEach(stock => {
+          let assignedCategory = "OTHER";
+          if (stock.category && defaultCategories[stock.category.toUpperCase()]) {
+             assignedCategory = stock.category.toUpperCase();
+          } else {
+            for (const [cat, symbolsInCategory] of Object.entries(defaultCategories)) {
+              if (symbolsInCategory.includes(stock.symbol)) {
+                assignedCategory = cat;
+                break;
+              }
+            }
           }
+          if (assignedCategory === "OTHER" && stock.symbol === "IBM" && defaultCategories["MISC"]) {
+              assignedCategory = "MISC";
+          }
+          if (!categorizedData[assignedCategory]) { categorizedData[assignedCategory] = []; }
+          categorizedData[assignedCategory].push(stock);
+        });
+        for (const category in categorizedData) {
+          categorizedData[category].sort((a, b) => a.symbol.localeCompare(b.symbol));
         }
-        // Handle stocks from API not in default categories (optional)
-        const uncategorized = data.filter(
-          (stock) =>
-            !Object.values(defaultCategories).flat().includes(stock.symbol)
-        );
-        if (uncategorized.length > 0) {
-          categorizedData["OTHER"] = uncategorized.sort((a, b) =>
-            a.symbol.localeCompare(b.symbol)
-          );
-        }
-
         setCategories(categorizedData);
-        console.log("Categorized stock data:", categorizedData);
-      } catch (err) {
-        console.error("Failed to fetch stock data", err);
-        message.error("Could not load stock data for this round.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
 
-    fetchStockData();
-  }, [apiService, gameId, round]); // Rerun when gameId changes
-
-  useEffect(() => {
-    const fetchPlayerState = async () => {
-      try {
-        const game = await apiService.get<GameResponseDTO>(`/game/${gameId}`);
-        const ps = game?.playerStates?.[currentUserId];
+        // Fetch player state (cash and holdings)
+        const gameData = await apiService.get<GameResponseDTO>(`/game/${gameId}`);
+        const ps = gameData?.playerStates?.[currentUserId];
         if (ps) {
           setPlayerCash(ps.cashBalance);
           setPlayerHoldings(ps.playerStocks ?? {});
         } else {
           message.error("Could not find your player state for this game.");
+          setPlayerHoldings({}); // Ensure it's an empty object on failure
         }
       } catch (err) {
-        console.error("Failed to fetch player state", err);
-        message.error("Could not load your balance/portfolio.");
+        message.error("Could not load initial game data. Please refresh.");
+        console.error("Initial data fetch error:", err);
+      } finally {
+        setIsPageLoading(false);
       }
     };
-  
-    if (gameId && !isNaN(gameId)) fetchPlayerState();
+
+    fetchInitialData();
   }, [apiService, gameId, round, currentUserId]);
 
-  const handleAmountChange = (
-    symbol: string,
-    value: number | null,
-    type: "buy" | "sell"
-  ) => {
+
+  const handleAmountChange = (symbol: string, value: number | null, type: "buy" | "sell") => {
     const setter = type === "buy" ? setBuyAmounts : setSellAmounts;
     setter((prev) => ({ ...prev, [symbol]: value ?? 0 }));
   };
 
-  // const getCurrentPrice = (symbol: string): number | undefined => {
-  //   // Find price from the categorized data for efficiency if available
-  //   for (const category in categories) {
-  //     const stock = categories[category].find((s) => s.symbol === symbol);
-  //     if (stock) return stock.price;
-  //   }
-  //   // Fallback to flat list if needed (though should be in categories)
-  //   return currentStocks.find((stock) => stock.symbol === symbol)?.price;
-  // };
-
-  // const handleTransaction = (symbol: string, type: "buy" | "sell") => {
-  //   const amount = type === "buy" ? buyAmounts[symbol] : sellAmounts[symbol];
-  //   const price = getCurrentPrice(symbol);
-
-  //   if (price === undefined) {
-  //     message.error(
-  //       `Price data missing for ${symbol}. Cannot process transaction.`
-  //     );
-  //     return;
-  //   }
-  //   console.log(
-  //     `${type.toUpperCase()}`,
-  //     symbol,
-  //     "amount:",
-  //     amount,
-  //     "price:",
-  //     price
-  //   );
-  //   // Add your actual API call logic here
-  //   message.info(
-  //     `Processing ${type} ${amount} of ${symbol} at $${price.toFixed(2)}...`
-  //   );
-  // };
-
-  // --- POLLING FUNCTION ---
-  const startPollingStatus = (submittedRound: number) => {
+  const startPollingStatus = (submittedRoundForPolling: number) => {
+    if (pollRef.current) clearTimeout(pollRef.current);
     const poll = async () => {
-      console.log(`🔄 Polling status (lastRound=${submittedRound})…`);
+      console.log(`🔄 Polling status (gameId=${gameId}, pollingForRoundCompletion=${submittedRoundForPolling})…`);
       try {
-        const roundParam = submittedRound ?? 0;
-        const { allSubmitted, roundEnded,nextRoundStartTime } =
-          await apiService.get<RoundStatusDTO>(
-            `/game/${gameId}/status?lastRound=${submittedRound}`
-          );
-        console.log("Polling with lastRound:", roundParam);
-        console.log(
-          `✅ Poll response: allSubmitted=${allSubmitted}, roundEnded=${roundEnded}`
+        // Using new page's parameter logic for polling: `submittedRoundForPolling` is the round that was just submitted.
+        const { allSubmitted, roundEnded, nextRoundStartTime } = await apiService.get<RoundStatusDTO>(
+            `/game/${gameId}/status?lastRound=${submittedRoundForPolling}`
         );
-
+        console.log(`✅ Poll response: allSubmitted=${allSubmitted}, roundEnded=${roundEnded}, nextRoundStartTime=${nextRoundStartTime}`);
         if (allSubmitted || roundEnded) {
+          if (pollRef.current) clearTimeout(pollRef.current);
           const waitTime = nextRoundStartTime - Date.now();
-          if (waitTime > 0) {
-            console.log(' Waiting ${waitTime}ms for synchronized start...');
+          if (waitTime > 0 && nextRoundStartTime > 0) { // ensure nextRoundStartTime is valid
+            console.log(`🚀 All players submitted or round ended. Waiting ${waitTime}ms for synchronized start before redirecting.`);
             setTimeout(() => {
               router.push(`/lobby/${gameId}/game/transition`);
             }, waitTime);
           } else {
+            console.log("🚀 All players submitted or round ended. Redirecting to transition page immediately.");
             router.push(`/lobby/${gameId}/game/transition`);
           }
         } else {
           pollRef.current = setTimeout(poll, 3000);
         }
-      } catch {
-        pollRef.current = setTimeout(poll, 5000);
+      } catch (error){
+        console.error("Polling failed:", error);
+        pollRef.current = setTimeout(poll, 5000); // Longer timeout on error
       }
     };
-    console.log("Polling with lastRound:", submittedRound);
-
     void poll();
   };
 
-  // --- CLEAN UP POLL TIMER ---
   useEffect(() => {
     return () => {
-      if (pollRef.current) clearTimeout(pollRef.current);
+      if (pollRef.current) {
+        clearTimeout(pollRef.current);
+      }
     };
   }, []);
 
-  // --- SUBMIT ROUND (wired to polling) ---
   const handleSubmitRound = async () => {
+    if (!currentUserId) {
+        message.error("User ID not found. Cannot submit transactions.");
+        return;
+    }
+    setIsPageLoading(true); // Use main page loader for submission process
+
     let latestCash = playerCash;
     let latestHoldings = playerHoldings;
-  
+
     try {
       const game = await apiService.get<GameResponseDTO>(`/game/${gameId}`);
       const ps = game?.playerStates?.[currentUserId];
       if (!ps) {
-        message.error("Could not retrieve your current balance / portfolio.");
+        message.error("Could not retrieve your current balance/portfolio before submitting.");
+        setIsPageLoading(false);
         return;
       }
       latestCash = ps.cashBalance;
       latestHoldings = ps.playerStocks ?? {};
-  
-      // keep React state in sync for the UI
       setPlayerCash(latestCash);
       setPlayerHoldings(latestHoldings);
     } catch (err) {
-      console.error("Failed to refresh player state", err);
-      message.error("Network error while checking your balance.");
+      console.error("Failed to refresh player state before submit", err);
+      message.error("Network error while checking your balance. Please try again.");
+      setIsPageLoading(false);
       return;
     }
 
-    // ---------- VALIDATION ----------
     let costOfBuys = 0;
-    let proceedsFromSells = 0;
-  
-    // Helper to look up a price inside the already‑categorised list
-    const priceFor = (sym: string) => {
+    const priceFor = (sym: string): number | undefined => {
       for (const cat in categories) {
         const p = categories[cat].find(s => s.symbol === sym)?.price;
         if (p !== undefined) return p;
       }
-      return undefined;        // should not happen
+      return undefined;
     };
-  
-    // Check BUYS
+
     for (const [symbol, qty] of Object.entries(buyAmounts)) {
-      if (qty && qty > 0) {
+      if (qty > 0) {
         const price = priceFor(symbol);
         if (price === undefined) {
-          message.error(`Price data missing for ${symbol}.`);
-          return;
+          message.error(`Price data missing for ${symbol}. Cannot validate buy.`);
+          setIsPageLoading(false); return;
         }
         costOfBuys += price * qty;
       }
     }
-  
-    // Check SELLS + share ownership
+
+    let proceedsFromSells = 0;
     for (const [symbol, qty] of Object.entries(sellAmounts)) {
-      if (qty && qty > 0) {
+      if (qty > 0) {
         const price = priceFor(symbol);
         if (price === undefined) {
-          message.error(`Price data missing for ${symbol}.`);
-          return;
+          message.error(`Price data missing for ${symbol}. Cannot validate sell.`);
+          setIsPageLoading(false); return;
         }
         proceedsFromSells += price * qty;
-  
-        const owned = latestHoldings[symbol] ?? 0;
+        const owned = latestHoldings[symbol] || 0;
         if (qty > owned) {
-          Modal.error({
-            title: "Not enough shares",
-            content: `You tried to sell ${qty} × ${symbol}, but you only own ${owned}.`,
-          });
-          return;
+          Modal.error({ title: "Not enough shares", content: `You tried to sell ${qty} × ${symbol}, but you only own ${owned}.` });
+          setIsPageLoading(false); return;
         }
       }
     }
-  
-    // Cash check (sales first, then buys)
+
     const newCash = latestCash + proceedsFromSells - costOfBuys;
     if (newCash < 0) {
-      Modal.error({
-        title: "Insufficient funds",
-        content: `You are $${Math.abs(newCash).toFixed(2)} short for these purchases.`,
-      });
-      return;
+      Modal.error({ title: "Insufficient funds", content: `You are $${Math.abs(newCash).toFixed(2)} short for these purchases.` });
+      setIsPageLoading(false); return;
     }
-  
-    // ---------- ORIGINAL SUBMISSION (unchanged) ----------
+
     try {
-      const transactions: TransactionDTO[] = [];
-  
+      const transactionsToSubmit: TransactionDTO[] = [];
       for (const [symbol, qty] of Object.entries(sellAmounts)) {
-        if (qty && qty > 0) {
-          transactions.push({ stockId: symbol, quantity: qty, type: "SELL" });
-        }
+        if (qty > 0) transactionsToSubmit.push({ stockId: symbol, quantity: qty, type: "SELL" });
       }
       for (const [symbol, qty] of Object.entries(buyAmounts)) {
-        if (qty && qty > 0) {
-          transactions.push({ stockId: symbol, quantity: qty, type: "BUY" });
-        }
+        if (qty > 0) transactionsToSubmit.push({ stockId: symbol, quantity: qty, type: "BUY" });
       }
-  
-      const bulkResponse = await apiService.post(
-        `/api/transaction/${gameId}/submit?userId=${currentUserId}`,
-        transactions
-      );
-      console.log("Bulk submission response:", bulkResponse);
-  
+
+      if (transactionsToSubmit.length === 0) {
+        message.info("No transactions entered. Submitting empty round.");
+        // Still need to "submit" to backend to mark as done for the round
+        await apiService.post(`/api/transaction/${gameId}/submit?userId=${currentUserId}`, []);
+      } else {
+        await apiService.post(`/api/transaction/${gameId}/submit?userId=${currentUserId}`, transactionsToSubmit);
+      }
+      message.success("Transactions submitted successfully!");
+
       setHasSubmitted(true);
       setWaitingForOthers(true);
-      setLastRoundAtSubmit(round);
-      startPollingStatus(round);
+      const submittedForRound = round;
+      setLastRoundAtSubmit(submittedForRound);
+      startPollingStatus(submittedForRound); // Use current round for polling status
+
     } catch (err) {
-      console.error(err);
-      message.error("Failed to submit transactions. Try again.");
+      console.error("Failed to submit transactions:", err);
+      message.error("Failed to submit transactions. Please try again.");
+      setHasSubmitted(false);
+      setWaitingForOthers(false);
+    } finally {
+        setIsPageLoading(false);
     }
   };
 
-  //   // --- Function to show chart ---
   const showChartForStock = async (symbol: string) => {
-    setSelectedStockSymbol(symbol);
-    setIsChartLoading(true);
-    setChartError(null);
-    setChartData([]); // Clear previous data
-
+    setSelectedStockSymbol(symbol); setIsChartLoading(true); setChartError(null); setChartData([]);
+    const MAX_DATA_POINTS_FOR_CHART = 60;
     try {
-      // Make API call to your new chart endpoint
-      const historyData = await apiService.get<StockDataPointDTO[]>(
-        `/api/charts/${symbol}/daily`
-      );
-      if (historyData && historyData.length > 0) {
-        setChartData(historyData);
-      } else {
-        setChartError(`No historical data found for ${symbol}.`);
+      const fullHistoryData = await apiService.get<StockDataPointDTO[]>(`/api/charts/${symbol}/daily`);
+      if (!fullHistoryData || fullHistoryData.length === 0) {
+        setChartError(`No historical data found for ${symbol}.`); setIsChartLoading(false); return;
       }
-    } catch (err: unknown) {
-      console.error(`Failed to fetch chart data for ${symbol}`, err);
+      let relevantHistoryData = fullHistoryData;
+      if (currentRoundMarketDate) {
+        try {
+          const roundEndDate = new Date(currentRoundMarketDate + "T00:00:00Z"); // Assuming date is YYYY-MM-DD
+          relevantHistoryData = fullHistoryData.filter(dp => new Date(dp.date + "T00:00:00Z") <= roundEndDate);
+        } catch (e) {
+          console.error("Date parsing error for chart filter", e);
+          setChartError("Error processing date filter. Showing recent data.");
+        }
+      }
+      if (relevantHistoryData.length === 0 && currentRoundMarketDate) {
+        setChartError(`No data for ${symbol} up to ${currentRoundMarketDate}. Showing most recent available.`);
+        relevantHistoryData = fullHistoryData; // Fallback to full history if filter yields nothing
+      } else if (relevantHistoryData.length === 0) {
+         setChartError(`No data found for ${symbol}.`);
+         setIsChartLoading(false); return;
+      }
 
-      const errorMessage =
-        err instanceof Error ? err.message : "An unknown error occurred.";
+      relevantHistoryData.sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      const finalChartData = relevantHistoryData.slice(-MAX_DATA_POINTS_FOR_CHART);
 
-      setChartError(`Could not load chart data for ${symbol}. ${errorMessage}`);
-      message.error(`Could not load chart data for ${symbol}.`);
+      if (finalChartData.length > 0) setChartData(finalChartData);
+      else setChartError(`Not enough data points for ${symbol} (max ${MAX_DATA_POINTS_FOR_CHART}).`);
+
+    } catch (err) {
+      console.error(`Chart data error for ${symbol}`, err);
+      setChartError(`Could not load chart: ${err instanceof Error ? err.message : "Unknown error"}`);
     } finally {
       setIsChartLoading(false);
     }
   };
 
   const handleCloseChartModal = () => {
-    setSelectedStockSymbol(null);
-    setChartData([]); // Clear data when closing
-    setChartError(null);
+    setSelectedStockSymbol(null); setChartData([]); setChartError(null);
   };
 
-  // -- Main Render --
+  const selectedCompanyInfo = selectedStockSymbol ? companyDescriptions[selectedStockSymbol] : null;
+
+  const iconColWidth = "30px";
+  const symbolColWidth = "80px";
+  const priceColWidth = "80px";
+  const positionColWidth = "70px";
+  const actionColWidth = "1fr";
+  const columnGap = "15px";
+  const gridTemplateColumnsLayout = `${iconColWidth} ${symbolColWidth} ${priceColWidth} ${positionColWidth} ${actionColWidth} ${actionColWidth}`;
+
   return (
-    <div
-      style={{
-        padding: "30px",
-        minHeight: "100vh",
-        color: "var(--foreground)",
-      }}
-    >
-      {/* Header Area */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "30px",
-          padding: "0 10px",
-        }}
-      >
-        <Typography.Title level={2} style={{ margin: 0 }}>
+    <div style={{ padding: "30px", minHeight: "100vh", color: "var(--foreground)" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "30px", padding: "0 10px" }}>
+        <Typography.Title level={2} style={{ margin: 0, color: "var(--foreground)" }}>
           Trade Stocks - Round {round ?? "..."}
         </Typography.Title>
-        <Button
-          type="primary"
-          onClick={onToggleLayout}
-          style={{ fontWeight: "bold" }}
-        >
+        <Button type="primary" onClick={onToggleLayout} style={{ fontWeight: "bold" }}>
           My Portfolio
         </Button>
       </div>
 
-      {/* Main Content Area (Flex Container) */}
-      {/* Using previous layout structure */}
       <div style={{ display: "flex", gap: "25px", alignItems: "stretch" }}>
-        {/* Left Pane: Transaction Area */}
         <div
           style={{
-            flex: "1 1 100%", // Take full width if no table
+            flex: "1 1 100%",
             backgroundColor: "var(--card-background)",
             borderRadius: "16px",
             padding: "24px",
-            // border: "1px solid #374151",
-            maxHeight: "calc(85vh)", // Adjusted height
+            maxHeight: "calc(85vh - 40px)",
             overflowY: "auto",
+            border: "1px solid var(--border-color, #374151)"
           }}
         >
-          <Typography.Title
-            level={4}
-            style={{
-              color: "var(--background)",
-              marginBottom: "20px",
-              borderBottom: "1px solid #4b5563",
-              paddingBottom: "10px",
-            }}
-          >
-            Your Transactions
+          <Typography.Title level={4} style={{ color: "var(--foreground-muted)", marginBottom: "20px", borderBottom: "1px solid var(--border-color-muted, #4b5563)", paddingBottom: "10px" }}>
+            Available Stocks for Trading (Cash: ${playerCash.toFixed(2)})
           </Typography.Title>
 
-          {isLoading ? (
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                height: "200px",
-              }}
-            >
-              <Spin size="large" />
+          {isPageLoading ? (
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "300px" }}>
+              <Spin size="large" tip="Loading market data..." />
             </div>
           ) : Object.keys(categories).length === 0 ? (
-            <Typography.Text style={{ color: "var(--foreground)" }}>
-              ❌ No stocks available for trading this round. 💲
+            <Typography.Text style={{ display: "block", textAlign: "center", padding: "40px 20px", color: "var(--foreground)" }}>
+              No stocks available for trading this round.
             </Typography.Text>
           ) : (
             Object.entries(categories).map(([cat, stocks]) => (
               <div key={cat} style={{ marginBottom: "24px" }}>
-                <ul
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "15px",
-                    paddingLeft: 0,
-                    listStyle: "none",
-                  }}
-                >
-                  <li
-                    style={{
+                <ul style={{ display: "flex", flexDirection: "column", gap: "0px", paddingLeft: 0, listStyle: "none" }}>
+                  <li style={{
                       display: "grid",
-                      gridTemplateColumns: "225px 1fr 1fr",
+                      gridTemplateColumns: gridTemplateColumnsLayout,
                       alignItems: "center",
-                      gap: "15px",
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "8px",
-                      }}
-                    >
-                      <h3
-                        style={{
-                          fontSize: "18px",
-                          fontWeight: "600",
-                          marginBottom: "12px",
-                          color: "var(--foreground)",
-                          borderBottom: "2px solid #4b5563",
-                          paddingBottom: "4px",
-                          display: "inline-block",
-                        }}
-                      >
-                        {cat}
-                      </h3>
-                    </div>
-                    {/* Buy Controls */}
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "8px",
-                        fontWeight: "600",
-                      }}
-                    >
-                      Buy
-                    </div>
-                    {/* Sell Controls */}
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "8px",
-                        fontWeight: "600",
-                      }}
-                    >
-                      Sell
-                    </div>
+                      gap: columnGap,
+                      padding: "10px 0",
+                      borderBottom: "2px solid var(--border-color-strong, #6b7280)",
+                      marginBottom: "10px",
+                      position: "sticky", top: -24,
+                      backgroundColor: "var(--card-background)", zIndex: 10
+                  }}>
+                    <Typography.Title level={5} style={{ margin: 0, color: "var(--foreground)", gridColumn: "1 / span 3" }}>
+                      {cat}
+                    </Typography.Title>
+                    <Typography.Text style={{ fontWeight: "bold", color: "var(--foreground-muted)", textAlign: "right" }}>Position</Typography.Text>
+                    <Typography.Text style={{ fontWeight: "bold", color: "var(--foreground-muted)", textAlign:'center' }}>Buy Qty</Typography.Text>
+                    <Typography.Text style={{ fontWeight: "bold", color: "var(--foreground-muted)", textAlign:'center' }}>Sell Qty</Typography.Text>
                   </li>
+
                   {stocks.map((stock) => (
                     <li
                       key={stock.symbol}
                       style={{
                         display: "grid",
-                        gridTemplateColumns: "30px 80px 80px 1fr 1fr",
+                        gridTemplateColumns: gridTemplateColumnsLayout,
                         alignItems: "center",
-                        gap: "15px",
+                        gap: columnGap,
+                        padding: "12px 0",
+                        borderBottom: "1px solid var(--border-color, #374151)",
                       }}
                     >
-                      {/* Icon */}
-
                       <Image
-                        src={`/icons/${stock.symbol}.png`}
-                        alt={`${stock.symbol} icon`}
-                        width={24}
-                        height={24}
-                        style={{ objectFit: "contain" }}
+                        src={`/icons/${stock.symbol}.png`} alt={`${stock.symbol} icon`}
+                        width={28} height={28} style={{ objectFit: "contain" }}
+                        onError={(e) => (e.currentTarget.src = "/icons/DEFAULT.png")} // Fallback icon
                       />
-
-                      {/* Symbol - CLICKABLE FOR CHART */}
                       <span
-                        onClick={() => showChartForStock(stock.symbol)} // <-- Call chart function
+                        onClick={() => showChartForStock(stock.symbol)}
                         title={`View chart for ${stock.symbol}`}
-                        style={{
-                          fontWeight: "600",
-                          color: "#60a5fa",
-                          cursor: "pointer",
-                          textDecoration: "underline",
-                        }}
+                        style={{ fontWeight: "bold", color: "#60a5fa", cursor: "pointer", textDecoration: "underline", fontSize: "1.05em" }}
                       >
                         {stock.symbol}
                       </span>
-                      {/* Price */}
-                      <span style={{ fontWeight: "500", textAlign: "right" }}>
+                      <span style={{ fontWeight: "500", textAlign: "right", color: "var(--foreground)", fontSize: "1.05em" }}>
                         ${stock.price.toFixed(2)}
                       </span>
-                      {/* Buy Controls */}
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "8px",
-                        }}
-                      >
-                        <InputNumber
-                          min={0}
-                          placeholder="Amount"
+                      <span style={{ fontWeight: "bold", textAlign: "right", color: (playerHoldings[stock.symbol] || 0) > 0 ? "var(--positive-color, #4ade80)" : "var(--foreground)" , fontSize: "1.05em"}}>
+                        {playerHoldings[stock.symbol] || 0}
+                      </span>
+                      <InputNumber
+                          min={0} placeholder="Amount"
                           value={buyAmounts[stock.symbol] || undefined}
-                          onChange={(value) =>
-                            handleAmountChange(stock.symbol, value, "buy")
-                          }
-                          style={{
-                            flexGrow: 1,
-                            border: "none",
-                          }}
+                          onChange={(value) => handleAmountChange(stock.symbol, value, "buy")}
+                          style={{ width: '100%', border: "1px solid var(--input-border-color, #4b5563)", background: "var(--input-background, #2d3748)", color: "var(--foreground)" }}
                           controls={false}
-                        />
-                      </div>
-                      {/* Sell Controls */}
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "8px",
-                        }}
-                      >
-                        <InputNumber
-                          min={0}
-                          placeholder="Amount"
+                      />
+                      <InputNumber
+                          min={0} max={playerHoldings[stock.symbol] || 0} placeholder="Amount"
                           value={sellAmounts[stock.symbol] || undefined}
-                          onChange={(value) =>
-                            handleAmountChange(stock.symbol, value, "sell")
-                          }
-                          style={{
-                            flexGrow: 1,
-                            border: "none",
-                          }}
+                          onChange={(value) => handleAmountChange(stock.symbol, value, "sell")}
+                          style={{ width: '100%', border: "1px solid var(--input-border-color, #4b5563)", background: "var(--input-background, #2d3748)", color: "var(--foreground)" }}
                           controls={false}
-                        />
-                      </div>
+                          disabled={!playerHoldings[stock.symbol] || playerHoldings[stock.symbol] === 0}
+                      />
                     </li>
                   ))}
                 </ul>
@@ -636,132 +474,59 @@ const TransactionPage: React.FC<TransactionListProps> = ({
             ))
           )}
         </div>
-
-        {/* Removed Right Pane: Stock Info Table */}
-        {/* <div style={{ flex: '1 1 40%', alignSelf: 'stretch' }}> ... table ... </div> */}
       </div>
 
-      {/* Submit & Timer (Fixed Position) */}
-      <div
-        style={{
-          position: "fixed",
-          bottom: "20px",
-          right: "30px",
-          zIndex: 1000,
-          display: "flex",
-          alignItems: "center",
-          gap: "20px",
-        }}
-      >
-        {/* Timer */}
-        <div
-          style={{
-            backgroundColor: "rgba(59, 130, 246, 0.2)",
-            padding: "8px 16px",
-            borderRadius: "8px",
-            backdropFilter: "blur(4px)",
-          }}
-        >
-          <Typography.Text
-            style={{
-              fontWeight: "bold",
-              fontSize: "1rem",
-              color: "var(--foreground)",
-            }}
-          >
+      <div style={{ position: "fixed", bottom: "20px", right: "30px", zIndex: 1000, display: "flex", alignItems: "center", gap: "20px" }}>
+        <div style={{ backgroundColor: "rgba(59, 130, 246, 0.8)", padding: "10px 18px", borderRadius: "8px", backdropFilter: "blur(5px)", boxShadow: "0 2px 10px rgba(0,0,0,0.2)" }}>
+          <Typography.Text style={{ fontWeight: "bold", fontSize: "1.1rem", color: "var(--foreground-on-accent, white)" }}>
             Time left: {timer === null ? "..." : `${timer}s`}
           </Typography.Text>
         </div>
-        {/* Submit Button */}
-        <Button
-          type="primary"
-          size="large"
-          onClick={handleSubmitRound}
-          disabled={hasSubmitted || isLoading}
-        >
-          Submit Round
+        <Button type="primary" size="large" onClick={handleSubmitRound} disabled={hasSubmitted || isPageLoading} style={{minWidth: '150px', fontWeight: 'bold'}}>
+          {hasSubmitted ? "Waiting..." : "Submit Round"}
         </Button>
       </div>
-      {/* Waiting Overlay for early submitters */}
-      {hasSubmitted && waitingForOthers && (
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: "rgba(0,0,0,0.4)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            pointerEvents: "none",
-            zIndex: 999,
-          }}
-        >
-          <div
-            style={{
-              pointerEvents: "auto",
-              padding: 16,
-              background: "var(--background)",
-              borderRadius: 4,
-            }}
-          >
-            <Typography.Text style={{ color: "var(--foreground)" }}>
-              Transaction Successful. Waiting for the rest of the players to
-              make their transaction…
+
+      {hasSubmitted && waitingForOthers && ( // Using styled Modal from old version
+        <Modal open={true} closable={false} footer={null} centered maskStyle={{ backgroundColor: "rgba(0,0,0,0.75)" }} bodyStyle={{padding: 0}}>
+          <div style={{ padding: "40px 30px", textAlign: "center", background: "var(--card-background)", borderRadius:"8px", color: "var(--foreground)" }}>
+            <Spin size="large" style={{ marginBottom: "25px" }} tip="Processing submission..."/>
+            <Typography.Title level={4} style={{ color: "var(--foreground)", marginBottom: "10px" }}>
+              Transactions Submitted
+            </Typography.Title>
+            <Typography.Text style={{ color: "var(--foreground-muted)" }}>
+              Waiting for other players to complete their round. This window will close automatically when the next round begins.
             </Typography.Text>
           </div>
-        </div>
+        </Modal>
       )}
-      <Modal
-        title={`Stock Chart: ${selectedStockSymbol || ""}`}
-        open={!!selectedStockSymbol} // Show modal when a symbol is selected
-        onCancel={handleCloseChartModal}
-        footer={null} // No OK/Cancel buttons needed
-        width={900} // Adjust width as needed
-        style={{ top: 20 }} // Position modal slightly from top
-        maskClosable={true} // Allow closing by clicking outside
-        destroyOnClose={true} // Unmount chart component when modal closes
+
+      <Modal // Chart Modal with company description and fixed colors
+        title={<Typography.Title level={4} style={{margin:0, color: "var(--foreground-on-modal, #212529)"}}>{`Stock Chart: ${selectedStockSymbol || ""}`}</Typography.Title>}
+        open={!!selectedStockSymbol} onCancel={handleCloseChartModal} footer={null} width={900} style={{ top: 20 }}
+        maskClosable={true} destroyOnClose={true}
+        bodyStyle={{ backgroundColor: "var(--modal-background, white)", color: "var(--foreground-on-modal, #212529)", padding:"24px"}}
       >
-        {isChartLoading ? (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "500px",
-            }}
-          >
-            <Spin size="large" tip="Loading chart data..." />
-          </div>
-        ) : chartError ? (
-          <Typography.Text
-            type="danger"
-            style={{
-              display: "block",
-              textAlign: "center",
-              marginTop: "20px",
-              color: "var(--foreground)",
-            }}
-          >
-            {chartError}
-          </Typography.Text>
+        {isChartLoading ? ( <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "500px" }}><Spin size="large" tip="Loading chart data..." /></div>
+        ) : chartError ? ( <Typography.Text style={{ display: "block", textAlign: "center", padding: "20px", color: "var(--error-color, red)"}}>{chartError}</Typography.Text>
         ) : chartData.length > 0 && selectedStockSymbol ? (
-          // Render the chart component only when data is ready
-          <StockChart data={chartData} symbol={selectedStockSymbol} />
-        ) : (
-          // Fallback case if data is empty but no error (might happen briefly)
-          <Typography.Text
-            style={{
-              display: "block",
-              textAlign: "center",
-              marginTop: "20px",
-              color: "var(--foreground)",
-            }}
-          >
-            No chart data available.
-          </Typography.Text>
+          <div>
+            <StockChart data={chartData} symbol={selectedStockSymbol} />
+            {selectedCompanyInfo && (
+              <div style={{ marginTop: "24px", padding: "16px", borderTop: "1px solid var(--border-color-modal, #dee2e6)", background: "var(--card-background-secondary-modal, #f8f9fa)", borderRadius:"8px" }}>
+                <Typography.Title level={5} style={{color: "var(--foreground-on-modal, #212529)", marginBottom:"12px"}}>{selectedCompanyInfo.name} ({selectedStockSymbol})</Typography.Title>
+                <Typography.Paragraph style={{color: "var(--foreground-muted-on-modal, #495057)", fontSize:"0.9em", lineHeight:"1.6"}}>
+                  <strong>Sector:</strong> {selectedCompanyInfo.sector}   |  
+                  <strong>Industry:</strong> {selectedCompanyInfo.industry}   |  
+                  <strong>Country:</strong> {selectedCompanyInfo.country}
+                </Typography.Paragraph>
+                <Typography.Paragraph style={{color: "var(--foreground-muted-on-modal, #495057)", maxHeight: '120px', overflowY: 'auto', fontSize:"0.9em", lineHeight:"1.6"}}>
+                  {selectedCompanyInfo.description}
+                </Typography.Paragraph>
+              </div>
+            )}
+          </div>
+        ) : ( <Typography.Text style={{ display: "block", textAlign: "center", padding: "20px", color: "var(--foreground-muted-on-modal, #6c757d)" }}>No chart data available for {selectedStockSymbol}.</Typography.Text>
         )}
       </Modal>
     </div>
