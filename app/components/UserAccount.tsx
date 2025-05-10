@@ -2,7 +2,12 @@
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Avatar, Dropdown, MenuProps, message, Button, Tooltip } from "antd";
-import { UserOutlined, LogoutOutlined, EditOutlined } from "@ant-design/icons";
+import {
+  UserOutlined,
+  LogoutOutlined,
+  EditOutlined,
+  FileTextOutlined,
+} from "@ant-design/icons";
 import { useApi } from "@/hooks/useApi";
 import { useRouter, useParams } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
@@ -46,6 +51,12 @@ const UserAccount = () => {
       label: "Profile",
       icon: <EditOutlined />,
       onClick: () => router.push(`/users/${userId}`),
+    },
+    {
+      key: "edit",
+      label: "Instructions",
+      icon: <FileTextOutlined />,
+      onClick: () => window.open("/instructions", "_blank"),
     },
     {
       key: "logout",
