@@ -46,17 +46,18 @@ const UserAccount = () => {
   };
 
   const items: MenuProps["items"] = [
-    {
-      key: "edit",
-      label: "Profile",
-      icon: <EditOutlined />,
-      onClick: () => router.push(`/users/${userId}`),
-    },
+ 
     {
       key: "edit",
       label: "Instructions",
       icon: <FileTextOutlined />,
       onClick: () => window.open("/instructions", "_blank"),
+    },
+    {
+      key: "edit",
+      label: "Back to Menu",
+      icon: <EditOutlined />,
+      onClick: () => router.push(`/users/${userId}`),
     },
     {
       key: "logout",
