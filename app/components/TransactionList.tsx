@@ -535,8 +535,7 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
               paddingBottom: "10px",
             }}
           >
-            {/* Available Stocks for Trading (Cash: ${playerCash.toFixed(2)}) */}
-            Available Stocks for Trading (Cash:
+            Available Stocks for Trading (Cash:{" "}
             {usdFormatter.format(playerCash)})
           </Typography.Title>
 
@@ -560,7 +559,7 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
                 color: "var(--foreground)",
               }}
             >
-              No stocks available for trading this round.
+              ❌ No stocks available for trading this round. 💲
             </Typography.Text>
           ) : (
             Object.entries(categories).map(([cat, stocks]) => (
@@ -744,17 +743,16 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
         <div
           style={{
             backgroundColor: "#3b82f6",
-            padding: "10px 18px",
+            padding: "8px 16px",
             borderRadius: "8px",
-            backdropFilter: "blur(5px)",
-            boxShadow: "0 2px 10px #000000",
+            backdropFilter: "blur(4px)",
           }}
         >
           <Typography.Text
             style={{
               fontWeight: "bold",
-              fontSize: "1.1rem",
-              color: "var(--foreground-on-accent, white)",
+              fontSize: "1rem",
+              color: "var(--foreground)",
             }}
           >
             Time left: {timer === null ? "..." : `${timer}s`}
