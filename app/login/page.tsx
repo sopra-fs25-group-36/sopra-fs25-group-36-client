@@ -40,7 +40,7 @@ const Login: React.FC = () => {
     } catch (error) {
       message.error(
         error instanceof Error
-          ? `Something went wrong during the login:\n${error.message}`
+          ? `Username or password is incorrect. Did you already register?`
           : "An unknown error occurred during login."
       );
     } finally {
