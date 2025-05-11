@@ -1,7 +1,8 @@
 :root {
   --background: #ffffff;
   --foreground: #2e3248;
-
+  --foreground-muted: #495057;
+  
   --button-text: #11e098;
   --button-primary: #11e09747;
   --button-primary-hover: #11e0975e;
@@ -9,6 +10,7 @@
 
   --button-secondary: #ffffff;
   --button-secondary-border: #dadce0;
+  --border-color-muted: #4b5563;
   --button-secondary-hover: #f8f9fa;
 
   --card-background: #f0f2f5;
@@ -19,11 +21,12 @@
   :root {
     --background: #2a304f;
     --foreground: #ffffff;
+    --foreground-muted: #aeb5c3;
 
     --button-primary-bg: #11e09833;
-
     --button-secondary: #3c4043;
     --button-secondary-border: #5f6368;
+    --border-color-muted: #f8f9fa;
     --button-secondary-hover: #5f6368;
 
     /* --card-background: #1f1f1f; */

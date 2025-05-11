@@ -47,6 +47,11 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
   const currentUserId =
     typeof window !== "undefined" ? localStorage.getItem("id") : null;
 
+  const usdFormatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  });
+
   // State for transactions
   const [buyAmounts, setBuyAmounts] = useState<{ [symbol: string]: number }>(
     {}
@@ -518,7 +523,7 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
             padding: "24px",
             maxHeight: "calc(85vh - 40px)",
             overflowY: "auto",
-            border: "1px solid var(--border-color, #374151)",
+            border: "1px solid var(--border-color-muted)",
           }}
         >
           <Typography.Title
@@ -526,11 +531,13 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
             style={{
               color: "var(--foreground-muted)",
               marginBottom: "20px",
-              borderBottom: "1px solid var(--border-color-muted, #4b5563)",
+              borderBottom: "1px solid var(--border-color-muted)",
               paddingBottom: "10px",
             }}
           >
-            Available Stocks for Trading (Cash: ${playerCash.toFixed(2)})
+            {/* Available Stocks for Trading (Cash: ${playerCash.toFixed(2)}) */}
+            Available Stocks for Trading (Cash:
+            {usdFormatter.format(playerCash)})
           </Typography.Title>
 
           {isPageLoading ? (
@@ -574,8 +581,7 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
                       alignItems: "center",
                       gap: columnGap,
                       padding: "10px 0",
-                      borderBottom:
-                        "2px solid var(--border-color-strong, #6b7280)",
+                      borderBottom: "2px solid var(--border-color-muted)",
                       marginBottom: "10px",
                       position: "sticky",
                       top: -24,
@@ -631,7 +637,7 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
                         alignItems: "center",
                         gap: columnGap,
                         padding: "12px 0",
-                        borderBottom: "1px solid var(--border-color, #374151)",
+                        borderBottom: "1px solid var(--border-color-muted)",
                       }}
                     >
                       <Image
@@ -673,7 +679,7 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
                           textAlign: "right",
                           color:
                             (playerHoldings[stock.symbol] || 0) > 0
-                              ? "var(--positive-color, #4ade80)"
+                              ? "var(--button-text)"
                               : "var(--foreground)",
                           fontSize: "1.05em",
                         }}
@@ -689,9 +695,8 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
                         }
                         style={{
                           width: "100%",
-                          border:
-                            "1px solid var(--input-border-color, #4b5563)",
-                          background: "var(--input-background, #2d3748)",
+                          border: "1px solid var(--border-color-muted)",
+                          background: "var(--foreground)",
                           color: "var(--foreground)",
                         }}
                         controls={false}
@@ -706,9 +711,8 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
                         }
                         style={{
                           width: "100%",
-                          border:
-                            "1px solid var(--input-border-color, #4b5563)",
-                          background: "var(--input-background, #2d3748)",
+                          border: "1px solid var(--foreground-muted)",
+                          background: "var(--foreground)",
                           color: "var(--foreground)",
                         }}
                         controls={false}
@@ -739,11 +743,11 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
       >
         <div
           style={{
-            backgroundColor: "rgba(59, 130, 246, 0.8)",
+            backgroundColor: "#3b82f6",
             padding: "10px 18px",
             borderRadius: "8px",
             backdropFilter: "blur(5px)",
-            boxShadow: "0 2px 10px rgba(0,0,0,0.2)",
+            boxShadow: "0 2px 10px #000000",
           }}
         >
           <Typography.Text
@@ -767,43 +771,42 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
         </Button>
       </div>
 
-      {hasSubmitted &&
-        waitingForOthers && ( // Using styled Modal from old version
-          <Modal
-            open={true}
-            closable={false}
-            footer={null}
-            centered
-            maskStyle={{ backgroundColor: "rgba(0,0,0,0.75)" }}
-            bodyStyle={{ padding: 0 }}
+      {hasSubmitted && waitingForOthers && (
+        <Modal
+          open={true}
+          closable={false}
+          footer={null}
+          centered
+          maskStyle={{ backgroundColor: "var(--card-background)" }}
+          bodyStyle={{ padding: 0 }}
+        >
+          <div
+            style={{
+              padding: "40px 30px",
+              textAlign: "center",
+              background: "var(--card-background)",
+              borderRadius: "8px",
+              color: "var(--foreground)",
+            }}
           >
-            <div
-              style={{
-                padding: "40px 30px",
-                textAlign: "center",
-                background: "var(--card-background)",
-                borderRadius: "8px",
-                color: "var(--foreground)",
-              }}
+            <Spin
+              size="large"
+              style={{ marginBottom: "25px" }}
+              tip="Processing submission..."
+            />
+            <Typography.Title
+              level={4}
+              style={{ color: "var(--foreground)", marginBottom: "10px" }}
             >
-              <Spin
-                size="large"
-                style={{ marginBottom: "25px" }}
-                tip="Processing submission..."
-              />
-              <Typography.Title
-                level={4}
-                style={{ color: "var(--foreground)", marginBottom: "10px" }}
-              >
-                Transactions Submitted
-              </Typography.Title>
-              <Typography.Text style={{ color: "var(--foreground-muted)" }}>
-                Waiting for other players to complete their round. This window
-                will close automatically when the next round begins.
-              </Typography.Text>
-            </div>
-          </Modal>
-        )}
+              Transactions Submitted
+            </Typography.Title>
+            <Typography.Text style={{ color: "var(--foreground-muted)" }}>
+              Waiting for other players to complete their round. This window
+              will close automatically when the next round begins.
+            </Typography.Text>
+          </div>
+        </Modal>
+      )}
 
       <Modal // Chart Modal with company description and fixed colors
         title={
@@ -820,8 +823,8 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
         maskClosable={true}
         destroyOnClose={true}
         bodyStyle={{
-          backgroundColor: "var(--modal-background, white)",
-          color: "var(--foreground-on-modal, #212529)",
+          backgroundColor: "var(--background)",
+          color: "var(--foreground)",
           padding: "24px",
         }}
       >
@@ -842,7 +845,7 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
               display: "block",
               textAlign: "center",
               padding: "20px",
-              color: "var(--error-color, red)",
+              color: "#FF0000",
             }}
           >
             {chartError}
@@ -855,15 +858,15 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
                 style={{
                   marginTop: "24px",
                   padding: "16px",
-                  borderTop: "1px solid var(--border-color-modal, #dee2e6)",
-                  background: "var(--card-background-secondary-modal, #f8f9fa)",
+                  borderTop: "1px solid var(--button-secondary-border)",
+                  background: "var(--card-background)",
                   borderRadius: "8px",
                 }}
               >
                 <Typography.Title
                   level={5}
                   style={{
-                    color: "var(--foreground-on-modal, #212529)",
+                    color: "var(--foreground)",
                     marginBottom: "12px",
                   }}
                 >
@@ -871,7 +874,7 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
                 </Typography.Title>
                 <Typography.Paragraph
                   style={{
-                    color: "var(--foreground-muted-on-modal, #495057)",
+                    color: "var(--foreground-muted)",
                     fontSize: "0.9em",
                     lineHeight: "1.6",
                   }}
@@ -883,7 +886,7 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
                 </Typography.Paragraph>
                 <Typography.Paragraph
                   style={{
-                    color: "var(--foreground-muted-on-modal, #495057)",
+                    color: "var(--foreground-muted)",
                     maxHeight: "120px",
                     overflowY: "auto",
                     fontSize: "0.9em",
@@ -901,7 +904,7 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
               display: "block",
               textAlign: "center",
               padding: "20px",
-              color: "var(--foreground-muted-on-modal, #6c757d)",
+              color: "var(--foreground)",
             }}
           >
             No chart data available for {selectedStockSymbol}.
