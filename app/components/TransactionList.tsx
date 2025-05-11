@@ -138,11 +138,14 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
             "INTC",
             "NFLX",
             "AMD",
+            "WDAY",
+            
           ],
-          ENERGY: ["XOM", "CVX"],
-          FINANCE: ["JPM", "GS"],
-          HEALTHCARE: ["PFE", "JNJ"],
-          CONSUMER: ["PG"],
+          RETAIL:["WMT","COST", "BABA"],
+          ENERGY: ["XOM", "CVX","SHEL"],
+          FINANCE: ["JPM", "GS", "V", "MA"],
+          HEALTHCARE: ["PFE", "JNJ","LLY", "ABBV"],
+          CONSUMER: ["PG","KO", "BTI", "MCD"],
           MISC: ["IBM"],
         };
         const categorizedData: { [category: string]: StockPriceGetDTO[] } = {};
