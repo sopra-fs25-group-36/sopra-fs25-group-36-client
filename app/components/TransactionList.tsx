@@ -59,25 +59,18 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
   const [sellAmounts, setSellAmounts] = useState<{ [symbol: string]: number }>(
     {}
   );
-
-  // State for stock list, categories, and market date
   const [categories, setCategories] = useState<{
     [category: string]: StockPriceGetDTO[];
   }>({});
   const [currentRoundMarketDate, setCurrentRoundMarketDate] = useState<
     string | null
   >(null);
-
-  // State for player cash and holdings
-  const [playerCash, setPlayerCash] = useState<number>(0); // From new
+  const [playerCash, setPlayerCash] = useState<number>(0);
   const [playerHoldings, setPlayerHoldings] = useState<{
     [symbol: string]: number;
   }>({});
 
-  // Loading states
-  const [isPageLoading, setIsPageLoading] = useState(true); // Combined loading state
-
-  // State for Chart Modal
+  const [isPageLoading, setIsPageLoading] = useState(true);
   const [selectedStockSymbol, setSelectedStockSymbol] = useState<string | null>(
     null
   );
@@ -139,13 +132,12 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
             "NFLX",
             "AMD",
             "WDAY",
-            
           ],
-          RETAIL:["WMT","COST", "BABA"],
-          ENERGY: ["XOM", "CVX","SHEL"],
+          RETAIL: ["WMT", "COST", "BABA"],
+          ENERGY: ["XOM", "CVX", "SHEL"],
           FINANCE: ["JPM", "GS", "V", "MA"],
-          HEALTHCARE: ["PFE", "JNJ","LLY", "ABBV"],
-          CONSUMER: ["PG","KO", "BTI", "MCD"],
+          HEALTHCARE: ["PFE", "JNJ", "LLY", "ABBV"],
+          CONSUMER: ["PG", "KO", "BTI", "MCD"],
           MISC: ["IBM"],
         };
         const categorizedData: { [category: string]: StockPriceGetDTO[] } = {};
@@ -218,29 +210,46 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
   };
 
   const startPollingStatus = (submittedRoundForPolling: number) => {
-    if (pollRef.current) clearTimeout(pollRef.current);
+    // Clear any existing poll
+    if (pollRef.current) {
+      clearTimeout(pollRef.current);
+      pollRef.current = null;
+    }
+
     const poll = async () => {
       console.log(
         `🔄 Polling status (gameId=${gameId}, pollingForRoundCompletion=${submittedRoundForPolling})…`
       );
       try {
-        // Using new page's parameter logic for polling: `submittedRoundForPolling` is the round that was just submitted.
         const { allSubmitted, roundEnded, nextRoundStartTime } =
           await apiService.get<RoundStatusDTO>(
             `/game/${gameId}/status?lastRound=${submittedRoundForPolling}`
           );
+
         console.log(
           `✅ Poll response: allSubmitted=${allSubmitted}, roundEnded=${roundEnded}, nextRoundStartTime=${nextRoundStartTime}`
         );
+
         if (allSubmitted || roundEnded) {
-          if (pollRef.current) clearTimeout(pollRef.current);
+          // Clear timeout just in case
+          if (pollRef.current) {
+            clearTimeout(pollRef.current);
+            pollRef.current = null;
+          }
+
+          // If final round, go to endgame screen
+          if (submittedRoundForPolling === 10) {
+            router.push(`/lobby/${gameId}/endgame`);
+            return;
+          }
+
           const waitTime = nextRoundStartTime - Date.now();
-          if (waitTime > 0 && nextRoundStartTime > 0) {
-            // ensure nextRoundStartTime is valid
+
+          if (nextRoundStartTime > 0 && waitTime > 0) {
             console.log(
               `🚀 All players submitted or round ended. Waiting ${waitTime}ms for synchronized start before redirecting.`
             );
-            setTimeout(() => {
+            pollRef.current = setTimeout(() => {
               router.push(`/lobby/${gameId}/game/transition`);
             }, waitTime);
           } else {
@@ -250,14 +259,17 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
             router.push(`/lobby/${gameId}/game/transition`);
           }
         } else {
+          // Keep polling
           pollRef.current = setTimeout(poll, 3000);
         }
       } catch (error) {
-        console.error("Polling failed:", error);
+        console.error("❌ Polling failed:", error);
+        // Retry after 5 seconds on failure
         pollRef.current = setTimeout(poll, 5000);
       }
     };
-    void poll();
+
+    void poll(); // Kick off the first poll immediately
   };
 
   useEffect(() => {
@@ -350,9 +362,18 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
 
     const newCash = latestCash + proceedsFromSells - costOfBuys;
     if (newCash < 0) {
-      Modal.error({
-        title: "Insufficient funds",
-        content: `You are $${Math.abs(newCash).toFixed(2)} short for these purchases.`,
+      Modal.confirm({
+        title: (
+          <span style={{ color: "var(--foreground)" }}>Insufficient funds</span>
+        ),
+        content: (
+          <span style={{ color: "var(--foreground)" }}>
+            You are {usdFormatter.format(Math.abs(newCash))} short for these
+            purchases.
+          </span>
+        ),
+        okText: "OK",
+        cancelButtonProps: { style: { display: "none" } },
       });
       setIsPageLoading(false);
       return;
@@ -379,7 +400,6 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
 
       if (transactionsToSubmit.length === 0) {
         message.info("No transactions entered. Submitting empty round.");
-        // Still need to "submit" to backend to mark as done for the round
         await apiService.post(
           `/api/transaction/${gameId}/submit?userId=${currentUserId}`,
           []
@@ -396,7 +416,7 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
       setWaitingForOthers(true);
       const submittedForRound = round;
       setLastRoundAtSubmit(submittedForRound);
-      startPollingStatus(submittedForRound); // Use current round for polling status
+      startPollingStatus(submittedForRound);
     } catch (err) {
       console.error("Failed to submit transactions:", err);
       message.error("Failed to submit transactions. Please try again.");
@@ -526,7 +546,6 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
             padding: "24px",
             maxHeight: "calc(85vh - 40px)",
             overflowY: "auto",
-            border: "1px solid var(--border-color-muted)",
           }}
         >
           <Typography.Title
@@ -773,14 +792,7 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
       </div>
 
       {hasSubmitted && waitingForOthers && (
-        <Modal
-          open={true}
-          closable={false}
-          footer={null}
-          centered
-          maskStyle={{ backgroundColor: "var(--card-background)" }}
-          bodyStyle={{ padding: 0 }}
-        >
+        <Modal open={true} closable={false} footer={null} centered>
           <div
             style={{
               padding: "40px 30px",
@@ -809,11 +821,11 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
         </Modal>
       )}
 
-      <Modal // Chart Modal with company description and fixed colors
+      <Modal
         title={
           <Typography.Title
             level={4}
-            style={{ margin: 0, color: "var(--foreground-on-modal, #212529)" }}
+            style={{ margin: 0, color: "var(--foreground)" }}
           >{`Stock Chart: ${selectedStockSymbol || ""}`}</Typography.Title>
         }
         open={!!selectedStockSymbol}

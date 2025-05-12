@@ -304,13 +304,15 @@ a:hover {
   border-bottom-color: var(--card-border) !important;
 }
 
+.ant-modal-content,
 .ant-modal-title {
   /* color: var(--button-text) !important; */
   color: var(--foreground) !important;
 }
 
-
 .ant-modal-footer {
+  display: flex !important;
+  justify-content: center !important;
   border-top-color: var(--card-border) !important;
 }
 

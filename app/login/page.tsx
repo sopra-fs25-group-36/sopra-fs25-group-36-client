@@ -80,9 +80,6 @@ const Login: React.FC = () => {
           <Input.Password placeholder="Enter password" />
         </Form.Item>
         <Form.Item>
-          {/* <Form.Item
-          style={{ display: "flex", justifyContent: "center", width: "100%" }}
-        > */}
           <Button type="primary" htmlType="submit" loading={loading} block>
             Login
           </Button>

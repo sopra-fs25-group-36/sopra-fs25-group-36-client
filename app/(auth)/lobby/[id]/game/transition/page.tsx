@@ -10,7 +10,6 @@ const TransitionPage: React.FC = () => {
   const { id: gameId } = useParams();
 
   useEffect(() => {
-    // After a short delay, navigate to the leaderboard
     const timeout = setTimeout(() => {
       router.replace(`/lobby/${gameId}/leader_board`);
     }, 2500);

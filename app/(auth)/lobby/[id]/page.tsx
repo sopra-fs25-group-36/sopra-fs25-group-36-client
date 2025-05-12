@@ -107,7 +107,7 @@ export default function LobbyPage() {
         userId: Number(currentUserId),
       });
     } catch {
-      message.error("Could not update ready status");
+      message.error("❌ Could not update ready status");
     }
   };
 
@@ -176,8 +176,8 @@ export default function LobbyPage() {
                     username === "Empty Slot"
                       ? undefined
                       : ready
-                      ? "#11e098"
-                      : "red",
+                        ? "#11e098"
+                        : "red",
                 }}
               >
                 {username}
@@ -189,15 +189,15 @@ export default function LobbyPage() {
                     username === "Empty Slot"
                       ? undefined
                       : ready
-                      ? "#11e098"
-                      : "red",
+                        ? "#11e098"
+                        : "red",
                 }}
               >
                 {username === "Empty Slot"
                   ? ""
                   : ready
-                  ? "Ready ✅"
-                  : "Not Ready ❌"}
+                    ? "Ready ✅"
+                    : "Not Ready ❌"}
               </span>
             </List.Item>
           )}
@@ -208,7 +208,8 @@ export default function LobbyPage() {
             type="primary"
             block
             onClick={handleReady}
-            style={{ marginTop: 16 }}>
+            style={{ marginTop: 16 }}
+          >
             Ready
           </Button>
         )}
