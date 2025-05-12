@@ -161,4 +161,7 @@ reason).
 | **[@LiakosKari]** | [11.05.2025] | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-client/commit/b8a149de4daaf98ba57b578034b8a74f8b0abeba] | Debugging                         | Fix all bugs in order the app can be deployed to vercel  |
 | **[@LiakosKari]** | [10.05.2025] | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-client/commit/a2aa4f6ac3eca0ca37533b60c585289c8a8fead5] | Remove Avatar                     | Remove Avatar functionality                              |
 | **[@LiakosKari]** | [10.05.2025] | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-client/commit/bc52f12d7af0664e3a57aa952d0c6e49400dad90] | Change Profile Menu Functionality | Add Instruction Page and go to main menu as TA suggested |
-
+| **[@sing-git]** | [10.05.2025] | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-client/commit/ae1789d71df27d9c3be49fe2656f03be8fbf6201] | reorganized the categories (add more icons and categories)                |                       |
+| **[@sing-git]** | [11.05.2025] | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-client/commit/78c96cd2449b15f50906d5fc845e51dcce3b96d1] | reduced countdown 20 to 10sec and change the naming of profile button |
+| **[@sing-git]** | [11.05.2025] | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-client/commit/87365cc123458c2f64fd5388767626b32c6038ef] | login error message for wrong id/pw or not registered|                           |
+| **[@sing-git]** | [11.05.2025] | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-server/commit/5b621eca47993a5209e4f8313b3c7ba8911a0f17] | backend-add more stocks with categories|    
