@@ -152,3 +152,6 @@ reason).
 | **[@JianwenCao]** | [03.05.2025] | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-client/commit/64c168c22c8541222952d303500635ee534a7b68] | fix vercel join game| In vercel when a user created a game and joined it, the lobby will be inactive for strange reasons but locally everything is fine, I fixed the vercel version so now it works.|
 | **[@JianwenCao]** | [03.05.2025] | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-client/commit/de9dbeebfffd3fd4b7fb305f513b51e9e6d09cf9] | fix instruction| Previously when all users are ready they are redirected to the instruction page, but the backend logic will start game as soon as all users are ready, but different users spent different time on reading instructions. It is fixed now.|
 
+
+## Contributions Week 5 & 6 - [06.05.2025] to [12.5.2025]
+| **[@JianwenCao]** | [09.05.2025] | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-client/commit/88600eeb7ba788b665c5969884366faf45b3618a] | fix transcation invalid| Deal with invalid transcations.|
