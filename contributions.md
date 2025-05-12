@@ -154,6 +154,8 @@ reason).
 
 
 ## Contributions Week 5 & 6 - [06.05.2025] to [12.5.2025]
+| **Student**       | **Date**   | **Link to Commit**                                                                                                  | **Description**                                                                                                                                                                            | **Relevance**          |
+| ----------------- |------------| ------------------------------------------------------------------------------------------------------------------- |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------|
 | **[@JianwenCao]** | [09.05.2025] | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-client/commit/88600eeb7ba788b665c5969884366faf45b3618a] | fix transcation invalid| Deal with invalid transcations.|
 | **[@LiakosKari]** | [12.05.2025] | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-client/commit/9516c3d9b3b7eb3c6bdcf8eae7a0b25bba65dc13] | End game page                     | First working version of final leaderboard/ end page     |
 | **[@LiakosKari]** | [11.05.2025] | [https://github.com/sopra-fs25-group-36/sopra-fs25-group-36-client/commit/b8a149de4daaf98ba57b578034b8a74f8b0abeba] | Debugging                         | Fix all bugs in order the app can be deployed to vercel  |
