@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { Spin, Typography } from "antd";
-import { useParams } from "next/navigation";
+import {useParams, useRouter} from "next/navigation";
 import usePlayerState from "@/hooks/usePlayerState";
 import Portfolio from "@/components/Portfolio";
 
@@ -18,7 +18,8 @@ export default function GamePage() {
 
   const { player, isLoading, error } = usePlayerState(gameId);
 
-  if (isLoading) return <Spin tip="Loading portfolio…" size="large" />;
+
+    if (isLoading) return <Spin tip="Loading portfolio…" size="large" />;
   if (error || !player) return <div>Error loading portfolio</div>;
 
   return (
@@ -26,7 +27,7 @@ export default function GamePage() {
       <div style={{ marginBottom: 16, textAlign: "center" }}>
         <Title level={2}>Your Portfolio</Title>
       </div>
-      <Portfolio player={player!} />
+      <Portfolio player={player} gameId={gameId} playerId={Number(player.userId)} />
     </>
   );
 }

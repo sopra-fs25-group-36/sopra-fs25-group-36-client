@@ -5,13 +5,16 @@ import { Row, Col, Card, Statistic, Typography } from "antd";
 import BarChart from "@/components/BarChart";
 import PieChart from "@/components/PieChart";
 import { PlayerStateDTO } from "@/types/player";
+import HeatmapTable from "@/components/HeatmapTable";
 
 const { Title } = Typography;
 
 interface PortfolioProps {
   player: PlayerStateDTO | null;
+  gameId: string;
+  playerId: number;
 }
-const Portfolio: React.FC<PortfolioProps> = ({ player }) => {
+const Portfolio: React.FC<PortfolioProps> = ({ player,gameId, playerId }) => {
   if (!player) return null;
   const categoryTotals: Record<string, number> = {};
 
@@ -45,72 +48,111 @@ const Portfolio: React.FC<PortfolioProps> = ({ player }) => {
     }))
     .sort((a, b) => b.value - a.value);
 
-  return (
-    <Row gutter={[13, 13]}>
-      <Col xs={24} sm={12} md={8}>
-        <Card>
-          <Statistic
-            title="Available Cash"
-            value={player.cashBalance}
-            prefix="$"
-            precision={2}
-          />
-        </Card>
-      </Col>
-      <Col xs={24} sm={12} md={8}>
-        <Card>
-          <Statistic
-            title="Portfolio Value"
-            value={stockValue}
-            prefix="$"
-            precision={2}
-          />
-        </Card>
-      </Col>
-      <Col xs={24} sm={12} md={8}>
-        <Card>
-          <Statistic
-            title="Total Assets"
-            value={totalAssets}
-            prefix="$"
-            precision={2}
-          />
-        </Card>
-      </Col>
+    return (
+        <Row gutter={[13, 13]}>
+            {/* Available Cash */}
+            <Col xs={24} sm={12} md={8}>
+                <Card>
+                    <Statistic
+                        title="Available Cash"
+                        value={player.cashBalance}
+                        prefix="$"
+                        precision={2}
+                    />
+                </Card>
+            </Col>
 
-      <Col span={24}>
-        {player.stocks.length === 0 ? (
-          <div
-            style={{
-              padding: 20,
-              textAlign: "center",
-              background: "var(--card-background)",
-              borderRadius: 8,
-              minHeight: 300,
-            }}
-          >
-            <Title level={5}>
-              You do not currently have any stocks in your portfolio.
-            </Title>
-            <p>
-              Buy some stocks on the left and hit <strong>Submit</strong> — you
-              will see your holdings here next round!
-            </p>
-          </div>
-        ) : (
-          <div
-            style={{
-              height: 300,
-            }}
-          >
-            <PieChart data={pieData} colorMap={categoryColorMap} />
+            {/* Portfolio Value */}
+            <Col xs={24} sm={12} md={8}>
+                <Card>
+                    <Statistic
+                        title="Portfolio Value"
+                        value={stockValue}
+                        prefix="$"
+                        precision={2}
+                    />
+                </Card>
+            </Col>
 
-            <BarChart data={barData} colorMap={categoryColorMap} />
-          </div>
-        )}
-      </Col>
-    </Row>
-  );
+            {/* Total Assets */}
+            <Col xs={24} sm={12} md={8}>
+                <Card>
+                    <Statistic
+                        title="Total Assets"
+                        value={totalAssets}
+                        prefix="$"
+                        precision={2}
+                    />
+                </Card>
+            </Col>
+
+            {/* Charts + Heatmap */}
+            <Col span={24}>
+                {player.stocks.length === 0 ? (
+                    <div
+                        style={{
+                            padding: 20,
+                            textAlign: "center",
+                            background: "var(--card-background)",
+                            borderRadius: 8,
+                            minHeight: 300,
+                        }}
+                    >
+                        <Title level={5}>
+                            You do not currently have any stocks in your portfolio.
+                        </Title>
+                        <p>
+                            Buy some stocks on the left and hit <strong>Submit</strong> — you will see your holdings here next round!
+                        </p>
+                    </div>
+                ) : (
+                    <div
+                        style={{
+                            maxHeight: "800px",      // cap total height
+                            overflowY: "auto",       // vertical scroll if too tall
+                            padding: "16px 0",
+                        }}
+                    >
+                        {/* Pie Chart */}
+                        <div
+                            style={{
+                                margin: "0 auto 16px", // center + bottom gap
+                                width: 200,
+                                height: 200,
+                            }}
+                        >
+                            <PieChart data={pieData} colorMap={categoryColorMap} />
+                        </div>
+
+                        {/* Bar Chart */}
+                        <div
+                            style={{
+                                marginBottom: 16,
+                                width: "100%",
+                                height: 300,
+                            }}
+                        >
+                            <BarChart data={barData} colorMap={categoryColorMap} />
+                        </div>
+
+                        {/* Heatmap Table */}
+                        <div
+                            style={{
+                                width: "100%",
+                                maxHeight: 300,
+                                overflowY: "auto",
+                            }}
+                        >
+                            <HeatmapTable
+                                playerId={playerId}
+                                gameId={Number(gameId)}
+                            />
+                        </div>
+                    </div>
+                )}
+            </Col>
+        </Row>
+    );
 };
 
 export default Portfolio;
