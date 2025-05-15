@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { InputNumber, Button, Typography, message, Spin, Modal } from "antd";
+import { InputNumber, Button, Typography, message, Spin, Modal, Tag, List } from "antd"; // Added Tag, List
 import React, { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useGame } from "@/hooks/useGame";
@@ -10,6 +10,27 @@ import { StockPriceGetDTO } from "@/types/stock";
 import StockChart from "@/components/StockChart";
 import { StockDataPointDTO } from "@/types/chart";
 import { companyDescriptions } from "@/data/companyDescriptions";
+
+// Define NewsItemDTO (assuming you might put this in a types/news.ts file later)
+export interface NewsItemDTO {
+  id: number;
+  title: string;
+  url: string;
+  summary: string;
+  bannerImage: string | null;
+  source: string;
+  sourceDomain: string;
+  publishedTime: string; // ISO string date, e.g., "2023-01-05T19:00:54"
+  overallSentimentScore: number | null;
+  overallSentimentLabel: string | null;
+  tickerSentiments: Array<{
+    ticker: string;
+    relevanceScore: number | string; // "N/A" is possible
+    sentimentScore: number | string; // "N/A" is possible
+    sentimentLabel: string;
+  }>;
+}
+
 
 interface TransactionPageProps {
   onToggleLayout: () => void;
@@ -70,13 +91,18 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
     [symbol: string]: number;
   }>({});
 
-  const [isPageLoading, setIsPageLoading] = useState(true);
+  const [isPageLoading, setIsPageLoading] = useState(true); // Overall page loading
   const [selectedStockSymbol, setSelectedStockSymbol] = useState<string | null>(
     null
   );
   const [chartData, setChartData] = useState<StockDataPointDTO[]>([]);
   const [isChartLoading, setIsChartLoading] = useState<boolean>(false);
   const [chartError, setChartError] = useState<string | null>(null);
+
+  // News State
+  const [newsItems, setNewsItems] = useState<NewsItemDTO[]>([]);
+  const [isNewsLoading, setIsNewsLoading] = useState<boolean>(false);
+
 
   // Polling state
   const [hasSubmitted, setHasSubmitted] = useState(false);
@@ -94,7 +120,9 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
         return;
       }
 
-      setIsPageLoading(true);
+      setIsPageLoading(true); // Start overall page loading
+      setIsNewsLoading(true); // Start news loading
+
       setCategories({});
       setCurrentRoundMarketDate(null);
       setPlayerHoldings({});
@@ -102,6 +130,8 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
       setSellAmounts({});
       setHasSubmitted(false);
       setWaitingForOthers(false);
+      setNewsItems([]);
+
 
       try {
         // Fetch stock prices
@@ -122,16 +152,7 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
 
         const defaultCategories: { [category: string]: string[] } = {
           TECH: [
-            "AAPL",
-            "TSLA",
-            "AMZN",
-            "MSFT",
-            "NVDA",
-            "GOOG",
-            "INTC",
-            "NFLX",
-            "AMD",
-            "WDAY",
+            "AAPL", "TSLA", "AMZN", "MSFT", "NVDA", "GOOG", "INTC", "NFLX", "AMD", "WDAY",
           ],
           RETAIL: ["WMT", "COST", "BABA"],
           ENERGY: ["XOM", "CVX", "SHEL"],
@@ -143,26 +164,17 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
         const categorizedData: { [category: string]: StockPriceGetDTO[] } = {};
         (stockPriceData || []).forEach((stock) => {
           let assignedCategory = "OTHER";
-          if (
-            stock.category &&
-            defaultCategories[stock.category.toUpperCase()]
-          ) {
+          if (stock.category && defaultCategories[stock.category.toUpperCase()]) {
             assignedCategory = stock.category.toUpperCase();
           } else {
-            for (const [cat, symbolsInCategory] of Object.entries(
-              defaultCategories
-            )) {
+            for (const [cat, symbolsInCategory] of Object.entries(defaultCategories)) {
               if (symbolsInCategory.includes(stock.symbol)) {
                 assignedCategory = cat;
                 break;
               }
             }
           }
-          if (
-            assignedCategory === "OTHER" &&
-            stock.symbol === "IBM" &&
-            defaultCategories["MISC"]
-          ) {
+          if (assignedCategory === "OTHER" && stock.symbol === "IBM" && defaultCategories["MISC"]) {
             assignedCategory = "MISC";
           }
           if (!categorizedData[assignedCategory]) {
@@ -187,13 +199,28 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
           setPlayerHoldings(ps.playerStocks ?? {});
         } else {
           message.error("Could not find your player state for this game.");
-          setPlayerHoldings({}); // Ensure it's an empty object on failure
+          setPlayerHoldings({});
         }
+
+        // Fetch news items for the game
+        try {
+            const newsData = await apiService.get<NewsItemDTO[]>(
+                `/api/news/${gameId}`
+              );
+              setNewsItems(newsData || []);
+        } catch (newsErr) {
+            message.error("Could not load news data.");
+            console.error("News data fetch error:", newsErr);
+            setNewsItems([]); // Ensure it's empty on error
+        }
+
+
       } catch (err) {
         message.error("Could not load initial game data. Please refresh.");
         console.error("Initial data fetch error:", err);
       } finally {
-        setIsPageLoading(false);
+        setIsPageLoading(false); // End overall page loading
+        setIsNewsLoading(false); // End news loading
       }
     };
 
@@ -210,7 +237,6 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
   };
 
   const startPollingStatus = (submittedRoundForPolling: number) => {
-    // Clear any existing poll
     if (pollRef.current) {
       clearTimeout(pollRef.current);
       pollRef.current = null;
@@ -231,20 +257,15 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
         );
 
         if (allSubmitted || roundEnded) {
-          // Clear timeout just in case
           if (pollRef.current) {
             clearTimeout(pollRef.current);
             pollRef.current = null;
           }
-
-          // If final round, go to endgame screen
           if (submittedRoundForPolling === 10) {
             router.push(`/lobby/${gameId}/endgame`);
             return;
           }
-
           const waitTime = nextRoundStartTime - Date.now();
-
           if (nextRoundStartTime > 0 && waitTime > 0) {
             console.log(
               `🚀 All players submitted or round ended. Waiting ${waitTime}ms for synchronized start before redirecting.`
@@ -259,17 +280,14 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
             router.push(`/lobby/${gameId}/game/transition`);
           }
         } else {
-          // Keep polling
           pollRef.current = setTimeout(poll, 3000);
         }
       } catch (error) {
         console.error("❌ Polling failed:", error);
-        // Retry after 5 seconds on failure
         pollRef.current = setTimeout(poll, 5000);
       }
     };
-
-    void poll(); // Kick off the first poll immediately
+    void poll();
   };
 
   useEffect(() => {
@@ -445,7 +463,7 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
       let relevantHistoryData = fullHistoryData;
       if (currentRoundMarketDate) {
         try {
-          const roundEndDate = new Date(currentRoundMarketDate + "T00:00:00Z"); // Assuming date is YYYY-MM-DD
+          const roundEndDate = new Date(currentRoundMarketDate + "T00:00:00Z");
           relevantHistoryData = fullHistoryData.filter(
             (dp) => new Date(dp.date + "T00:00:00Z") <= roundEndDate
           );
@@ -538,9 +556,10 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
       </div>
 
       <div style={{ display: "flex", gap: "25px", alignItems: "stretch" }}>
+        {/* Stocks Panel */}
         <div
           style={{
-            flex: "1 1 100%",
+            flex: "2 1 65%", // Stocks take more space
             backgroundColor: "var(--card-background)",
             borderRadius: "16px",
             padding: "24px",
@@ -561,25 +580,15 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
             {usdFormatter.format(playerCash)})
           </Typography.Title>
 
-          {isPageLoading ? (
+          {isPageLoading && !isNewsLoading ? ( // Show main page spinner if page is loading but news isn't the primary blocker
             <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                height: "300px",
-              }}
+              style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "300px"}}
             >
               <Spin size="large" tip="Loading market data..." />
             </div>
-          ) : Object.keys(categories).length === 0 ? (
+          ) : Object.keys(categories).length === 0 && !isPageLoading ? ( // Check !isPageLoading to avoid showing this during initial full load
             <Typography.Text
-              style={{
-                display: "block",
-                textAlign: "center",
-                padding: "40px 20px",
-                color: "var(--foreground)",
-              }}
+              style={{ display: "block", textAlign: "center", padding: "40px 20px", color: "var(--foreground)"}}
             >
               ❌ No stocks available for trading this round. 💲
             </Typography.Text>
@@ -587,13 +596,7 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
             Object.entries(categories).map(([cat, stocks]) => (
               <div key={cat} style={{ marginBottom: "24px" }}>
                 <ul
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "0px",
-                    paddingLeft: 0,
-                    listStyle: "none",
-                  }}
+                  style={{ display: "flex", flexDirection: "column", gap: "0px", paddingLeft: 0, listStyle: "none"}}
                 >
                   <li
                     style={{
@@ -605,46 +608,24 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
                       borderBottom: "2px solid var(--border-color-muted)",
                       marginBottom: "10px",
                       position: "sticky",
-                      top: -24,
-                      backgroundColor: "var(--card-background)",
+                      top: -24, // Adjust if padding of parent changes
+                      backgroundColor: "var(--card-background)", // Match parent background
                       zIndex: 10,
                     }}
                   >
                     <Typography.Title
                       level={5}
-                      style={{
-                        margin: 0,
-                        color: "var(--foreground)",
-                        gridColumn: "1 / span 3",
-                      }}
+                      style={{ margin: 0, color: "var(--foreground)", gridColumn: "1 / span 3"}}
                     >
                       {cat}
                     </Typography.Title>
-                    <Typography.Text
-                      style={{
-                        fontWeight: "bold",
-                        color: "var(--foreground-muted)",
-                        textAlign: "right",
-                      }}
-                    >
+                    <Typography.Text style={{ fontWeight: "bold", color: "var(--foreground-muted)", textAlign: "right"}}>
                       Position
                     </Typography.Text>
-                    <Typography.Text
-                      style={{
-                        fontWeight: "bold",
-                        color: "var(--foreground-muted)",
-                        textAlign: "center",
-                      }}
-                    >
+                    <Typography.Text style={{ fontWeight: "bold", color: "var(--foreground-muted)", textAlign: "center"}}>
                       Buy Qty
                     </Typography.Text>
-                    <Typography.Text
-                      style={{
-                        fontWeight: "bold",
-                        color: "var(--foreground-muted)",
-                        textAlign: "center",
-                      }}
-                    >
+                    <Typography.Text style={{ fontWeight: "bold", color: "var(--foreground-muted)", textAlign: "center"}}>
                       Sell Qty
                     </Typography.Text>
                   </li>
@@ -667,59 +648,27 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
                         width={28}
                         height={28}
                         style={{ objectFit: "contain" }}
-                        onError={(e) =>
-                          (e.currentTarget.src = "/icons/DEFAULT.png")
-                        } // Fallback icon
+                        onError={(e) => (e.currentTarget.src = "/icons/DEFAULT.png")}
                       />
                       <span
                         onClick={() => showChartForStock(stock.symbol)}
                         title={`View chart for ${stock.symbol}`}
-                        style={{
-                          fontWeight: "bold",
-                          color: "#60a5fa",
-                          cursor: "pointer",
-                          textDecoration: "underline",
-                          fontSize: "1.05em",
-                        }}
+                        style={{ fontWeight: "bold", color: "#60a5fa", cursor: "pointer", textDecoration: "underline", fontSize: "1.05em"}}
                       >
                         {stock.symbol}
                       </span>
-                      <span
-                        style={{
-                          fontWeight: "500",
-                          textAlign: "right",
-                          color: "var(--foreground)",
-                          fontSize: "1.05em",
-                        }}
-                      >
+                      <span style={{ fontWeight: "500", textAlign: "right", color: "var(--foreground)", fontSize: "1.05em"}}>
                         ${stock.price.toFixed(2)}
                       </span>
-                      <span
-                        style={{
-                          fontWeight: "bold",
-                          textAlign: "right",
-                          color:
-                            (playerHoldings[stock.symbol] || 0) > 0
-                              ? "var(--button-text)"
-                              : "var(--foreground)",
-                          fontSize: "1.05em",
-                        }}
-                      >
+                      <span style={{ fontWeight: "bold", textAlign: "right", color: (playerHoldings[stock.symbol] || 0) > 0 ? "var(--button-text)" : "var(--foreground)", fontSize: "1.05em"}}>
                         {playerHoldings[stock.symbol] || 0}
                       </span>
                       <InputNumber
                         min={0}
                         placeholder="Amount"
                         value={buyAmounts[stock.symbol] || undefined}
-                        onChange={(value) =>
-                          handleAmountChange(stock.symbol, value, "buy")
-                        }
-                        style={{
-                          width: "100%",
-                          border: "1px solid var(--border-color-muted)",
-                          background: "var(--foreground)",
-                          color: "var(--foreground)",
-                        }}
+                        onChange={(value) => handleAmountChange(stock.symbol, value, "buy")}
+                        style={{ width: "100%", border: "1px solid var(--border-color-muted)", background: "var(--foreground)", color: "var(--foreground)"}}
                         controls={false}
                       />
                       <InputNumber
@@ -727,20 +676,10 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
                         max={playerHoldings[stock.symbol] || 0}
                         placeholder="Amount"
                         value={sellAmounts[stock.symbol] || undefined}
-                        onChange={(value) =>
-                          handleAmountChange(stock.symbol, value, "sell")
-                        }
-                        style={{
-                          width: "100%",
-                          border: "1px solid var(--foreground-muted)",
-                          background: "var(--foreground)",
-                          color: "var(--foreground)",
-                        }}
+                        onChange={(value) => handleAmountChange(stock.symbol, value, "sell")}
+                        style={{ width: "100%", border: "1px solid var(--foreground-muted)", background: "var(--foreground)", color: "var(--foreground)"}}
                         controls={false}
-                        disabled={
-                          !playerHoldings[stock.symbol] ||
-                          playerHoldings[stock.symbol] === 0
-                        }
+                        disabled={!playerHoldings[stock.symbol] || playerHoldings[stock.symbol] === 0}
                       />
                     </li>
                   ))}
@@ -749,8 +688,88 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
             ))
           )}
         </div>
+
+        {/* News Panel */}
+        <div
+          style={{
+            flex: "1 1 35%", // News takes less space
+            backgroundColor: "var(--card-background)",
+            borderRadius: "16px",
+            padding: "24px",
+            maxHeight: "calc(85vh - 40px)",
+            overflowY: "auto",
+          }}
+        >
+          <Typography.Title
+            level={4}
+            style={{
+              color: "var(--foreground-muted)",
+              marginBottom: "20px",
+              borderBottom: "1px solid var(--border-color-muted)",
+              paddingBottom: "10px",
+              position: "sticky", // Make title sticky
+              top: -24, // Adjust if padding of parent changes
+              backgroundColor: "var(--card-background)", // Match parent background
+              zIndex: 10, // Ensure it's above scrolling content
+            }}
+          >
+            Market News & Sentiment
+          </Typography.Title>
+          {isNewsLoading ? (
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "200px" }}>
+              <Spin tip="Loading news..." />
+            </div>
+          ) : newsItems.length === 0 ? (
+            <Typography.Text style={{ display: "block", textAlign: "center", padding: "20px", color: "var(--foreground)" }}>
+              No relevant news found for this game's timeline.
+            </Typography.Text>
+          ) : (
+            <List
+                itemLayout="vertical"
+                dataSource={newsItems.slice(0,15)} // Show up to 15 news items
+                renderItem={(item) => (
+                    <List.Item
+                        key={item.id}
+                        style={{padding: "12px 0", borderBottom: "1px solid var(--border-color-muted)"}}
+                    >
+                        <List.Item.Meta
+                            title={
+                                <Typography.Link href={item.url} target="_blank" rel="noopener noreferrer" style={{fontSize: "1.0em", fontWeight:"bold"}}>
+                                    {item.title}
+                                </Typography.Link>
+                            }
+                            description={
+                                <Typography.Text type="secondary" style={{fontSize: "0.8em"}}>
+                                    {item.source} - {new Date(item.publishedTime).toLocaleDateString()} {new Date(item.publishedTime).toLocaleTimeString()}
+                                </Typography.Text>
+                            }
+                        />
+                        {item.overallSentimentLabel && (
+                             <Tag
+                                color={
+                                  item.overallSentimentLabel.toLowerCase().includes("bullish") ? "green" :
+                                  item.overallSentimentLabel.toLowerCase().includes("bearish") ? "red" :
+                                  "geekblue" // For Neutral
+                                }
+                                style={{marginTop: "8px"}}
+                              >
+                                {item.overallSentimentLabel}
+                                {item.overallSentimentScore !== null ? ` (${item.overallSentimentScore.toFixed(2)})` : ""}
+                              </Tag>
+                        )}
+                        {/* Uncomment to show summary
+                        <Typography.Paragraph ellipsis={{ rows: 2, expandable: true, symbol: 'more' }} style={{ fontSize: "0.9em", color: "var(--foreground-muted)", marginTop: "8px"}}>
+                            {item.summary}
+                        </Typography.Paragraph>
+                        */}
+                    </List.Item>
+                )}
+            />
+          )}
+        </div>
       </div>
 
+      {/* Timer and Submit Button */}
       <div
         style={{
           position: "fixed",
@@ -774,7 +793,7 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
             style={{
               fontWeight: "bold",
               fontSize: "1rem",
-              color: "var(--foreground)",
+              color: "var(--foreground)", // Changed for better contrast on blue
             }}
           >
             Time left: {timer === null ? "..." : `${timer}s`}
@@ -784,13 +803,14 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
           type="primary"
           size="large"
           onClick={handleSubmitRound}
-          disabled={hasSubmitted || isPageLoading}
+          disabled={hasSubmitted || isPageLoading} // Disable if overall page is loading too
           style={{ minWidth: "150px", fontWeight: "bold" }}
         >
           {hasSubmitted ? "Waiting..." : "Submit Round"}
         </Button>
       </div>
 
+      {/* Waiting for others Modal */}
       {hasSubmitted && waitingForOthers && (
         <Modal open={true} closable={false} footer={null} centered>
           <div
@@ -821,6 +841,7 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
         </Modal>
       )}
 
+      {/* Stock Chart Modal */}
       <Modal
         title={
           <Typography.Title
