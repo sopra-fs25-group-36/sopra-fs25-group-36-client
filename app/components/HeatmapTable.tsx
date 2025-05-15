@@ -47,7 +47,6 @@ const HeatmapTable: React.FC<HeatmapTableProps> = ({ playerId, gameId }) => {
                 const displayRounds = Object.keys(data).sort((a, b) => Number(a) - Number(b));
                 // 2) Remove extra cols if needed
                 if (displayRounds.length > 1) displayRounds.pop();
-                if (displayRounds.length > 1) displayRounds.pop();
                 setRounds(displayRounds);
 
                 // 2) Gather all symbols ever present
@@ -56,7 +55,7 @@ const HeatmapTable: React.FC<HeatmapTableProps> = ({ playerId, gameId }) => {
                     data[r].forEach((h) => allSyms.add(h.symbol))
                 );
 
-                // 3) Build your cell map
+                // 3) Build cell map
                 const map: Record<string, Record<string, CellInfo>> = {};
                 const pctList: number[] = [];
 
@@ -171,6 +170,7 @@ const HeatmapTable: React.FC<HeatmapTableProps> = ({ playerId, gameId }) => {
                         </td>
                         {rounds.map((r) => {
                             const cell = cells[sym]?.[r];
+                            const isZero = !cell || cell.value === 0;
                             return (
                                 <td
                                     key={r}
@@ -178,21 +178,23 @@ const HeatmapTable: React.FC<HeatmapTableProps> = ({ playerId, gameId }) => {
                                         border: "1px solid #ddd",
                                         padding: 8,
                                         textAlign: "center",
-                                        background: heatColor(cell?.pctChange ?? null),
+                                        background: isZero
+                                            ? "#fff"
+                                            : heatColor(cell!.pctChange),
                                     }}
                                 >
-                                    {cell ? (
+                                    {isZero ? (
+                                        "-"
+                                    ) : (
                                         <>
-                                            <div>${cell.value.toFixed(2)}</div>
-                                            {cell.pctChange != null && (
+                                            <div>${cell!.value.toFixed(2)}</div>
+                                            {cell!.pctChange != null && (
                                                 <div>
-                                                    {arrow(cell.pctChange)}{" "}
-                                                    {Math.abs(cell.pctChange).toFixed(2)}%
+                                                    {arrow(cell!.pctChange)}{" "}
+                                                    {Math.abs(cell!.pctChange).toFixed(2)}%
                                                 </div>
                                             )}
                                         </>
-                                    ) : (
-                                        "-"
                                     )}
                                 </td>
                             );

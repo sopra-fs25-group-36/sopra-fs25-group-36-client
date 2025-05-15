@@ -111,6 +111,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ player,gameId, playerId }) => {
                             maxHeight: "800px",      // cap total height
                             overflowY: "auto",       // vertical scroll if too tall
                             padding: "16px 0",
+                            marginRight : 20,
                         }}
                     >
                         {/* Pie Chart */}
@@ -141,6 +142,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ player,gameId, playerId }) => {
                                 width: "100%",
                                 maxHeight: 300,
                                 overflowY: "auto",
+                                marginBottom: 50 ,
                             }}
                         >
                             <HeatmapTable
@@ -152,6 +154,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ player,gameId, playerId }) => {
                 )}
             </Col>
         </Row>
+
     );
 };
 
