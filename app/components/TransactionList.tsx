@@ -226,6 +226,7 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
           setPlayerHoldings({});
         }
 
+        setIsPageLoading(false); // End overall page loading. Don't wait for news.
         // Fetch news items for the game
         try {
           const newsData = await apiService.get<NewsItemDTO[]>(

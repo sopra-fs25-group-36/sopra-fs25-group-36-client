@@ -68,10 +68,11 @@ export default function LobbyPage() {
     );
     const amHost = Number(currentUserId) === hostId;
 
+    setStartInitiated(true);
+
     (async () => {
       if (amHost) {
         try {
-          setStartInitiated(true);
           await api.post(`/game/${lobbyId}/start?gameId=${lobbyId}`, {});
         } catch (err) {
           // If we lost the race, the game is likely already started – ignore
@@ -85,7 +86,7 @@ export default function LobbyPage() {
           router.push(`/lobby/${lobbyId}/leader_board`);
         } catch {
           console.log("Game not ready yet waiting...");
-          setTimeout(checkIfGameReady, 500);
+          setTimeout(checkIfGameReady, 750);
         }
       };
 
