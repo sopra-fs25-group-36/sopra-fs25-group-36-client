@@ -1,7 +1,16 @@
 "use client";
 
 import Image from "next/image";
-import { InputNumber, Button, Typography, message, Spin, Modal, Tag, List } from "antd"; // Added Tag, List
+import {
+  InputNumber,
+  Button,
+  Typography,
+  message,
+  Spin,
+  Modal,
+  Tag,
+  List,
+} from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useGame } from "@/hooks/useGame";
@@ -25,12 +34,11 @@ export interface NewsItemDTO {
   overallSentimentLabel: string | null;
   tickerSentiments: Array<{
     ticker: string;
-    relevanceScore: number | string; // "N/A" is possible
-    sentimentScore: number | string; // "N/A" is possible
+    relevanceScore: number | string;
+    sentimentScore: number | string;
     sentimentLabel: string;
   }>;
 }
-
 
 interface TransactionPageProps {
   onToggleLayout: () => void;
@@ -103,7 +111,6 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
   const [newsItems, setNewsItems] = useState<NewsItemDTO[]>([]);
   const [isNewsLoading, setIsNewsLoading] = useState<boolean>(false);
 
-
   // Polling state
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [waitingForOthers, setWaitingForOthers] = useState(false);
@@ -132,7 +139,6 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
       setWaitingForOthers(false);
       setNewsItems([]);
 
-
       try {
         // Fetch stock prices
         const stockPriceData = await apiService.get<StockPriceGetDTO[]>(
@@ -152,7 +158,16 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
 
         const defaultCategories: { [category: string]: string[] } = {
           TECH: [
-            "AAPL", "TSLA", "AMZN", "MSFT", "NVDA", "GOOG", "INTC", "NFLX", "AMD", "WDAY",
+            "AAPL",
+            "TSLA",
+            "AMZN",
+            "MSFT",
+            "NVDA",
+            "GOOG",
+            "INTC",
+            "NFLX",
+            "AMD",
+            "WDAY",
           ],
           RETAIL: ["WMT", "COST", "BABA"],
           ENERGY: ["XOM", "CVX", "SHEL"],
@@ -164,17 +179,26 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
         const categorizedData: { [category: string]: StockPriceGetDTO[] } = {};
         (stockPriceData || []).forEach((stock) => {
           let assignedCategory = "OTHER";
-          if (stock.category && defaultCategories[stock.category.toUpperCase()]) {
+          if (
+            stock.category &&
+            defaultCategories[stock.category.toUpperCase()]
+          ) {
             assignedCategory = stock.category.toUpperCase();
           } else {
-            for (const [cat, symbolsInCategory] of Object.entries(defaultCategories)) {
+            for (const [cat, symbolsInCategory] of Object.entries(
+              defaultCategories
+            )) {
               if (symbolsInCategory.includes(stock.symbol)) {
                 assignedCategory = cat;
                 break;
               }
             }
           }
-          if (assignedCategory === "OTHER" && stock.symbol === "IBM" && defaultCategories["MISC"]) {
+          if (
+            assignedCategory === "OTHER" &&
+            stock.symbol === "IBM" &&
+            defaultCategories["MISC"]
+          ) {
             assignedCategory = "MISC";
           }
           if (!categorizedData[assignedCategory]) {
@@ -204,17 +228,15 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
 
         // Fetch news items for the game
         try {
-            const newsData = await apiService.get<NewsItemDTO[]>(
-                `/api/news/${gameId}`
-              );
-              setNewsItems(newsData || []);
+          const newsData = await apiService.get<NewsItemDTO[]>(
+            `/api/news/${gameId}`
+          );
+          setNewsItems(newsData || []);
         } catch (newsErr) {
-            message.error("Could not load news data.");
-            console.error("News data fetch error:", newsErr);
-            setNewsItems([]); // Ensure it's empty on error
+          message.error("Could not load news data.");
+          console.error("News data fetch error:", newsErr);
+          setNewsItems([]); // Ensure it's empty on error
         }
-
-
       } catch (err) {
         message.error("Could not load initial game data. Please refresh.");
         console.error("Initial data fetch error:", err);
@@ -582,13 +604,23 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
 
           {isPageLoading && !isNewsLoading ? ( // Show main page spinner if page is loading but news isn't the primary blocker
             <div
-              style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "300px"}}
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "300px",
+              }}
             >
               <Spin size="large" tip="Loading market data..." />
             </div>
           ) : Object.keys(categories).length === 0 && !isPageLoading ? ( // Check !isPageLoading to avoid showing this during initial full load
             <Typography.Text
-              style={{ display: "block", textAlign: "center", padding: "40px 20px", color: "var(--foreground)"}}
+              style={{
+                display: "block",
+                textAlign: "center",
+                padding: "40px 20px",
+                color: "var(--foreground)",
+              }}
             >
               ❌ No stocks available for trading this round. 💲
             </Typography.Text>
@@ -596,7 +628,13 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
             Object.entries(categories).map(([cat, stocks]) => (
               <div key={cat} style={{ marginBottom: "24px" }}>
                 <ul
-                  style={{ display: "flex", flexDirection: "column", gap: "0px", paddingLeft: 0, listStyle: "none"}}
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "0px",
+                    paddingLeft: 0,
+                    listStyle: "none",
+                  }}
                 >
                   <li
                     style={{
@@ -609,23 +647,45 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
                       marginBottom: "10px",
                       position: "sticky",
                       top: -24, // Adjust if padding of parent changes
-                      backgroundColor: "var(--card-background)", // Match parent background
+                      backgroundColor: "var(--card-background)",
                       zIndex: 10,
                     }}
                   >
                     <Typography.Title
                       level={5}
-                      style={{ margin: 0, color: "var(--foreground)", gridColumn: "1 / span 3"}}
+                      style={{
+                        margin: 0,
+                        color: "var(--foreground)",
+                        gridColumn: "1 / span 3",
+                      }}
                     >
                       {cat}
                     </Typography.Title>
-                    <Typography.Text style={{ fontWeight: "bold", color: "var(--foreground-muted)", textAlign: "right"}}>
+                    <Typography.Text
+                      style={{
+                        fontWeight: "bold",
+                        color: "var(--foreground-muted)",
+                        textAlign: "right",
+                      }}
+                    >
                       Position
                     </Typography.Text>
-                    <Typography.Text style={{ fontWeight: "bold", color: "var(--foreground-muted)", textAlign: "center"}}>
+                    <Typography.Text
+                      style={{
+                        fontWeight: "bold",
+                        color: "var(--foreground-muted)",
+                        textAlign: "center",
+                      }}
+                    >
                       Buy Qty
                     </Typography.Text>
-                    <Typography.Text style={{ fontWeight: "bold", color: "var(--foreground-muted)", textAlign: "center"}}>
+                    <Typography.Text
+                      style={{
+                        fontWeight: "bold",
+                        color: "var(--foreground-muted)",
+                        textAlign: "center",
+                      }}
+                    >
                       Sell Qty
                     </Typography.Text>
                   </li>
@@ -648,27 +708,59 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
                         width={28}
                         height={28}
                         style={{ objectFit: "contain" }}
-                        onError={(e) => (e.currentTarget.src = "/icons/DEFAULT.png")}
+                        onError={(e) =>
+                          (e.currentTarget.src = "/icons/DEFAULT.png")
+                        }
                       />
                       <span
                         onClick={() => showChartForStock(stock.symbol)}
                         title={`View chart for ${stock.symbol}`}
-                        style={{ fontWeight: "bold", color: "#60a5fa", cursor: "pointer", textDecoration: "underline", fontSize: "1.05em"}}
+                        style={{
+                          fontWeight: "bold",
+                          color: "#60a5fa",
+                          cursor: "pointer",
+                          textDecoration: "underline",
+                          fontSize: "1.05em",
+                        }}
                       >
                         {stock.symbol}
                       </span>
-                      <span style={{ fontWeight: "500", textAlign: "right", color: "var(--foreground)", fontSize: "1.05em"}}>
+                      <span
+                        style={{
+                          fontWeight: "500",
+                          textAlign: "right",
+                          color: "var(--foreground)",
+                          fontSize: "1.05em",
+                        }}
+                      >
                         ${stock.price.toFixed(2)}
                       </span>
-                      <span style={{ fontWeight: "bold", textAlign: "right", color: (playerHoldings[stock.symbol] || 0) > 0 ? "var(--button-text)" : "var(--foreground)", fontSize: "1.05em"}}>
+                      <span
+                        style={{
+                          fontWeight: "bold",
+                          textAlign: "right",
+                          color:
+                            (playerHoldings[stock.symbol] || 0) > 0
+                              ? "var(--button-text)"
+                              : "var(--foreground)",
+                          fontSize: "1.05em",
+                        }}
+                      >
                         {playerHoldings[stock.symbol] || 0}
                       </span>
                       <InputNumber
                         min={0}
                         placeholder="Amount"
                         value={buyAmounts[stock.symbol] || undefined}
-                        onChange={(value) => handleAmountChange(stock.symbol, value, "buy")}
-                        style={{ width: "100%", border: "1px solid var(--border-color-muted)", background: "var(--foreground)", color: "var(--foreground)"}}
+                        onChange={(value) =>
+                          handleAmountChange(stock.symbol, value, "buy")
+                        }
+                        style={{
+                          width: "100%",
+                          border: "1px solid var(--border-color-muted)",
+                          background: "var(--foreground)",
+                          color: "var(--foreground)",
+                        }}
                         controls={false}
                       />
                       <InputNumber
@@ -676,10 +768,20 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
                         max={playerHoldings[stock.symbol] || 0}
                         placeholder="Amount"
                         value={sellAmounts[stock.symbol] || undefined}
-                        onChange={(value) => handleAmountChange(stock.symbol, value, "sell")}
-                        style={{ width: "100%", border: "1px solid var(--foreground-muted)", background: "var(--foreground)", color: "var(--foreground)"}}
+                        onChange={(value) =>
+                          handleAmountChange(stock.symbol, value, "sell")
+                        }
+                        style={{
+                          width: "100%",
+                          border: "1px solid var(--foreground-muted)",
+                          background: "var(--foreground)",
+                          color: "var(--foreground)",
+                        }}
                         controls={false}
-                        disabled={!playerHoldings[stock.symbol] || playerHoldings[stock.symbol] === 0}
+                        disabled={
+                          !playerHoldings[stock.symbol] ||
+                          playerHoldings[stock.symbol] === 0
+                        }
                       />
                     </li>
                   ))}
@@ -709,61 +811,96 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
               paddingBottom: "10px",
               position: "sticky", // Make title sticky
               top: -24, // Adjust if padding of parent changes
-              backgroundColor: "var(--card-background)", // Match parent background
+              backgroundColor: "var(--card-background)",
               zIndex: 10, // Ensure it's above scrolling content
             }}
           >
             Market News & Sentiment
           </Typography.Title>
           {isNewsLoading ? (
-            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "200px" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "200px",
+              }}
+            >
               <Spin tip="Loading news..." />
             </div>
           ) : newsItems.length === 0 ? (
-            <Typography.Text style={{ display: "block", textAlign: "center", padding: "20px", color: "var(--foreground)" }}>
-              No relevant news found for this game's timeline.
+            <Typography.Text
+              style={{
+                display: "block",
+                textAlign: "center",
+                padding: "20px",
+                color: "var(--foreground)",
+              }}
+            >
+              No relevant news found for this game timeline.
             </Typography.Text>
           ) : (
             <List
-                itemLayout="vertical"
-                dataSource={newsItems.slice(0,15)} // Show up to 15 news items
-                renderItem={(item) => (
-                    <List.Item
-                        key={item.id}
-                        style={{padding: "12px 0", borderBottom: "1px solid var(--border-color-muted)"}}
+              itemLayout="vertical"
+              dataSource={newsItems.slice(0, 15)} // Show up to 15 news items
+              renderItem={(item) => (
+                <List.Item
+                  key={item.id}
+                  style={{
+                    padding: "12px 0",
+                    borderBottom: "1px solid var(--border-color-muted)",
+                  }}
+                >
+                  <List.Item.Meta
+                    title={
+                      <Typography.Link
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ fontSize: "1.0em", fontWeight: "bold" }}
+                      >
+                        {item.title}
+                      </Typography.Link>
+                    }
+                    description={
+                      <Typography.Text
+                        type="secondary"
+                        style={{ fontSize: "0.8em" }}
+                      >
+                        {item.source} -{" "}
+                        {new Date(item.publishedTime).toLocaleDateString()}{" "}
+                        {new Date(item.publishedTime).toLocaleTimeString()}
+                      </Typography.Text>
+                    }
+                  />
+                  {item.overallSentimentLabel && (
+                    <Tag
+                      color={
+                        item.overallSentimentLabel
+                          .toLowerCase()
+                          .includes("bullish")
+                          ? "green"
+                          : item.overallSentimentLabel
+                                .toLowerCase()
+                                .includes("bearish")
+                            ? "red"
+                            : "geekblue" // For Neutral
+                      }
+                      style={{ marginTop: "8px" }}
                     >
-                        <List.Item.Meta
-                            title={
-                                <Typography.Link href={item.url} target="_blank" rel="noopener noreferrer" style={{fontSize: "1.0em", fontWeight:"bold"}}>
-                                    {item.title}
-                                </Typography.Link>
-                            }
-                            description={
-                                <Typography.Text type="secondary" style={{fontSize: "0.8em"}}>
-                                    {item.source} - {new Date(item.publishedTime).toLocaleDateString()} {new Date(item.publishedTime).toLocaleTimeString()}
-                                </Typography.Text>
-                            }
-                        />
-                        {item.overallSentimentLabel && (
-                             <Tag
-                                color={
-                                  item.overallSentimentLabel.toLowerCase().includes("bullish") ? "green" :
-                                  item.overallSentimentLabel.toLowerCase().includes("bearish") ? "red" :
-                                  "geekblue" // For Neutral
-                                }
-                                style={{marginTop: "8px"}}
-                              >
-                                {item.overallSentimentLabel}
-                                {item.overallSentimentScore !== null ? ` (${item.overallSentimentScore.toFixed(2)})` : ""}
-                              </Tag>
-                        )}
-                        {/* Uncomment to show summary
+                      {item.overallSentimentLabel}
+                      {item.overallSentimentScore !== null
+                        ? ` (${item.overallSentimentScore.toFixed(2)})`
+                        : ""}
+                    </Tag>
+                  )}
+                  {/* Uncomment to show summary
                         <Typography.Paragraph ellipsis={{ rows: 2, expandable: true, symbol: 'more' }} style={{ fontSize: "0.9em", color: "var(--foreground-muted)", marginTop: "8px"}}>
                             {item.summary}
                         </Typography.Paragraph>
                         */}
-                    </List.Item>
-                )}
+                </List.Item>
+              )}
             />
           )}
         </div>
