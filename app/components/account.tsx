@@ -9,7 +9,7 @@ import {
   FileTextOutlined,
 } from "@ant-design/icons";
 import { useApi } from "@/hooks/useApi";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { User } from "@/types/user";
 

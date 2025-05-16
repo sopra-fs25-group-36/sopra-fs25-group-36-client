@@ -83,7 +83,7 @@ export default function LobbyPage() {
         try {
           await api.get(`/game/${lobbyId}`);
           router.push(`/lobby/${lobbyId}/leader_board`);
-        } catch (err) {
+        } catch {
           console.log("Game not ready yet waiting...");
           setTimeout(checkIfGameReady, 500);
         }
