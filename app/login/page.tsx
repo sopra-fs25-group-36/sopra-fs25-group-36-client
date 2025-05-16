@@ -70,7 +70,7 @@ const Login: React.FC = () => {
           label="Username"
           rules={[{ required: true, message: "Please input your username!" }]}
         >
-          <Input placeholder="Enter username" />
+          <Input placeholder="Enter username" autoFocus />
         </Form.Item>
         <Form.Item
           name="password"
