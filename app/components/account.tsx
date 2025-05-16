@@ -15,7 +15,7 @@ import { User } from "@/types/user";
 
 const Account = () => {
   const router = useRouter();
-  const { id: userId } = useParams();
+  const userId = localStorage.getItem("id");
   const apiService = useApi();
   const queryClient = useQueryClient();
   const { isAuthenticated } = useAuth();
@@ -53,7 +53,7 @@ const Account = () => {
       onClick: () => router.push(`/users/${userId}`),
     },
     {
-      key: "edit",
+      key: "instructions",
       label: "Instructions",
       icon: <FileTextOutlined />,
       onClick: () => router.push(`/instructions`),

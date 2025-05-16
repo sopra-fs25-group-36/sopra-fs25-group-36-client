@@ -15,7 +15,7 @@ import { User } from "@/types/user";
 
 const UserAccount = () => {
   const router = useRouter();
-  const { id: userId } = useParams();
+  const userId = localStorage.getItem("id");
   const apiService = useApi();
   const queryClient = useQueryClient();
   const { isAuthenticated } = useAuth();
@@ -46,9 +46,9 @@ const UserAccount = () => {
   };
 
   const items: MenuProps["items"] = [
- 
+
     {
-      key: "edit",
+      key: "instructions",
       label: "Instructions",
       icon: <FileTextOutlined />,
       onClick: () => window.open("/instructions", "_blank"),
