@@ -71,6 +71,7 @@ export default function LobbyPage() {
     (async () => {
       if (amHost) {
         try {
+          setStartInitiated(true);
           await api.post(`/game/${lobbyId}/start?gameId=${lobbyId}`, {});
         } catch (err) {
           // If we lost the race, the game is likely already started – ignore
@@ -78,8 +79,17 @@ export default function LobbyPage() {
         }
       }
 
-      setStartInitiated(true);
-      router.push(`/lobby/${lobbyId}/leader_board`);
+      const checkIfGameReady = async () => {
+        try {
+          await api.get(`/game/${lobbyId}`);
+          router.push(`/lobby/${lobbyId}/leader_board`);
+        } catch (err) {
+          console.log("Game not ready yet waiting...");
+          setTimeout(checkIfGameReady, 500);
+        }
+      };
+
+      await checkIfGameReady();
     })();
   }, [lobby, api, lobbyId, router, currentUserId, startInitiated]);
 
@@ -119,21 +129,21 @@ export default function LobbyPage() {
   /* -------- players with placeholders -------- */
   const players = lobby
     ? [
-        ...Object.entries(lobby.playerReadyStatuses).map(([uid, ready]) => ({
-          uid,
-          username: userMap[uid] ?? `User ${uid}`,
-          ready,
-        })),
-        ...Array.from(
-          {
-            length: Math.max(
-              0,
-              TOTAL_SLOTS - Object.keys(lobby.playerReadyStatuses).length
-            ),
-          },
-          () => ({ uid: "", username: "Empty Slot", ready: false })
-        ),
-      ]
+      ...Object.entries(lobby.playerReadyStatuses).map(([uid, ready]) => ({
+        uid,
+        username: userMap[uid] ?? `User ${uid}`,
+        ready,
+      })),
+      ...Array.from(
+        {
+          length: Math.max(
+            0,
+            TOTAL_SLOTS - Object.keys(lobby.playerReadyStatuses).length
+          ),
+        },
+        () => ({ uid: "", username: "Empty Slot", ready: false })
+      ),
+    ]
     : [];
 
   /* -------- render -------- */
