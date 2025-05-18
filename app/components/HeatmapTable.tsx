@@ -1,4 +1,5 @@
 "use client";
+import { getApiDomain } from "@/utils/domain";
 import React, { useEffect, useState } from "react";
 
 interface Holding {
@@ -37,7 +38,7 @@ const HeatmapTable: React.FC<HeatmapTableProps> = ({ playerId, gameId }) => {
     (async () => {
       try {
         const res = await fetch(
-          `http://localhost:8080/api/stocks/player-holdings/${playerId}/all-rounds?gameId=${gameId}`
+          `${getApiDomain()}/api/stocks/player-holdings/${playerId}/all-rounds?gameId=${gameId}`
         );
         if (!res.ok) {
           throw new Error(`HTTP ${res.status}`);
@@ -103,6 +104,8 @@ const HeatmapTable: React.FC<HeatmapTableProps> = ({ playerId, gameId }) => {
           console.error(err);
           setError("Unknown error");
         }
+      } finally {
+        setLoading(false);
       }
     })();
   }, [playerId, gameId]);

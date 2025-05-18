@@ -17,7 +17,7 @@ export const useGame = (gameId: number) => {
       if (!response.ok) throw new Error("Failed to fetch game state");
       const data = await response.json();
       setRound(data.currentRound);
-      setTimer(120);
+      setTimer(Math.floor(data.remainingTime / 1000));
       return data.currentRound;
     } catch (error) {
       console.error("❌ Error fetching game state:", error);
