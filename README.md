@@ -1,387 +1,312 @@
-# Getting Started
+# Stockico - Client Application
 
-### MacOS, Linux and WSL
+This repository contains the frontend client for Stockico, a competitive, fast-paced multiplayer game that simulates real-world stock trading. This application provides the user interface for players to register, log in, join game lobbies, participate in trading rounds, manage their portfolios, view stock charts, and compete on leaderboards. It communicates with the Stockico Backend Service to fetch game data and submit player actions.
 
-If you are using MacOS, Linux or WSL(Windows-Subsystem-Linux), you can skip
-directly to the
-[installation part](https://github.com/HASEL-UZH/sopra-fs25-template-client?tab=readme-ov-file#installation)
+## Introduction
 
-### Windows
+*   **Project Goal:** To create an intuitive, responsive, and engaging user interface for the Stockico game, enabling players to easily navigate game features, make informed trading decisions, and enjoy a seamless multiplayer experience.
+*   **Motivation:** To provide a visually appealing and user-friendly platform that complements the backend's functionality, making the Stockico game accessible and enjoyable. The interface aims to clearly present complex stock information and game state, allowing players to focus on strategy and competition.
 
-If you are using Windows, you first need to install
-WSL(Windows-Subsystem-Linux). You might need to reboot your computer for the
-installation, therefore, save and close all your other work and programs
+## Technologies Used
 
-1. Download the following [powershell script](./windows.ps1)\
-   ![downloadWindowsScript](https://github.com/user-attachments/assets/1ed16c0d-ed8a-42d5-a5d7-7bab1ac277ab)
+*   **Next.js (with App Router):** React framework for building the user interface, handling routing, and enabling server-side rendering or static site generation capabilities.
+*   **React:** JavaScript library for building component-based UIs.
+*   **TypeScript:** Superset of JavaScript for static typing, improving code quality and maintainability.
+*   **Tailwind CSS (Assumed, or specify):** Utility-first CSS framework for styling. (Please confirm or replace if you used something else like Styled Components, CSS Modules, etc.)
+*   **Custom Hooks:** For reusable stateful logic (e.g., `useApi`, `useAuth`).
+*   **Plotly.js (Implied by `plotly.js-dist.d.ts`):** For rendering charts and data visualizations.
+*   **Deno / Node.js:** JavaScript runtimes for development and building.
+*   **Nix & direnv:** For managing development environments and dependencies (as per your setup script).
+*   **Axios (Likely, or Fetch API via `useApi`):** For making HTTP requests to the backend.
 
----
-2. Open a new powershell terminal **with admin privileges** and run the following command and follow the instructions. Make sure that you open the powershell terminal at the path where you have downloaded the powershell script, otherwise the command will not work because it can not find the script. You can list currently accessible files in the powershell terminal with ```dir``` and you can use ```cd``` to navigate between directories
-   ```shell
-   C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -ExecutionPolicy Bypass -File .\windows.ps1
-   ```
----
+## High-level Components
 
-3. If you experience any issues, try re-running the script a couple of times. If
-   the installation remains unsuccessful, follow this
-   [youtube tutorial](https://youtu.be/GIYOoMDfmkM) or post your question in the
-   OLAT forum
+The Stockico client application is built with Next.js and React, organized around the following key architectural components:
 
----
-4. After successful installation, you can open WSL/Ubuntu. You will need to choose a username and password, although no characters will be shown on the screen when typing the password but the system recognizes your input, no worries :) After these four steps your setup should look similar to this
-![initialUbuntuScreen](https://github.com/user-attachments/assets/a2b1511f-943b-468e-a726-b7a9dc46ea2c)
-<br>
-<br>
-<br>
-# Installation
-1. Open a new MacOS, Linux or WSL(Windows-Subsystem-Linux) terminal. Make sure you have git installed, you can check that by running
-   ```shell
-   git --version
-   ```
-   The output should be something similar to ```git version X.XX.X```, if not, try to install git in one of the following ways
-   #### MacOS
-   ```shell
-   brew install --formulae git
-   ```
-   #### Linux/WSL
-   ```shell
-   sudo apt-get install git
-   ```
-   If you are not using Ubuntu, you will need to install git with your package manager of choice
----
+1.  **Routing & Page Structure (`app/` directory):**
+    *   **Role:** Defines the different views (pages) of the application using the Next.js App Router. Each folder within `app/` typically corresponds to a URL segment, and `page.tsx` files within these folders render the content for that route.
+    *   **Correlation:** Pages compose various UI Components and utilize Custom Hooks or Services to fetch data and manage state.
+    *   **Main Files/Folders:**
+        *   [`app/(auth)/login/page.tsx`](app/(auth)/login/page.tsx) & [`app/(auth)/register/page.tsx`](app/(auth)/register/page.tsx): Handles user authentication.
+        *   [`app/lobby/[id]/page.tsx`](app/lobby/[id]/page.tsx): Displays the game lobby where players gather before a game starts.
+        *   [`app/game/page.tsx`](app/game/page.tsx): The main game interface where trading occurs. (Or if it's dynamic, like `app/game/[gameId]/page.tsx`)
+        *   [`app/game/transaction/symbol/[symbol]/page.tsx`](app/game/transaction/symbol/[symbol]/page.tsx): Page for viewing details and transacting a specific stock.
+        *   [`app/leader_board/page.tsx`](app/leader_board/page.tsx): Shows the game or global leaderboard.
 
-2. Clone the repository with git using the following command
-   ```shell
-   git clone https://github.com/YOUR_USERNAME/YOUR-CLIENT-REPO
-   ```
+2.  **Reusable UI Components (`components/` directory):**
+    *   **Role:** Encapsulate specific parts of the user interface, promoting reusability and modularity. These range from simple elements like buttons to more complex ones like charts or portfolio displays.
+    *   **Correlation:** Assembled within Pages or other Components to build the complete user interface. They receive data via props and may use local state or context.
+    *   **Main Files:**
+        *   [`components/BarChart.tsx`](components/BarChart.tsx) & [`components/PieChart.tsx`](components/PieChart.tsx): For data visualization.
+        *   [`components/Portfolio.tsx`](components/Portfolio.tsx): Displays the user's current stock holdings and cash.
+        *   [`components/StockChart.tsx`](components/StockChart.tsx): Renders detailed charts for individual stocks.
+        *   [`components/TransactionList.tsx`](components/TransactionList.tsx): Lists recent transactions.
 
----
-3. Navigate to the cloned directory in the terminal, in example with ```cd sopra-fs25-student-client```
----
+3.  **API Communication & State Management (Custom Hooks & Services):**
+    *   **Role:** Manages interaction with the backend API and handles application-wide or feature-specific state. Custom Hooks abstract complex logic and make it reusable across components.
+    *   **Correlation:**
+        *   `apiService.ts`: Centralizes logic for making HTTP requests to the backend.
+        *   Custom Hooks (`hooks/`): Provide reactive state and functions to components. For example, `useApi.ts` likely wraps `apiService.ts` to provide data fetching capabilities, `useAuth.ts` manages authentication state, and `usePlayerState.ts` tracks the current player's game status.
+    *   **Main Files:**
+        *   [`api/apiService.ts`](api/apiService.ts): Core service for backend communication.
+        *   [`hooks/useApi.ts`](hooks/useApi.ts): Hook for making API calls and managing loading/error states.
+        *   [`hooks/useAuth.ts`](hooks/useAuth.ts): Manages user authentication status, login, and logout logic.
+        *   [`hooks/usePlayerState.ts`](hooks/usePlayerState.ts): Manages and provides access to the current player's game-related data.
 
-4. Inside the repository folder (with `ls` you can list files) there is a bash
-   script _setup.sh_ that will install everything you need, according to the
-   system you are using. Run the following command and follow the instructions
-   ```shell
-   source setup.sh
-   ```
+4.  **Type Definitions (`types/` directory):**
+    *   **Role:** Defines TypeScript interfaces and types for data structures used throughout the application, ensuring type safety and improving developer understanding of data contracts (e.g., API responses, component props).
+    *   **Correlation:** Used by all other components (Pages, UI Components, Hooks, Services) to define the shape of data.
+    *   **Main Files:**
+        *   [`types/user.ts`](types/user.ts), [`types/stock.ts`](types/stock.ts), [`types/game.ts`](types/game.ts) (assuming `lobby.ts`, `player.ts` contribute to a broader `game.ts` concept or similar).
 
-The screenshot below shows an example of how this looks
-![sourceScript](https://github.com/user-attachments/assets/2560320a-93ec-4086-994d-f3a0eed53c7b)
+## Launch & Deployment
 
-The installation script _setup.sh_ can take a few minutes, please be patient and
-do not abort the process. If you encounter any issues, please close the terminal
-and open a new one and try to run the command again
+These instructions will get you a copy of the Stockico client application up and running on your local machine for development and testing purposes.
 
-<br>
-<br>
-<br>
+### Prerequisites
 
-# Troubleshooting the installation
+*   **Git:** For cloning the repository.
+*   **WSL (for Windows users):** Windows Subsystem for Linux is highly recommended for a smoother development experience. If you are on Windows, follow the setup in the "Windows" section below first.
+*   **Nix & direnv:** The project uses Nix for managing the development environment. The provided `setup.sh` script will attempt to install these for you.
+*   **Stockico Backend Service:** The client application **requires the Stockico Backend Service to be running** and accessible (typically on `http://localhost:8080` or as configured) for full functionality.
 
-If the four steps above did not work for you and re-running the setup.sh script
-a couple of times did not help, try running the following steps manually
+### Windows Specific Setup (Run this first if you are on Windows)
 
-1. Open a new MacOS, Linux or WSL(Windows-Subsystem-Linux) terminal and navigate
-   to the repository with `cd`. Then ensure that curl is installed
-   ```shell
-   curl --version
-   ```
-   The output should be something similar to `curl X.X.X`, if not, try to
-   install curl in one of the following ways
-   #### MacOS
-   ```shell
-   brew install --formulae curl
-   ```
-   #### Linux/WSL
-   ```shell
-   sudo apt-get install curl
-   ```
-   If you are not using Ubuntu, you will need to install curl with your package
-   manager of choice
+If you are using Windows, you first need to install WSL (Windows-Subsystem-Linux). You might need to reboot your computer for the installation, therefore, save and close all your other work and programs.
 
----
-2. Download Determinate Nix
-   ```shell
-   curl --proto '=https' --tlsv1.2 -ssf --progress-bar -L https://install.determinate.systems/nix -o install-nix.sh
-   ```
----
+1.  Download the following [powershell script](./windows.ps1)
+    *(You might need to host this `windows.ps1` script in your repository or link to it from the original SoPra template if it's provided there).*
+    <!-- ![downloadWindowsScript](https://github.com/user-attachments/assets/1ed16c0d-ed8a-42d5-a5d7-7bab1ac277ab) -->
+    *(If you have the image, uncomment the line above. Otherwise, ensure `windows.ps1` is in your repo).*
 
-3. Install Determinate Nix
-   ```shell
-   sh install-nix.sh install --determinate --no-confirm --verbose
-   ```
+2.  Open a new PowerShell terminal **with admin privileges**. Navigate to the directory where you downloaded `windows.ps1` and run:
+    ```shell
+    C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -ExecutionPolicy Bypass -File .\windows.ps1
+    ```
+    Follow the on-screen instructions.
 
----
-4. Install direnv using nix
-   ```shell
-   nix profile install nixpkgs#direnv
-   ```
-   If you encounter a permission error, try running with sudo
-   ```shell
-   sudo nix profile install nixpkgs#direnv
-   ```
----
+3.  If you experience any issues, try re-running the script. If problems persist, consult the SoPra OLAT forum or general WSL installation guides.
 
-5. Find out what shell you are using
-   ```shell
-   echo $SHELL
-   ```
+4.  After successful installation, open WSL/Ubuntu. You will be prompted to create a username and password for your Linux environment.
 
----
-6. Hook direnv into your shell according to [this guide](https://github.com/direnv/direnv/blob/master/docs/hook.md)
----
+### Installation (macOS, Linux, and WSL after Windows Setup)
 
-7. Allow direnv to access the repository
-   ```shell
-   direnv allow
-   ```
+1.  **Open a new terminal** (macOS, Linux, or WSL/Ubuntu terminal). Ensure Git is installed:
+    ```shell
+    git --version
+    ```
+    If not installed, use your system's package manager (e.g., `brew install git` on macOS, `sudo apt-get install git` on Debian/Ubuntu).
 
-If all troubleshooting steps above still did not work for you, try the following
-as a **last resort**: Open a new terminal and navigate to the client repository
-with `cd`. Run the command. Close the terminal again and do this for each of the
-six commands above, running each one in its own terminal, one after the other.
+2.  **Clone the repository:**
+    ```shell
+    git clone https://github.com/YOUR_GITHUB_USERNAME/YOUR_CLIENT_REPOSITORY_NAME.git
+    cd YOUR_CLIENT_REPOSITORY_NAME
+    ```
 
-<br>
-<br>
-<br>
+3.  **Run the setup script:**
+    This script installs Nix, direnv, and project dependencies defined in `flake.nix`.
+    ```shell
+    source setup.sh
+    ```
+    This process may take several minutes. Please be patient. If it prompts you, allow `direnv` to load the environment.
 
-# Available commands after successful installation
+4.  **Allow direnv (if needed):**
+    If the setup script doesn't automatically do it, or if you open a new terminal in the project directory later, you might need to explicitly allow direnv:
+    ```shell
+    direnv allow
+    ```
+    This loads the development environment specified in `.envrc` and `flake.nix`.
 
-With the installation steps above your system now has all necessary tools for
-developing and running the sopra frontend application. Amongst others, two
-javascript runtimes have been installed for running the app:
+### Troubleshooting the Installation
 
-- [NodeJS](https://nodejs.org)
-- [Deno](https://deno.com)
+If the `setup.sh` script fails, refer to the detailed troubleshooting steps in the original SoPra template client README, which involve manually installing curl, Determinate Nix, and direnv. These steps are summarized [here in your original README](#troubleshooting-the-installation) (link to your existing section if it's kept separate, or integrate them).
 
-Runtimes is what your system needs to compile
-[typescript](https://www.typescriptlang.org) code (used in this project) to
-javascript and execute the application. You can use either runtime for this
-project, according to your preference. Both come with an included package
-manager, `npm` for nodejs and `deno` for deno. Thereby, the
-[package.json](./package.json) file defines possible commands that can be
-executed (using either `deno` or `npm`). The following commands are available in
-this repository:
+### Running the Development Server
 
-1. **Running the development server** - This will start the application in
-   development mode, meaning that changes to the code are instantly visible live
-   on [http://localhost:3000](http://localhost:3000) in the browser
-   ```bash
-   deno task dev
-   ```
-2. **Building a production-ready application** - This will create an optimized
-   production build that is faster and takes up less space. It is a static
-   build, meaning that changes to the code will only be included when the
-   command is run again
-   ```bash
-   deno task build
-   ```
-3. **Running the production application** - This will start the optimized
-   production build and display it on
-   [http://localhost:3000](http://localhost:3000) in the browser. This command
-   can only be run _after_ a production build has been created with the command
-   above and will not preview live code changes
-   ```bash
-   deno task start
-   ```
-4. **Linting the entire codebase** - This command allows to check the entire
-   codebase for mistakes, errors and warnings
-   ```bash
-   deno task lint
-   ```
-5. **Formatting the entire codebase** - This command will ensure that proper
-   indentation, spacing and further styling is applied to the code. This ensures
-   that the code looks uniform and the same across your team members, it is best
-   to run this command _every time before pushing changes to your repository_!
-   ```bash
-   deno task fmt
-   ```
+Once the installation is successful and `direnv` has loaded the environment:
+1.  **Start the development server:**
+    ```bash
+    deno task dev
+    ```
+    Alternatively, if you prefer using npm scripts and they are configured in `package.json`:
+    ```bash
+    npm run dev
+    ```
+    This will start the Next.js development server, typically on [http://localhost:3000](http://localhost:3000). The application will automatically reload in your browser when you make changes to the code.
 
-All of the above mentioned commands can also be run using the nodejs runtime by
-substituting `deno task` with `npm run`, i.e
+### Building for Production
 
+To create an optimized production build of the application:
 ```bash
-npm run dev
+deno task build
+# OR
+npm run build
 ```
+The output will usually be in the .next directory.
 
-<br>
-<br>
-<br>
+### Running the Production Build Locally
 
-# Docker
-
-### Introduction
-This year, for the first time, Docker will be used to ease the process of deployment.\
-Docker is a tool that uses containers as isolated environments, ensuring that the application runs consistently and uniformly across different devices.\
-Everything in this repository is already set up to minimize your effort for deployment.\
-All changes to the main branch will automatically be pushed to dockerhub and optimized for production.
-
-### Setup
-1. **One** member of the team should create an account on [dockerhub](https://hub.docker.com/), _incorporating the group number into the account name_, for example, `SoPra_group_XX`.\
-2. This account then creates a repository on dockerhub with the _same name as the group's Github repository name_.\
-3. Finally, the person's account details need to be added as [secrets](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions#creating-secrets-for-a-repository) to the group's repository:
-    - dockerhub_username (the username of the dockerhub account from step 1, for example, `SoPra_group_XX`)
-    - dockerhub_password (a generated PAT([personal access token](https://docs.docker.com/docker-hub/access-tokens/)) of the account with read and write access)
-    - dockerhub_repo_name (the name of the dockerhub repository from step 2)
-
-### Pull and run
-Once the image is created and has been successfully pushed to dockerhub, the image can be run on any machine.\
-Ensure that [Docker](https://www.docker.com/) is installed on the machine you wish to run the container.\
-First, pull (download) the image with the following command, replacing your username and repository name accordingly.
-
-```docker pull <dockerhub_username>/<dockerhub_repo_name>```
-
-Then, run the image in a container with the following command, again replacing _<dockerhub_username>_ and _<dockerhub_repo_name>_ accordingly.
-
-```docker run -p 3000:3000 <dockerhub_username>/<dockerhub_repo_name>```
-
-<br>
-<br>
-<br>
-
-# Installing additional software by modifying [flake.nix](./flake.nix)
-
-As this project uses Determinate Nix for managing development software,
-installing additional tools you might need is straightforward. You only need to
-adjust the section `nativeBuildInputs = with pkgs;` in the
-[nix flake](./flake.nix) with the package you would like to install. For
-example, if you want to use docker (the [Dockerfile](./Dockerfile) and
-[.dockerignore](./.dockerignore) are already included in this repo) you can
-simply add:
-
-```nix
-nativeBuildInputs = with pkgs;
-  [
-    nodejs
-    git
-    deno
-    watchman
-    docker ### <- added docker here
-  ]
-  ++ lib.optionals stdenv.isDarwin [
-    xcodes
-  ]
-  ++ lib.optionals (system == "aarch64-linux") [
-    qemu
-  ];
+To serve the production build locally (after running `deno task build`):
+```bash
+deno task start
+# OR
+npm run start
 ```
+This will typically serve the application on http://localhost:3000.
 
-and add the package path to the `shellHook''` section
+## Running the tests
 
-```nix
-        devShells.default = pkgs.mkShell {
-          inherit nativeBuildInputs;
+### Linting and Formatting (Coding Style Tests)
 
-          shellHook = ''
-            export HOST_PROJECT_PATH="$(pwd)"
-            export COMPOSE_PROJECT_NAME=sopra-fs25-template-client
-            
-            export PATH="${pkgs.nodejs}/bin:$PATH"
-            export PATH="${pkgs.git}/bin:$PATH"
-            export PATH="${pkgs.deno}/bin:$PATH"
-            export PATH="${pkgs.watchman}/bin:$PATH"
-            export PATH="${pkgs.docker}/bin:$PATH" ### <- added docker path here
-            
-            ### rest of code ###
-        };
-```
+*   **What these tests test and why:**
+    These tools (like ESLint for linting and Prettier for formatting, often invoked via Deno tasks or npm scripts) check the codebase for syntactical errors, adherence to coding style guidelines, and potential bugs. This ensures code quality, readability, and consistency across the team.
+*   **Commands:**
+    *   To check for linting errors:
+        ```bash
+        deno task lint
+        ```
+        or, if using npm scripts:
+        ```bash
+        npm run lint
+        ```
+    *   To automatically format the entire codebase:
+        ```bash
+        deno task fmt
+        ```
+        or, if using npm scripts:
+        ```bash
+        npm run fmt
+        ```
+    It is highly recommended to run the formatter (e.g., `deno task fmt`) before committing any changes.
 
-and finally do `direnv reload` in your terminal inside the repository folder. If
-you need a specific version of a package, you can override it in the `overlays`
-section
+## Deployment (Vercel)
 
-```nix
-overlays = [
-  (self: super: {
-    nodejs = super.nodejs_23; ### <- changed to nodejs 23
-  })
-];
-```
+We deploy the Stockico client application using [Vercel](https://vercel.com), the platform created by the team behind Next.js. Vercel offers seamless integration with Next.js projects and automates the build and deployment process.
 
-<br>
-<br>
-<br>
+### Initial Setup (One-time)
 
-# Miscellaneous
+1.  **Sign up/Log in to Vercel:** Create an account on Vercel or log in with your existing GitHub account.
+2.  **Import Project:**
+    *   From your Vercel dashboard, click "Add New..." > "Project".
+    *   Select "Continue with GitHub" and authorize Vercel to access your repositories.
+    *   Choose this client application's GitHub repository (e.g., `sopra-fs24-group-36-client`) and import it.
+3.  **Configure Project Settings (if needed):**
+    *   Vercel usually auto-detects Next.js projects and configures them correctly.
+    *   **Framework Preset:** Should be "Next.js".
+    *   **Build Command:** Vercel typically uses `next build` (or your `package.json` build script). If you use Deno tasks primarily, you might need to ensure your `package.json` has an equivalent `build` script (e.g., `"build": "deno task build"`), or configure the build command in Vercel.
+    *   **Output Directory:** Should be `.next`.
+    *   **Environment Variables:** This is crucial. You **must** configure the `NEXT_PUBLIC_API_URL` environment variable in your Vercel project settings. This variable should point to the **live URL of your deployed Stockico Backend Service**.
+        *   Go to your project settings on Vercel > "Environment Variables".
+        *   Add `NEXT_PUBLIC_API_URL` and set its value to your backend's production URL (e.g., `https://your-backend-service.onrender.com/api` or similar).
 
-This project uses
-[`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts)
-to automatically optimize and load [Geist](https://vercel.com/font), a new font
-family for Vercel.
+### Automatic Deployments
 
-## Learn More
+Once set up, Vercel provides automatic deployments:
 
-To learn more about Next.js, take a look at the following resources:
+*   **Production Deployments:** Every push to your `main` branch (or your designated production branch) will automatically trigger a new build and deploy it to your production URL on Vercel.
+*   **Preview Deployments:** Every push to other branches or new Pull Requests will generate a unique preview URL. This allows you to test changes in a production-like environment before merging them into `main`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js
-  features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+You can monitor your deployments and access logs from your Vercel project dashboard.
 
-You can check out
-[the Next.js GitHub repository](https://github.com/vercel/next.js) - your
-feedback and contributions are welcome!
+### Releases & Promoting Deployments
 
-## Deploy on Vercel
+While Vercel automates deployments from your Git branches, you can manage "releases" conceptually using Git tags and by promoting specific Vercel deployments.
 
-The easiest way to deploy your Next.js app is to use the
-[Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme)
-from the creators of Next.js.
+1.  **Tagging in Git:** When you're ready for a release (e.g., after thoroughly testing a preview deployment):
+    *   Ensure the `main` branch (or your release branch) is stable.
+    *   Create an annotated Git tag following Semantic Versioning:
+        ```bash
+        git tag -a v1.0.0-client -m "Client Release v1.0.0: Initial UI for login, lobby, and basic trading."
+        ```
+        (Using a `-client` suffix can help distinguish client tags if your backend also has version tags in the same numerical sequence).
+    *   Push the tag to your GitHub repository:
+        ```bash
+        git push origin v1.0.0-client
+        ```
+2.  **Vercel Deployments:**
+    *   The push to `main` (if your tag is on `main`) would have already triggered a production deployment.
+    *   You can view all deployments in your Vercel dashboard. Each deployment is associated with a Git commit.
+    *   If needed, you can manually **promote** a specific past deployment (e.g., one corresponding to a Git tag commit) to be the current production deployment, or roll back to a previous one.
+3.  **GitHub Releases (Optional but Recommended):**
+    *   After pushing your Git tag, you can create a corresponding [Release on GitHub](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository).
+    *   Associate this GitHub Release with the Git tag you just created.
+    *   Write release notes summarizing the changes, new features, and bug fixes in this version. This provides a good historical record.
 
-Check out our
-[Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying)
-for more details.
+## Illustrations: Main User Flows
 
-## Windows users
+1.  **Authentication (Login/Registration):**
+    *   Users are presented with a login form. New users can navigate to a registration form to create an account.
+    *   Upon successful login/registration, users are redirected to the main application area (e.g., lobby or dashboard).
+    *   ![](./docs/images/client-login.png) ##TODOs
+    *   ![](./docs/images/client-registration.png) ##TODOs
 
-Please ensure that the repository folder is inside the WSL2 filesystem
-(otherwise, the disk IO performance will be horrible). If you followed the
-tutorial closely, this is already the case. If for whatever reason you deviated
-from the instructions, please take the time now to ensure the repo is on the WSL
-filesystem. You can do this either by
+2.  **Game Lobby Interaction:**
+    *   After login, users can view available game lobbies or create a new one.
+    *   They can join an existing lobby, see other players, and ready up for the game to start.
+    *   ![](./docs/images/client-lobby-list.png) ##TODOs
+    *   ![](./docs/images/client-game-lobby.png) ##TODOs
 
-1. _Cloning the repository again with git in a WSL/Ubuntu terminal using the
-   following command and deleting the repository on the windows filesystem_
-   ```shell
-   git clone https://github.com/HASEL-UZH/sopra-fs25-template-client
-   ```
-2. _Using the Windows explorer to move the repository from the windows
-   filesystem to WSL filesystem_ In the left overview of all folders and drives
-   there should be a new filesystem called Linux (also check in the network
-   tab). Open the Linux drive and open the folder named "home", followed by your
-   username. Copy the whole repository folder from your current location to the
-   Linux folder /home/your-username (note that the folder will initially be
-   empty). Finally, delete the folder from your current location such that you
-   only have the folder inside the Linux filesystem.
-3. _Using the command line in WSL to move the repo_ Open a new Ubuntu / WSL2
-   terminal window. This will automatically open your home folder of the Linux
-   file system. You then need to locate where the repository / folder that you
-   have downloaded resides. You can use the `cp -ar` command to copy the folder
-   from the Windows drive to the Linux filesystem. The command takes the
-   following arguments: cp **source_file** _target_file_. Thus we need to
-   specify **source_file** the folder we want to copy from Windows filesystem
-   and the _target_file_ where to copy the folder to in the Linux filesystem. As
-   visible in this screenshot
-   ![copyFolderToUbuntu](https://github.com/user-attachments/assets/d483e495-e3af-4e85-929c-61dce1a39e10)
-   the repository folder resides under the C drive in /mnt/c/. If your file is
-   not on your C drive, the folder path will be something like /mnt/d/. In the
-   screenshot, the downloaded repository folder is in the Downloads folder of
-   the current user on the C drive, thus the path for **source_file** is
-   `/mnt/c/Users/immol/Downloads`. The terminal in the screenshot is currently
-   in the home directory, indicated by ~ in the path in blue. As we want to copy
-   the folder to the home folder (/home/your-username) we can specify the
-   current directory (.) as the _target_file_, thus the dot at the end of the
-   command. If you happen to not be in the home folder, you can also run the
-   command with explicitly copying to the home folder as such:
-   ```bash
-   cp -ar /mnt/c/your-path /home/your-username
-   ```
-   Else you can run
-   ```bash
-   cp -ar /mnt/c/your-path .
-   ```
-   with . indicating to copy to the current path (in this case your home
-   folder). You can check if the repository was successfully copied over using
-   `ls` to list folders and files, as visible in the screenshot. You can then
-   delete the downloaded folder / repository from the Windows filesystem in the
-   explorer.
+3.  **In-Game Trading:**
+    *   Once a game starts, users see their portfolio (cash, owned stocks), available stocks with current prices, and charts.
+    *   They can select a stock to view more details (e.g., historical chart, company info).
+    *   Users can place buy or sell orders for stocks, subject to available funds and shares.
+    *   ![](./docs/images/client-game-interface.png) ##TODOs
+    *   ![](./docs/images/client-stock-detail.png) ##TODOs
+
+4.  **Viewing Leaderboard:**
+    *   During or after a game, users can view a leaderboard showing player rankings based on portfolio value.
+    *   ![](./docs/images/client-leaderboard.png) ##TODOs
+
+## Roadmap
+
+Top features new developers could contribute to the client application:
+
+1.  **Enhanced Real-time UI Updates with WebSockets:** If the backend supports WebSockets for game events (stock prices, portfolio changes, leaderboard updates), integrate WebSocket client logic to update the UI instantly without requiring manual refreshes or polling, providing a more dynamic user experience.
+2.  **Advanced Interactive Stock Charts:** Improve stock charting capabilities using a library like Plotly.js (which seems to be included) or others (e.g., Chart.js, Recharts, TradingView Lightweight Charts). Add features like different chart types (candlestick, line), time range selectors, and technical indicators.
+3.  **User Profile Customization & Statistics Display:** Create a user profile page where players can view their overall game statistics (win rate, average profit, most traded stocks), manage account settings, and perhaps customize their avatar or theme preferences.
+
+## Built With
+
+*   [Next.js](https://nextjs.org/) - React Framework (using App Router).
+*   [React](https://reactjs.org/) - JavaScript library for building user interfaces.
+*   [TypeScript](https://www.typescriptlang.org/) - Statically typed JavaScript.
+*   [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS Framework. *(Confirm or replace if you used something else, e.g., Ant Design styles, CSS Modules)*
+*   [Plotly.js](https://plotly.com/javascript/) - JavaScript graphing library.
+*   [Deno](https://deno.land/) / [Node.js](https://nodejs.org/) - JavaScript Runtimes for development and build.
+*   [Nix](https://nixos.org/nix/) & [direnv](https://direnv.net/) - Development Environment Management.
+*   Custom React Hooks for state management and API interaction.
+*   Deployed on [Vercel](https://vercel.com).
+
+## Contributing
+
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, the process for submitting pull requests to us, and other guidelines for contributing to the Stockico client project.
+*(Ensure you have a `CONTRIBUTING.MD` file in this client repository, similar to the one for the backend, but with links pointing to this client repository.)*
+
+## Versioning
+
+We use [Semantic Versioning (SemVer)](http://semver.org/) for versioning our client releases. For the versions available, see the [tags on this repository](https://github.com/YOUR_GITHUB_USERNAME/YOUR_CLIENT_REPOSITORY_NAME/tags).
+
+## Authors
+
+*   **SoPra FS24 Group 36** - *Development Team*
+    *   [Shirley Lau](https://github.com/shirleyl1220)
+    *   [SeungJu Paek](https://github.com/sing-git)
+    *   [Jianwen Cao](https://github.com/JianwenCao)
+    *   [Ilias Karagiannakis](https://github.com/LiakosKari)
+    *   [Julius Landes](https://github.com/JuliusLhamo)
+
+## License
+
+This project is licensed under the **MIT License**.
+See the [LICENSE.md](LICENSE.md) file for the full license text.
+
+## Acknowledgments
+
+*   Our gratitude to the **SoPra FS24 Teaching Team** at the University of Zurich for their guidance, support, and providing the initial project templates and framework.
+*   Thanks to the **Vercel team** for Next.js, the Geist font, and their excellent deployment platform.
+*   Appreciation for the open-source community and the creators of the many libraries and frameworks that made this project possible.
+
+
+
+
+
