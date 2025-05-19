@@ -162,9 +162,10 @@ const FinalBoard: React.FC = () => {
 
   const playerStatesColumns = [
     {
-      title: "User ID",
-      dataIndex: "userId",
-      key: "userId",
+      title: "User Name",
+      dataIndex: "name",
+      key: "name",
+      width: "25%",
       align: "center" as const,
     },
     {
