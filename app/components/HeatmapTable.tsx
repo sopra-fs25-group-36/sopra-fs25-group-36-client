@@ -122,7 +122,7 @@ const HeatmapTable: React.FC<HeatmapTableProps> = ({ playerId, gameId }) => {
 
   // your heat‐map coloring & arrow logic
   const heatColor = (pct: number | null) => {
-    if (pct == null) return "#fff";
+    if (pct == null) return "var(--background)";
     const norm = (pct - minPct) / (maxPct - minPct);
     const hue = Math.round(Math.max(0, Math.min(1, norm)) * 120);
     return `hsl(${hue},60%,75%)`;
@@ -178,7 +178,9 @@ const HeatmapTable: React.FC<HeatmapTableProps> = ({ playerId, gameId }) => {
                       border: "1px solid #ddd",
                       padding: 8,
                       textAlign: "center",
-                      background: isZero ? "#fff" : heatColor(cell!.pctChange),
+                      background: isZero
+                        ? "var(--background)"
+                        : heatColor(cell!.pctChange),
                     }}
                   >
                     {isZero ? (
