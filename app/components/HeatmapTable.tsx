@@ -120,12 +120,17 @@ const HeatmapTable: React.FC<HeatmapTableProps> = ({ playerId, gameId }) => {
     return <div style={{ color: "red" }}>Error: {error}</div>;
   }
 
-  // your heat‐map coloring & arrow logic
+  //heat‐map coloring & arrow logic
   const heatColor = (pct: number | null) => {
     if (pct == null) return "var(--background)";
-    const norm = (pct - minPct) / (maxPct - minPct);
-    const hue = Math.round(Math.max(0, Math.min(1, norm)) * 120);
-    return `hsl(${hue},60%,75%)`;
+
+    const maxPct = 20; // Max magnitude to clamp to (can be tweaked)
+    const clamped = Math.min(Math.abs(pct), maxPct) / maxPct;
+    const lightness = 75 - clamped * 25; // from 75% (light) to 50% (darker)
+
+    const hue = pct >= 0 ? 120 : 0; // 120 = green, 0 = red
+
+    return `hsl(${hue}, 60%, ${lightness}%)`;
   };
   const arrow = (pct: number | null) =>
     pct == null ? "" : pct > 0 ? "▲" : pct < 0 ? "▼" : "•";
