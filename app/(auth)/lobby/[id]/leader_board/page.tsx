@@ -144,7 +144,6 @@ const LeaderBoard: React.FC = () => {
     return () => clearInterval(timer);
   }, [gameDetail, id, router]);
 
-  // Define table columns.
   const columns = [
     {
       title: "Rank",
@@ -153,18 +152,18 @@ const LeaderBoard: React.FC = () => {
       width: "5%",
       align: "center" as const,
     },
-    {
-      title: "User ID",
-      dataIndex: "userId",
-      key: "userId",
-      width: "10%",
-      align: "center" as const,
-    },
+    // {
+    //   title: "User ID",
+    //   dataIndex: "userId",
+    //   key: "userId",
+    //   width: "10%",
+    //   align: "center" as const,
+    // },
     {
       title: "User Name",
       dataIndex: "name",
       key: "name",
-      width: "25%",
+      width: "35%",
       align: "center" as const,
     },
     {

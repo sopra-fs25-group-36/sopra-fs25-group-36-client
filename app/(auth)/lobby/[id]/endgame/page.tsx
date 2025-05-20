@@ -136,18 +136,18 @@ const FinalBoard: React.FC = () => {
       width: "5%",
       align: "center" as const,
     },
-    {
-      title: "User ID",
-      dataIndex: "userId",
-      key: "userId",
-      width: "10%",
-      align: "center" as const,
-    },
+    // {
+    //   title: "User ID",
+    //   dataIndex: "userId",
+    //   key: "userId",
+    //   width: "10%",
+    //   align: "center" as const,
+    // },
     {
       title: "User Name",
       dataIndex: "name",
       key: "name",
-      width: "25%",
+      width: "35%",
       align: "center" as const,
     },
     {

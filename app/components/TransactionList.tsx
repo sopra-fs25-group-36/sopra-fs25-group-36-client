@@ -288,7 +288,7 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
             router.push(`/lobby/${gameId}/endgame`);
             return;
           }
-          const waitTime = (nextRoundStartTime / 100) - Date.now();
+          const waitTime = nextRoundStartTime / 100 - Date.now();
           if (nextRoundStartTime > 0 && waitTime > 0) {
             console.log(
               `🚀 All players submitted or round ended. Waiting ${waitTime}ms for synchronized start before redirecting.`
@@ -599,7 +599,7 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
               paddingBottom: "10px",
             }}
           >
-            Available Stocks for Trading (Cash:{" "}
+            Available Stocks for Trading (Your Cash:{" "}
             {usdFormatter.format(playerCash)})
           </Typography.Title>
 
@@ -882,8 +882,8 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
                           .includes("bullish")
                           ? "green"
                           : item.overallSentimentLabel
-                            .toLowerCase()
-                            .includes("bearish")
+                                .toLowerCase()
+                                .includes("bearish")
                             ? "red"
                             : "geekblue" // For Neutral
                       }
@@ -1052,8 +1052,7 @@ const TransactionPage: React.FC<TransactionPageProps> = ({
                   }}
                 >
                   <strong>Sector:</strong> {selectedCompanyInfo.sector}   |
-                  <strong>Industry:</strong> {selectedCompanyInfo.industry}{" "}
-                  |
+                  <strong>Industry:</strong> {selectedCompanyInfo.industry} |
                   <strong>Country:</strong> {selectedCompanyInfo.country}
                 </Typography.Paragraph>
                 <Typography.Paragraph

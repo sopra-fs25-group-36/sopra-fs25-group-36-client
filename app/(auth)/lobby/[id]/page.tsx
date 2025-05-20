@@ -40,7 +40,6 @@ export default function LobbyPage() {
     return () => clearInterval(int);
   }, [fetchLobby]);
 
-  /* -------- derived countdown -------- */
   useEffect(() => {
     if (!lobby || startInitiated) return;
     const endTime = lobby.createdAt + lobby.timeLimitSeconds * 1000;
@@ -75,7 +74,6 @@ export default function LobbyPage() {
         try {
           await api.post(`/game/${lobbyId}/start?gameId=${lobbyId}`, {});
         } catch (err) {
-          // If we lost the race, the game is likely already started – ignore
           console.warn("Start failed (likely already started)", err);
         }
       }
@@ -122,29 +120,24 @@ export default function LobbyPage() {
     }
   };
 
-  /* -------- show instruction -------- */
-  const handleShowInstruction = () => {
-    router.push(`/lobby/${lobbyId}/instruction`);
-  };
-
   /* -------- players with placeholders -------- */
   const players = lobby
     ? [
-      ...Object.entries(lobby.playerReadyStatuses).map(([uid, ready]) => ({
-        uid,
-        username: userMap[uid] ?? `User ${uid}`,
-        ready,
-      })),
-      ...Array.from(
-        {
-          length: Math.max(
-            0,
-            TOTAL_SLOTS - Object.keys(lobby.playerReadyStatuses).length
-          ),
-        },
-        () => ({ uid: "", username: "Empty Slot", ready: false })
-      ),
-    ]
+        ...Object.entries(lobby.playerReadyStatuses).map(([uid, ready]) => ({
+          uid,
+          username: userMap[uid] ?? `User ${uid}`,
+          ready,
+        })),
+        ...Array.from(
+          {
+            length: Math.max(
+              0,
+              TOTAL_SLOTS - Object.keys(lobby.playerReadyStatuses).length
+            ),
+          },
+          () => ({ uid: "", username: "Empty Slot", ready: false })
+        ),
+      ]
     : [];
 
   /* -------- render -------- */
@@ -224,8 +217,11 @@ export default function LobbyPage() {
             Ready
           </Button>
         )}
-
-        <Button block onClick={handleShowInstruction} style={{ marginTop: 8 }}>
+        <Button
+          block
+          onClick={() => window.open("/instructions", "_blank")}
+          style={{ marginTop: 10 }}
+        >
           Show Instruction
         </Button>
       </div>
