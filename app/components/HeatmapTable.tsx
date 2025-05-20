@@ -26,8 +26,7 @@ const HeatmapTable: React.FC<HeatmapTableProps> = ({ playerId, gameId }) => {
   const [cells, setCells] = useState<Record<string, Record<string, CellInfo>>>(
     {}
   );
-  const [minPct, setMinPct] = useState(0);
-  const [maxPct, setMaxPct] = useState(0);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -92,10 +91,6 @@ const HeatmapTable: React.FC<HeatmapTableProps> = ({ playerId, gameId }) => {
 
         // 5) Commit data
         setCells(map);
-        if (pctList.length) {
-          setMinPct(Math.min(...pctList));
-          setMaxPct(Math.max(...pctList));
-        }
       } catch (err: unknown) {
         if (err instanceof Error) {
           console.error(err);
