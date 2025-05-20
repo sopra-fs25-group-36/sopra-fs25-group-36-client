@@ -113,7 +113,28 @@ const FinalBoard: React.FC = () => {
         );
         setLeaderBoardData(formattedData);
 
-        const playersArray = Object.values(gameDataResponse.playerStates);
+        const playersArray = await Promise.all(
+          Object.values(gameDataResponse.playerStates).map(
+            async (playerState) => {
+              let name = "Unknown";
+              try {
+                const userResponse = await apiService.get<UserGetDTO>(
+                  `/users/${playerState.userId}`
+                );
+                name = userResponse.name;
+              } catch (error) {
+                console.error(
+                  `Failed to fetch user details for userId ${playerState.userId}`,
+                  error
+                );
+              }
+              return {
+                ...playerState,
+                name,
+              };
+            }
+          )
+        );
         setPlayerStatesData(playersArray);
 
         setStockTimelineData(gameDataResponse.stockTimeline);
@@ -136,13 +157,6 @@ const FinalBoard: React.FC = () => {
       width: "5%",
       align: "center" as const,
     },
-    // {
-    //   title: "User ID",
-    //   dataIndex: "userId",
-    //   key: "userId",
-    //   width: "10%",
-    //   align: "center" as const,
-    // },
     {
       title: "User Name",
       dataIndex: "name",
@@ -163,6 +177,8 @@ const FinalBoard: React.FC = () => {
   const playerStatesColumns = [
     {
       title: "User Name",
+      // dataIndex: "userId",
+      // key: "userId",
       dataIndex: "name",
       key: "name",
       width: "25%",
