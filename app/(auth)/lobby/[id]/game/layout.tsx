@@ -21,11 +21,16 @@ export default function GameLayout({ children }: GameLayoutProps) {
   }
 
   return (
-    <Row>
-      <Col span={isExpanded ? 14 : 24}>
-        <TransactionList onToggleLayout={toggleLayout} />
-      </Col>
-      {isExpanded && <Col span={10}>{children}</Col>}
-    </Row>
+      <Row style={{ height: "100%", display: "flex" }}>
+        <Col span={isExpanded ? 14 : 24} style={{ height: "100%" }}>
+          <TransactionList onToggleLayout={toggleLayout} />
+        </Col>
+        {isExpanded && (
+            <Col span={10} style={{ height: "100%" }}>
+              {children}
+            </Col>
+        )}
+      </Row>
+
   );
 }
