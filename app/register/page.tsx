@@ -86,7 +86,15 @@ const Register: React.FC = () => {
         <Form.Item
           name="password"
           label="Create Password"
-          rules={[{ required: true, message: "Please input your password!" }]}
+          rules={[
+            { required: true, message: "Please input your password!" },
+            {
+              pattern:
+                /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{};:,<.>]).{8,}$/,
+              message:
+                "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.",
+            },
+          ]}
         >
           <Input.Password
             placeholder="Create your password"
