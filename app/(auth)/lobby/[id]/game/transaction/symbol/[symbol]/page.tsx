@@ -11,8 +11,6 @@ const SymbolDetailPage: React.FC = () => {
   const router = useRouter();
   const params = useParams();
   const api = useApi();
-
-  // Extract symbol, handle potential array/undefined, and ensure uppercase
   const rawSymbol = params?.symbol;
   const symbol =
     typeof rawSymbol === "string" ? rawSymbol.toUpperCase() : undefined;
@@ -22,7 +20,6 @@ const SymbolDetailPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Only fetch if symbol is valid
     if (!symbol) {
       setError("Invalid stock symbol provided in URL.");
       setIsLoading(false);
@@ -40,7 +37,6 @@ const SymbolDetailPage: React.FC = () => {
         );
 
         if (historyData && historyData.length > 0) {
-          // Ensure data has the required fields for candlestick
           const hasRequiredData = historyData.every(
             (d) =>
               d.date != null &&
@@ -127,12 +123,10 @@ const SymbolDetailPage: React.FC = () => {
             {error}
           </Typography.Text>
         ) : chartData.length > 0 && symbol ? (
-          // Render the chart component full width inside the container
           <div style={{ width: "100%", height: "100%" }}>
             <StockChart data={chartData} symbol={symbol} />
           </div>
         ) : (
-          // Fallback if no data and no specific error (should ideally be caught by error state)
           <Typography.Text style={{ color: "var(--foreground)" }}>
             No chart data available to display for {symbol}.
           </Typography.Text>

@@ -11,10 +11,6 @@ interface UseWindowSizeReturn {
   isDesktop: boolean;
 }
 
-/**
- * Custom hook to track the browser window size.
- * Returns the current window dimensions along with flags for mobile and desktop layouts.
- */
 const useWindowSize = (): UseWindowSizeReturn => {
   const [windowSize, setWindowSize] = useState<WindowSize>({
     width: 0,
@@ -30,7 +26,6 @@ const useWindowSize = (): UseWindowSizeReturn => {
     }
     if (typeof window !== "undefined") {
       globalThis.addEventListener("resize", handleResize);
-      // Set initial dimensions
       handleResize();
     }
     return () => globalThis.removeEventListener("resize", handleResize);

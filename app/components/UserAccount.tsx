@@ -33,20 +33,44 @@ const UserAccount = () => {
 
   const handleLogout = async () => {
     try {
-      await apiService.post(`/logout/${userId}`, {});
-    } catch (error) {
-      console.error("Logout failed:", error);
-      message.error("Logout failed");
-    } finally {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        message.error("No authentication token found");
+        throw new Error("No token found");
+      }
+
+      const hideLoading = message.loading("Logging out...", 0);
+
+      await apiService.post(
+        `/users/${userId}/logout`,
+        {},
+        {
+          Authorization: `Bearer ${token}`,
+        }
+      );
       queryClient.clear();
       localStorage.removeItem("token");
       localStorage.removeItem("id");
-      router.push("/login");
+
+      hideLoading();
+      message.success("Logged out successfully!");
+
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 1000);
+    } catch (error) {
+      console.error("Logout failed:", error);
+      // message.error("Logout failed. You have been logged out locally.");
+      localStorage.removeItem("token");
+      localStorage.removeItem("id");
+
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 1500);
     }
   };
 
   const items: MenuProps["items"] = [
-
     {
       key: "instructions",
       label: "Instructions",
@@ -72,12 +96,11 @@ const UserAccount = () => {
 
   return (
     <div style={{ position: "fixed", top: 16, right: 16, zIndex: 1000 }}>
-      {/* <Tooltip title={currentUser?.username}> */}
       <Tooltip>
         <Dropdown
           menu={{ items }}
           trigger={["click"]}
-          placement="bottomRight" // Add this prop
+          placement="bottomRight"
           overlayStyle={{
             position: "fixed",
             minWidth: "200px",

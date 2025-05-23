@@ -12,7 +12,6 @@ interface LogoProps {
 const Logo = ({ width = 632 / 3, height = 209 / 3 }: LogoProps) => {
   const [isDarkTheme, setIsDarkTheme] = useState(false);
 
-  // Detect the theme preference
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     setIsDarkTheme(mediaQuery.matches);
@@ -34,9 +33,9 @@ const Logo = ({ width = 632 / 3, height = 209 / 3 }: LogoProps) => {
         <Image
           src={isDarkTheme ? "/Stockico_dark.png" : "/Stockico_light.png"}
           alt="Game Logo"
-          width={width} // Use the width prop
-          height={height} // Use the height prop
-          unoptimized // Disable default optimizations (e.g., blur-up placeholder)
+          width={width}
+          height={height}
+          unoptimized
           style={{ cursor: "pointer" }}
         />
       </Link>

@@ -1,7 +1,7 @@
 export interface StockDataPointDTO {
     symbol: string;
-    date: string; // Expecting 'YYYY-MM-DD' string from backend for Plotly
-    open?: number | null; // Use optional or null if backend might not send it
+    date: string;
+    open?: number | null;
     high?: number | null;
     low?: number | null;
     close?: number | null;

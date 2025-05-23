@@ -33,7 +33,6 @@ const TransitionPage: React.FC = () => {
         color: "white",
       }}
     >
-      {/* Coin animation */}
       <motion.div
         className="w-24 h-24 bg-yellow-400 rounded-full flex items-center justify-center text-3xl text-white shadow-2xl mb-8"
         animate={{ rotateY: 360 }}
@@ -42,7 +41,6 @@ const TransitionPage: React.FC = () => {
         💰
       </motion.div>
 
-      {/* Message */}
       <Typography.Title
         level={3}
         style={{ color: "var(--foreground)", marginBottom: 0 }}
@@ -53,7 +51,6 @@ const TransitionPage: React.FC = () => {
         Round has ended. Loading leaderboard...
       </Typography.Text>
 
-      {/* Spinner below message */}
       <Spin size="large" />
     </div>
   );

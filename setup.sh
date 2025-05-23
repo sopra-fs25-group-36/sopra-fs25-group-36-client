@@ -1,5 +1,3 @@
-#!/bin/bash
-
 FAILED_COMMANDS=()
 OS_TYPE=$(uname)
 
@@ -11,7 +9,6 @@ run_command() {
         }
 }
 
-# Install nix
 if [ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then
     echo "nix is already installed"
 else
@@ -25,11 +22,9 @@ if [ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then
     echo "Sourcing nix-daemon..."
     run_command ". /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh && nix profile install nixpkgs#direnv && direnv allow"
     
-    # source directly in shell as well
     . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
     export PATH="$HOME/.nix-profile/bin:$PATH"
 
-    # Try to install direnv, fix permissions if it fails
     if ! run_command "nix profile install nixpkgs#direnv && direnv allow"; then
         echo -e "\033[0;31mFailed to install direnv. Attempting to fix Nix permissions...\033[0m"
         sudo chown -R "$(whoami)" /nix
@@ -40,7 +35,6 @@ else
     return 1
 fi
 
-# Hook direnv into shell
 echo "Configuring direnv for the current shell..."
 case "$SHELL" in
 */bash)
