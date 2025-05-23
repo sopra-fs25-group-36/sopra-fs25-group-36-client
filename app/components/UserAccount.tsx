@@ -33,7 +33,7 @@ const UserAccount = () => {
 
   const handleLogout = async () => {
     try {
-      await apiService.post(`/logout/${userId}`, {});
+      await apiService.post(`/users/${userId}/logout/`, {});
     } catch (error) {
       console.error("Logout failed:", error);
       message.error("Logout failed");
