@@ -33,21 +33,40 @@ const UserAccount = () => {
 
   const handleLogout = async () => {
     try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        message.error("No authentication token found");
+        throw new Error("No token found");
+      }
+
+      const hideLoading = message.loading("Logging out...", 0);
+
       await apiService.post(
         `/users/${userId}/logout`,
         {},
         {
-          token: localStorage.getItem("token")!,
+          Authorization: `Bearer ${token}`,
         }
       );
-    } catch (error) {
-      console.error("Logout failed:", error);
-      message.error("Logout failed");
-    } finally {
       queryClient.clear();
       localStorage.removeItem("token");
       localStorage.removeItem("id");
-      router.push("/login");
+
+      hideLoading();
+      message.success("Logged out successfully!");
+
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 1000);
+    } catch (error) {
+      console.error("Logout failed:", error);
+      // message.error("Logout failed. You have been logged out locally.");
+      localStorage.removeItem("token");
+      localStorage.removeItem("id");
+
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 1500);
     }
   };
 
