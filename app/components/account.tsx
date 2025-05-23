@@ -32,7 +32,13 @@ const Account = () => {
 
   const handleLogout = async () => {
     try {
-      await apiService.post(`/users/${userId}/logout/`, {});
+      await apiService.post(
+        `/users/${userId}/logout`,
+        {},
+        {
+          token: localStorage.getItem("token")!,
+        }
+      );
     } catch (error) {
       console.error("Logout failed:", error);
       message.error("Logout failed");

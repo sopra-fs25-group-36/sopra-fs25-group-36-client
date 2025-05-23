@@ -57,18 +57,23 @@ export class ApiService {
     );
   }
 
-  public async post<T>(endpoint: string, data: unknown): Promise<T> {
-    const url = `${this.baseURL}${endpoint}`;
-    const res = await fetch(url, {
-      method: "POST",
-      headers: this.defaultHeaders,
-      body: JSON.stringify(data),
-    });
-    return this.processResponse<T>(
-      res,
-      "An error occurred while posting the data.\n",
-    );
-  }
+  public async post<T>(
+  endpoint: string,
+  data: unknown,
+  customHeaders: HeadersInit = {}
+): Promise<T> {
+  const url = `${this.baseURL}${endpoint}`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { ...this.defaultHeaders, ...customHeaders },
+    body: JSON.stringify(data),
+  });
+  return this.processResponse<T>(
+    res,
+    "An error occurred while posting the data.\n",
+  );
+}
+
 
   public async put<T>(endpoint: string, data: unknown): Promise<T> {
     const url = `${this.baseURL}${endpoint}`;
