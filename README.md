@@ -236,26 +236,32 @@ While Vercel automates deployments from your Git branches, you can manage "relea
 
 1.  **Authentication (Login/Registration):**
     *   Users are presented with a login form. New users can navigate to a registration form to create an account.
+    *   ![](public/imgs/Screenshot%202025-05-23%20210844.png) 
     *   Upon successful login/registration, users are redirected to the main application area (e.g., lobby or dashboard).
-    *   ![](./docs/images/client-login.png) ##TODOs
-    *   ![](./docs/images/client-registration.png) ##TODOs
+    *   ![](public/imgs/Screenshot%202025-05-23%20210855.png) 
 
 2.  **Game Lobby Interaction:**
     *   After login, users can view available game lobbies or create a new one.
+    *   ![](public/imgs/Screenshot%202025-05-23%20210941.png)
     *   They can join an existing lobby, see other players, and ready up for the game to start.
-    *   ![](./docs/images/client-lobby-list.png) ##TODOs
-    *   ![](./docs/images/client-game-lobby.png) ##TODOs
+    *   ![](public/imgs/Screenshot%202025-05-23%20210956.png) 
 
 3.  **In-Game Trading:**
     *   Once a game starts, users see their portfolio (cash, owned stocks), available stocks with current prices, and charts.
+    *   ![](public/imgs/Screenshot%202025-05-23%20211041.png)
     *   They can select a stock to view more details (e.g., historical chart, company info).
+    *   ![](public/imgs/Screenshot%202025-05-23%20213015.png) 
     *   Users can place buy or sell orders for stocks, subject to available funds and shares.
-    *   ![](./docs/images/client-game-interface.png) ##TODOs
-    *   ![](./docs/images/client-stock-detail.png) ##TODOs
 
 4.  **Viewing Leaderboard:**
     *   During or after a game, users can view a leaderboard showing player rankings based on portfolio value.
-    *   ![](./docs/images/client-leaderboard.png) ##TODOs
+    *   ![](public/imgs/Screenshot%202025-05-23%20211001.png) ##TODOs
+
+5.  **Endgame Screen:**
+    * After finishing the game, users can see the end statistics.
+    *   ![](public/imgs/Screenshot%202025-05-23%20211911.png)
+    *   ![](public/imgs/Screenshot%202025-05-23%20211924.png)
+    *   ![](public/imgs/Screenshot%202025-05-23%20211946.png)
 
 ## Roadmap
 
