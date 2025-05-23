@@ -20,7 +20,6 @@ const Register: React.FC = () => {
   const handleRegister = async (values: {
     username: string;
     password: string;
-    // avatar: number;
   }) => {
     try {
       const payload = {

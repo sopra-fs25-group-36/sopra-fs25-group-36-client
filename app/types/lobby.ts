@@ -1,7 +1,7 @@
 export interface Lobby {
   id: number;
   playerReadyStatuses: Record<string, boolean>;
-  createdAt: number;          // epoch millis
+  createdAt: number;
   active: boolean;
   timeLimitSeconds: number;
 }

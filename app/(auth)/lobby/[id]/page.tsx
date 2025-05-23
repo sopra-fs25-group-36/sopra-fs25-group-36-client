@@ -24,7 +24,6 @@ export default function LobbyPage() {
 
   useEffect(() => setCurrentUserId(localStorage.getItem("id") ?? ""), []);
 
-  /* -------- fetch lobby -------- */
   const fetchLobby = useCallback(async () => {
     try {
       const data = await api.get<Lobby>(`/lobby/${lobbyId}`);
@@ -55,7 +54,6 @@ export default function LobbyPage() {
     return () => clearInterval(int);
   }, [lobby, router, currentUserId, startInitiated]);
 
-  /* -------- when EVERYONE is ready, start the game -------- */
   useEffect(() => {
     if (!lobby || startInitiated) return;
 
@@ -92,7 +90,6 @@ export default function LobbyPage() {
     })();
   }, [lobby, api, lobbyId, router, currentUserId, startInitiated]);
 
-  /* -------- usernames -------- */
   useEffect(() => {
     if (!lobby) return;
     const ids = Object.keys(lobby.playerReadyStatuses);
@@ -109,7 +106,6 @@ export default function LobbyPage() {
     });
   }, [lobby, api, userMap]);
 
-  /* -------- ready -------- */
   const handleReady = async () => {
     try {
       await api.post(`/lobby/${lobbyId}/ready`, {
@@ -120,7 +116,6 @@ export default function LobbyPage() {
     }
   };
 
-  /* -------- players with placeholders -------- */
   const players = lobby
     ? [
         ...Object.entries(lobby.playerReadyStatuses).map(([uid, ready]) => ({
@@ -140,7 +135,6 @@ export default function LobbyPage() {
       ]
     : [];
 
-  /* -------- render -------- */
   return (
     <AntApp>
       <div style={{ maxWidth: 400, margin: "20px auto", padding: 16 }}>

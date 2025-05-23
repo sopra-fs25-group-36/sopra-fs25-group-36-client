@@ -46,7 +46,6 @@ const UserAccount = () => {
   };
 
   const items: MenuProps["items"] = [
-
     {
       key: "instructions",
       label: "Instructions",
@@ -72,12 +71,11 @@ const UserAccount = () => {
 
   return (
     <div style={{ position: "fixed", top: 16, right: 16, zIndex: 1000 }}>
-      {/* <Tooltip title={currentUser?.username}> */}
       <Tooltip>
         <Dropdown
           menu={{ items }}
           trigger={["click"]}
-          placement="bottomRight" // Add this prop
+          placement="bottomRight"
           overlayStyle={{
             position: "fixed",
             minWidth: "200px",

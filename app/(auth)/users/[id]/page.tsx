@@ -24,7 +24,6 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     if (isJoinGameModalVisible) {
-      // Short delay ensures modal is rendered before focus
       setTimeout(() => {
         inputRef.current?.focus();
       }, 100);
@@ -45,7 +44,6 @@ const Dashboard: React.FC = () => {
     fetchUser();
   }, [userId, apiService]);
 
-  // Handle creating a new lobby
   const handleCreateNewRoom = async () => {
     try {
       const newLobby = await apiService.post<Lobby>(
@@ -63,18 +61,15 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  // Show join game modal
   const showJoinGameModal = () => {
     setIsJoinGameModalVisible(true);
   };
 
-  // Cancel join game modal
   const handleJoinGameCancel = () => {
     setIsJoinGameModalVisible(false);
     form.resetFields();
   };
 
-  // Submit join game modal
   const handleJoinGameSubmit = async () => {
     try {
       const lobbyId = form.getFieldValue("gameCode");
@@ -82,7 +77,6 @@ const Dashboard: React.FC = () => {
         message.error("Please enter a game code");
         return;
       }
-      // Post to the joinLobby endpoint using lobbyCode as the lobby id.
       const targetLobby = await apiService.post<Lobby>(
         `/lobby/${lobbyId}/joinLobby`,
         {
@@ -164,7 +158,7 @@ const Dashboard: React.FC = () => {
               <Button
                 type="primary"
                 onClick={handleJoinGameSubmit}
-                style={{ width: "150px" }} // Adjust width as needed
+                style={{ width: "150px" }}
               >
                 Join Game
               </Button>

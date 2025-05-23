@@ -22,7 +22,6 @@ const StockChart: React.FC<StockChartProps> = ({ data, symbol }) => {
       return;
     }
 
-    // Read the computed styles
     const computedStyles = getComputedStyle(document.documentElement);
     const backgroundColor = computedStyles
       .getPropertyValue("--background")
@@ -31,7 +30,6 @@ const StockChart: React.FC<StockChartProps> = ({ data, symbol }) => {
       .getPropertyValue("--foreground")
       .trim();
 
-    // Filter out any invalid data points (where any OHLC is null/undefined)
     const filteredData = data.filter(
       (d) =>
         d.open != null &&
@@ -69,9 +67,6 @@ const StockChart: React.FC<StockChartProps> = ({ data, symbol }) => {
         title: "Price",
         type: "linear",
       },
-      // plot_bgcolor: "#1f2937", //"var(--background)"
-      // paper_bgcolor: "#1f2937", //"var(--background)"
-      // font: { color: "#ffffff" }, //"var(--foreground)"
       plot_bgcolor: backgroundColor,
       paper_bgcolor: backgroundColor,
       font: { color: foregroundColor },

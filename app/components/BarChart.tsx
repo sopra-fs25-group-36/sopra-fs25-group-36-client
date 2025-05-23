@@ -18,7 +18,6 @@ const BarChart: React.FC<BarChartProps> = ({ data, colorMap = {} }) => {
       data,
       xField: "value",
       yField: "name",
-      // isHorizontal: true,
       seriesField: "category",
       label: false,
       tooltip: {

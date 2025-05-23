@@ -1,22 +1,21 @@
 .page {
-  justify-content: flex-start; /* Moves content closer to the top */
-  padding-top: 50px; /* Adjust as needed */
+  justify-content: flex-start;
+  padding-top: 50px;
 }
 
 .logo {
   max-width: 100%;
   height: auto;
-  margin-bottom: 50px; /* Adjust this value to add more space below */
+  margin-bottom: 50px;
 }
 
 .main {
- /* flex: 1; /* Allow main content to grow and take up available space */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding-bottom: 30px; /* Add padding at the bottom to prevent overlap with footer */
-  gap: 60px; /* Adjust spacing between logo and buttons */
+  padding-bottom: 30px;
+  gap: 60px;
 }
 
 .main code {
@@ -27,22 +26,22 @@
 }
 
 .ctas {
-  margin-top: 50px; /* Ensure there's space between the logo and buttons */
-  margin-bottom: 50px; /* Ensure there's space between the logo and buttons */
-  justify-content: center; /* Center buttons horizontally */
-  align-items: center; /* Center buttons vertically */
-  width: 100%; /* Ensure it spans full width of container */
-  max-width: 300px; /* Limit the width of the button container */
+  margin-top: 50px;
+  margin-bottom: 50px;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 300px;
 }
 
 .footer {
   display: flex;
-  flex-wrap: wrap; /* Allow buttons to wrap onto the next line */
-  justify-content: center; /* Center buttons horizontally */
-  gap: 10px; /* Space between buttons */
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
   padding: 10px;
   border-top: 1px solid var(--card-border);
-  width: 100%; /* Ensure footer spans full width */
+  width: 100%;
 }
 
 @media (max-width: 300px) {
@@ -52,7 +51,7 @@
   }
 
   .main {
-    align-items: center; /* Ensures all child elements are centered */
+    align-items: center;
     text-align: center;
     width: 100%;
   }
@@ -63,7 +62,7 @@
   }
 
   .footer {
-    flex-direction: column; /* Stack footer buttons vertically on small screens */
+    flex-direction: column;
     align-items: center;
   }
 }

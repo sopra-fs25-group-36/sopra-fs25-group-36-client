@@ -1,8 +1,8 @@
 export interface StockHoldingDTO {
     symbol: string;
     quantity: number;
-    category: string;      // e.g. “TECH”, “ENERGY”
-    currentPrice: number;  // last known price
+    category: string;
+    currentPrice: number;
 }
 
 export interface TransactionDTO {

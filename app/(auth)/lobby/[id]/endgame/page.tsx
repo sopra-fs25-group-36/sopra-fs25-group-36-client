@@ -46,7 +46,7 @@ interface StockTransaction {
   quantity: number;
   price: number;
   type: string;
-  timestamp?: string; // Added for better key generation
+  timestamp?: string;
 }
 
 interface TableRecord {
@@ -177,8 +177,6 @@ const FinalBoard: React.FC = () => {
   const playerStatesColumns = [
     {
       title: "User Name",
-      // dataIndex: "userId",
-      // key: "userId",
       dataIndex: "name",
       key: "name",
       width: "25%",
@@ -324,7 +322,7 @@ const FinalBoard: React.FC = () => {
                 stockTimelineData[Object.keys(stockTimelineData)[0]]
               ).map((stockId) => ({
                 stock: stockId,
-                key: stockId, // Added key here
+                key: stockId,
                 ...Object.keys(stockTimelineData).reduce(
                   (acc, round) => {
                     acc[round] = stockTimelineData[round][stockId] || 0;

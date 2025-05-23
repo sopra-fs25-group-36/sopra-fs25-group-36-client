@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "antd";
 import { GithubOutlined } from "@ant-design/icons";
 import styles from "@/styles/page.module.css";
-import Logo from "@/components/Logo"; // Adjust the import path as needed
+import Logo from "@/components/Logo";
 
 export default function Home() {
   const router = useRouter();
@@ -18,7 +18,7 @@ export default function Home() {
             variant="solid"
             onClick={() => router.push("/login")}
             block
-            style={{ height: "60px", fontSize: "20px", padding: "0 30px" }} // Inline styles for Ant Design Button
+            style={{ height: "60px", fontSize: "20px", padding: "0 30px" }}
           >
             Login
           </Button>

@@ -13,9 +13,8 @@ export default function useLocalStorage<T>(
   const [value, setValue] = useState<T>(defaultValue);
 
   useEffect(() => {
-    if (typeof window === "undefined") return; // SSR safeguard
+    if (typeof window === "undefined") return;
     try {
-      // const stored = globalThis.localStorage.getItem(key);
       const stored = localStorage.getItem(key);
       if (stored) {
         setValue(JSON.parse(stored) as T);
@@ -28,7 +27,6 @@ export default function useLocalStorage<T>(
   const set = (newVal: T) => {
     setValue(newVal);
     if (typeof window !== "undefined") {
-      // globalThis.localStorage.setItem(key, JSON.stringify(newVal));
       localStorage.setItem(key, JSON.stringify(newVal));
     }
   };

@@ -19,7 +19,6 @@ const Account = () => {
   const apiService = useApi();
   const queryClient = useQueryClient();
   const { isAuthenticated } = useAuth();
-
   const { data: currentUser } = useQuery<User>({
     queryKey: ["currentUser"],
     queryFn: async () => {
@@ -71,12 +70,11 @@ const Account = () => {
 
   return (
     <div style={{ position: "fixed", top: 16, right: 16, zIndex: 1000 }}>
-      {/* <Tooltip title={currentUser?.username}> */}
       <Tooltip>
         <Dropdown
           menu={{ items }}
           trigger={["click"]}
-          placement="bottomRight" // Add this prop
+          placement="bottomRight"
           overlayStyle={{
             position: "fixed",
             minWidth: "200px",

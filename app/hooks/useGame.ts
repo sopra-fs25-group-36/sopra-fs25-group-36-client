@@ -9,8 +9,6 @@ export const useGame = (gameId: number) => {
   const [isLoading, setIsLoading] = useState(true);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const pathname = usePathname();
-
-  // Wrap fetchGameState in useCallback to memoize it
   const fetchGameState = useCallback(async () => {
     try {
       const response = await fetch(`${getApiDomain()}/game/${gameId}/round`);
@@ -31,12 +29,10 @@ export const useGame = (gameId: number) => {
     }
   }, [gameId]);
 
-  // Initial fetch on mount
   useEffect(() => {
     fetchGameState();
   }, [fetchGameState]);
 
-  // Timer management
   useEffect(() => {
     if (intervalRef.current) clearInterval(intervalRef.current);
 
@@ -50,7 +46,6 @@ export const useGame = (gameId: number) => {
           }
           fetchGameState().then((newRound) => {
             if (newRound >= 10) {
-              // router.push(`/lobby/${gameId}/leader_board`);
               router.push(`/lobby/${gameId}/endgame`);
             } else {
               router.push(`/lobby/${gameId}/game/transition`);
